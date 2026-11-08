@@ -1,0 +1,103 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Vlado Martek</title>
+  <meta name="description" content="Vlado Martek — pjesnik i umjetnik. Odabrani radovi: vizualna poezija, akcije, knjige, kiparstvo, tekstovi." />
+  <meta name="theme-color" content="#E63323" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Vlado Martek" />
+  <meta property="og:title" content="Vlado Martek" />
+  <meta property="og:description" content="Vlado Martek — pjesnik i umjetnik. Odabrani radovi: vizualna poezija, akcije, knjige, kiparstvo, tekstovi." />
+  <meta property="og:image" content="img/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="675" />
+  <meta property="og:locale" content="hr_HR" />
+  <meta property="og:locale:alternate" content="en_GB" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Vlado Martek" />
+  <meta name="twitter:image" content="img/og.png" />
+  <script type="module" crossorigin src="./assets/index-DDkh1GvV.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DWOkvCCD.css">
+</head>
+<body class="is-loading">
+  <div class="loader" id="loader" aria-hidden="true">
+    <img class="loader-mark" src="img/loader.svg" alt="10% artist" />
+  </div>
+
+  <div class="veil" aria-hidden="true"></div>
+
+  <nav class="menu blurrable" id="menu" aria-label="Kategorije">
+    <span class="menu-prefix prefix" id="menuPrefix">Medij:</span>
+    <div class="menu-pick">
+      <button class="menu-label" id="menuLabel" type="button" aria-expanded="false" aria-controls="menuList">Svi radovi</button>
+      <ul class="menu-list" id="menuList"></ul>
+    </div>
+  </nav>
+
+  <nav class="views blurrable" id="views" aria-label="Prikaz">
+    <span class="prefix" id="viewsPrefix">Prikaz:</span>
+    <button type="button" class="switch-opt is-on" data-view="surf" id="viewSurf" aria-pressed="true">Galerija</button><span class="sep" aria-hidden="true">|</span><button type="button" class="switch-opt" data-view="index" id="viewIndex" aria-pressed="false">Pregled</button>
+  </nav>
+
+  <div class="lang about-link blurrable" id="langBox"><button id="langToggle" type="button" aria-label="Promijeni jezik / Change language">Hrvatski</button><span class="prefix">;</span><button id="soundToggle" type="button" aria-pressed="true">Zvuk</button></div>
+
+  <p class="hover-title" id="hoverTitle" aria-live="polite"></p>
+
+  <main class="gallery" id="gallery" aria-label="Odabrani radovi">
+    <div class="track" id="track" role="list"></div>
+  </main>
+
+  <main class="index" id="index" aria-label="Pregled" hidden>
+    <ol class="index-grid" id="indexGrid"></ol>
+  </main>
+
+  <button class="label label-first blurrable" id="labelFirst" type="button">Vlado</button>
+  <button class="label label-last blurrable" id="labelLast" type="button">Martek</button>
+
+  <section class="overlay info" id="info" role="dialog" aria-modal="true" aria-label="O umjetniku" tabindex="-1" hidden>
+    <div class="info-actions">
+      <button class="close info-close" type="button" id="infoClose" data-close>Zatvori</button>
+    </div>
+    <div class="info-inner">
+      <div class="info-col">
+        <div class="info-body" id="infoBody"></div>
+        <figure class="info-photo" id="infoPhoto"><span id="infoPhotoLabel">Fotografija</span></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="overlay detail" id="detail" role="dialog" aria-modal="true" aria-labelledby="detailTitle" tabindex="-1" hidden>
+    <nav class="detail-dim" aria-label="Prikaz rada"><span class="prefix" id="dimPrefix">Prikaz:</span><button type="button" class="switch-opt is-on" data-dim="2d" id="dim2d" aria-pressed="true">2D</button><span class="sep" aria-hidden="true">|</span><button type="button" class="switch-opt" data-dim="3d" id="dim3d" aria-pressed="false">3D</button></nav>
+    <button class="close detail-close" type="button" id="detailClose" data-close>Zatvori</button>
+    <div class="detail-names" id="detailNames" aria-hidden="true"><span class="foot-first">Vlado</span><span class="foot-last">Martek</span></div>
+    <div class="detail-scroll" id="detailScroll">
+      <div class="detail-hero">
+        <header class="detail-head">
+          <h2 class="detail-title" id="detailTitle"></h2>
+          <p class="detail-year" id="detailYear"></p>
+        </header>
+        <div class="detail-stage" id="detailStage"></div>
+      </div>
+      <article class="detail-panel" id="detailPanel">
+        <p class="detail-desc" id="detailDesc"></p>
+        <table class="detail-facts" id="detailFacts"></table>
+        <div class="detail-strip" id="detailStrip"></div>
+        <section class="detail-links" id="detailLinksBox">
+          <h3 class="detail-links-title" id="detailLinksTitle">Pročitaj više</h3>
+          <ul class="detail-links-list" id="detailLinks"></ul>
+        </section>
+      </article>
+      <footer class="detail-end" id="detailEnd"></footer>
+    </div>
+  </section>
+
+  <noscript><p style="padding:20px">Vlado Martek — za prikaz stranice potreban je JavaScript.</p></noscript>
+</body>
+</html>
+
+</body></html>
