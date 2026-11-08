@@ -1,0 +1,16 @@
+{
+  "name": "vlado-martek",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview --host",
+    "placeholders": "node scripts/make-placeholders.mjs",
+    "build:offline": "node scripts/build-offline.mjs"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}

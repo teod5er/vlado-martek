@@ -1,0 +1,569 @@
+/* One typeface, one weight, sizes on a golden-ratio scale: each step is the previous × 1.618. */
+@font-face {
+  font-family: 'Malamocco';
+  src: url('./fonts/Malamocco-Medium.otf') format('opentype');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+:root {
+  --red: #E63323;
+  --crumb: #8E8E8E;                     /* Home in the Home / Medium path */
+  --splash: #FA0203;                    /* accent of the splash screen */
+  --ink: #111111;
+  --bg: #E4E4E4;
+  --veil: rgba(242, 242, 242, 0.6);
+  --line: #D6D6D6;
+  --sheet: #F7F7F7;                     /* the work's details, under the work */                      /* hairlines in the work details */
+  /* the grid: 12 columns between two margins, the gutters as wide as the margins (one unit of space
+     for the whole page). Columns are counted from 1; a line "at column n" is where column n starts. */
+  --pad: clamp(10px, 1.1vw, 22px);      /* the margin, on every edge */
+  --gut: var(--pad);                    /* the gutter between two columns */
+  --col: calc((100vw - var(--pad) * 2 - var(--gut) * 11) / 12); /* one column */
+  --colg: calc(var(--col) + var(--gut)); /* a column and its gutter: the step from one column to the next */
+  --cs: calc(var(--pad) + var(--colg) * 3);          /* column 4: the content column (media, titles, works, details) */
+  --c2: calc(var(--pad) + var(--colg) * 6);          /* column 7: the second column of the details (values, years) */
+  --ce: calc(var(--pad) + var(--colg) * 9 - var(--gut)); /* the end of column 9: where the details end */
+  --span1: var(--col);
+  --span2: calc(var(--col) * 2 + var(--gut));
+  --span3: calc(var(--col) * 3 + var(--gut) * 2);
+  --span4: calc(var(--col) * 4 + var(--gut) * 3);
+  --blur: 48px;
+  --phi: 1.618;
+  --u: clamp(12px, 0.6vw + 6px, 17px);
+  --t0: var(--u);                       /* menu, captions, meta, close */
+  --t1: calc(var(--t0) * var(--phi));   /* work description */
+  --tm: calc(var(--t0) * 1.3);          /* menus and running text */
+  --t2: calc(var(--t1) * var(--phi));   /* titles, about text */
+  --t3: calc(var(--t2) * var(--phi));   /* VLADO / MARTEK */
+  --t4: calc(var(--t3) * var(--phi));
+  --label: var(--t3);
+  --name: calc(var(--tm) * 2.6);       /* VLADO MARTEK in the corner */
+  --sans: 'Malamocco', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --ease: cubic-bezier(.22, .8, .2, 1);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+/* the page frame: two rows
+   - top row: VLADO / MARTEK | the media | the tools, all hanging from the top edge (cap tops at --pad)
+   - bottom row: the title | the exhibition, all on the title's last baseline */
+body {
+  --row: var(--pad);
+  --bar: calc(var(--row) + var(--tm) + var(--pad) * 1.5); /* height of the top bar (no colour of its own) */
+}
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg);
+  transition: none;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 500; /* Malamocco Medium is the one weight; nothing is synthesised bold */
+  font-synthesis: none;
+  font-size: var(--t0);
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+h1, h2, h3, th { font-weight: inherit; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+img { -webkit-user-drag: none; user-drag: none; }
+/* no visible scrollbars anywhere (the lists still scroll) */
+* { scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+.small { font-size: var(--t0); line-height: 1.2; text-transform: uppercase; letter-spacing: .01em; }
+
+/* ---------- blur choreography ---------- */
+/* nothing on the page is blurred itself; the open medium menu and About lay a backdrop blur over
+   the page (one veil, below the menu or below About), which builds up gradually */
+.veil {
+  position: fixed; inset: 0; z-index: 11; pointer-events: none;
+  -webkit-backdrop-filter: blur(0px); backdrop-filter: blur(0px);
+  transition: backdrop-filter .2s steps(3, end), -webkit-backdrop-filter .2s steps(3, end);
+}
+body.focus-menu .veil, body.focus-info .veil { -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); }
+body.focus-info .veil { z-index: 19; -webkit-backdrop-filter: blur(calc(var(--blur) * 2)); backdrop-filter: blur(calc(var(--blur) * 2)); } /* the about page: a stronger blur */
+body.detail-open.focus-menu .veil { z-index: 24; }
+.blurrable, .index-item { transition: none; }
+
+/* ---------- intro: names, then menu + language, then the gallery ---------- */
+body.intro .label, body.intro .menu, body.intro .about-link, body.intro .views, body.intro .gallery, body.intro .hover-title { opacity: 0; pointer-events: none; }
+body.intro .menu, body.intro .about-link, body.intro .views, body.intro .hover-title { transition: none; } /* cut in; the gallery slides in */
+body.intro-names .label { opacity: 1; }
+body.intro-ui .menu, body.intro-ui .about-link, body.intro-ui .views { opacity: 1; }
+body.intro-gallery .gallery, body.intro-gallery .hover-title { opacity: 1; }
+
+
+.menu, .about-link, .views, .label { transition: none; }
+
+/* ---------- loader ---------- */
+.loader {
+  position: fixed; inset: 0; z-index: 30;
+  background: var(--splash);
+  pointer-events: none;
+}
+body.loaded .loader { display: none; }
+.loader { display: grid; place-items: center; }
+.loader-mark { width: min(22vw, 420px); min-width: 180px; height: auto; display: block; }
+
+
+/* ---------- labels ---------- */
+/* a low, soft grey shade along the bottom, always there (in every view, over a work and the events
+   too): a touch darker than the page, so it shows on the plain grey as well, not only over pictures */
+.bottom-fade {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 4; pointer-events: none; /* under the names and the title */
+  height: calc(var(--label) + var(--pad) * 1.5);
+  background: linear-gradient(to top, rgba(0, 0, 0, .06), rgba(0, 0, 0, 0));
+}
+body.detail-open .bottom-fade, body.events-open .bottom-fade { z-index: 22; } /* over a work and the events page too */
+/* VLADO / MARTEK in two lines in the top-left corner, Vlado's cap tops in line with the top bar */
+.label {
+  position: fixed; top: 0; z-index: 13;
+  font-size: var(--name); line-height: .76;
+  letter-spacing: -.035em; white-space: nowrap;
+  padding: var(--pad) 0 0;
+  text-box: trim-both cap alphabetic;
+}
+.label-first { left: var(--pad); color: var(--ink); margin-left: -.06em; }
+.label-last { left: var(--pad); margin-left: -.09em; padding-top: calc(var(--pad) + var(--name) * .92); color: var(--red); } /* Martek on a second line, under Vlado (the M's side-bearing pulled in, to line up with the V) */
+/* About, bottom left: only his portrait, small and square; it opens the text about him */
+.about-btn {
+  position: fixed; left: var(--pad); bottom: var(--pad); z-index: 12;
+  display: flex; align-items: flex-end; gap: .5em; font-size: var(--tm); color: var(--red);
+}
+.about-thumb { flex: none; width: 2.4em; height: 2.4em; background: #c6c6c6 center / cover no-repeat; }
+.about-btn:hover .about-thumb, body.focus-info .about-thumb { outline: 1px solid var(--ink); outline-offset: 2px; }
+body.intro .about-btn { opacity: 0; pointer-events: none; }
+body.detail-open .about-btn, body.events-open .about-btn, body.focus-info .about-btn { z-index: 25; }
+/* during the splash the names sit on the vertical middle, Vlado at the left edge and Martek at the
+   right (Martek in black there, so it shows on the red); once the page is in, they glide up together
+   into the top-left corner */
+.label { transition: transform .5s steps(8, end); } /* from the splash into the corner: eight hard steps */
+body.names-up .label { transform: translate(var(--lx, 0), var(--ly, 0)); z-index: 31; transition: none; }
+/* the names stay on every page: over a work and the events too */
+body.detail-open .label, body.events-open .label { z-index: 26; }
+body.names-up .label-last { color: var(--ink); }
+
+/* ---------- icons ----------
+   one family: a 12 × 12 grid drawn cap-height tall; filled shapes sit in a 10 × 10 box with
+   1.5 gaps, lines are 1.5 thick (the same as the gaps), round shapes overshoot the box a little
+   and diagonals stay inside it, so every icon weighs and measures the same to the eye */
+.icon { display: block; flex: none; width: .72em; height: .72em; fill: currentColor; overflow: visible; }
+.icon .s, .icon.s { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: butt; stroke-linejoin: miter; }
+
+/* ---------- menu ---------- */
+.menu {
+  position: fixed; top: 0; left: var(--cs); z-index: 12;
+  padding: var(--row) var(--pad) var(--pad) 0;
+  text-align: left;
+  display: flex; align-items: flex-start; gap: .28em; font-size: var(--tm);
+}
+/* a medium chosen: Home / Medium, Home in grey (a link back to all works) */
+.menu-back { display: none; align-items: flex-start; gap: .35em; font-size: var(--tm); line-height: 1.15; color: var(--ink); white-space: nowrap; }
+.menu-back > * { font-size: var(--tm); line-height: 1.15; text-box: trim-both cap alphabetic; }
+.crumb-home, .crumb-sep { color: var(--crumb); }
+.crumb-home:hover { color: var(--ink); }
+/* the X after the medium: clears it, back to all works */
+.crumb-x { font-size: var(--tm); color: var(--red); margin-left: .15em; }
+.crumb-x:hover { color: var(--ink); }
+body.has-cat .menu-back { display: flex; }
+body.has-cat .menu-pick { display: none !important; }
+.menu-label, .menu-list button {
+  font-size: var(--tm); line-height: 1.15;
+}
+.menu-label { text-align: left; }
+/* long category names: on one line up to the view switch, cut with an ellipsis */
+.menu-label { flex: none; display: flex; align-items: center; gap: .3em; white-space: nowrap; }
+.menu-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; text-box: trim-both cap alphabetic; padding-bottom: .25em; margin-bottom: -.25em; }
+/* chevron beside the medium: points down, turns up while the list is open */
+.menu-chevron { transform: rotate(-90deg); }
+body.focus-menu .menu-chevron { transform: rotate(90deg); }
+/* the medium menu opens to the right, in one row, from the grid column */
+.menu-pick { display: flex; align-items: flex-start; gap: 1em; }
+.menu-list li { display: flex; }
+.menu-list button { text-align: left; white-space: nowrap; }
+.menu-label { color: var(--red);  }
+.menu-list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: .5em .7em; max-width: calc(100vw - var(--cs) - var(--right-w, 16em)); /* --right-w: the exhibition and icons, from main.js */
+}
+.menu-list button {
+  text-box: trim-both cap alphabetic;
+  color: var(--red);
+  visibility: hidden;
+  pointer-events: none;
+}
+body.focus-menu .menu-label { color: var(--ink); }
+body.focus-menu .menu-list button { visibility: visible; pointer-events: auto; }
+.menu-list button:hover { color: var(--ink); }
+.menu-list li:has(.is-active) { display: none; }
+
+/* ---------- gallery: the carousel ---------- */
+.gallery { position: fixed; inset: 0; z-index: 2; touch-action: none; overflow: hidden; }
+.track { position: absolute; inset: 0; }
+.work {
+  position: absolute; left: 0; top: 0; margin: 0;
+  will-change: transform, width, height;
+  cursor: pointer; background: #d9d9d9;
+}
+.work img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.work.is-cutout { background: transparent; }
+.work.is-cutout img { object-fit: contain; }
+
+
+/* the title of the featured (or hovered) work, typed out at the bottom on the grid column */
+.hover-title {
+  position: fixed; bottom: var(--pad); left: var(--cs); z-index: 10; margin: 0;
+  max-width: calc(100vw - var(--cs) - var(--ex-w, 12em)); pointer-events: none; /* clear of the exhibition */
+  font-size: var(--t1); line-height: 1.12;
+  text-box: trim-end text alphabetic; /* its last line stands on the bottom row's baseline */
+}
+.hover-title .t { display: block; }
+.hover-title .y { display: block; color: var(--red); }
+body.detail-open .hover-title { visibility: hidden; }
+/* the open medium menu: the title goes behind the blur with the works */
+
+/* top right, one toolbar in two groups: the view icons | language and sound, parted by a thin grey
+   rule (the rule is the first item of .prefs; .views stands one gap left of it, --prefs-w being the
+   measured width of .prefs, set by main.js) */
+.views {
+  position: fixed; top: var(--row); right: calc(var(--pad) + var(--prefs-w, 3.3em) + .6em); z-index: 12;
+  display: flex; align-items: flex-start; gap: .6em; white-space: nowrap; font-size: var(--tm);
+}
+.prefs { position: fixed; right: var(--pad); top: var(--row); z-index: 12; display: flex; align-items: flex-start; gap: .6em; font-size: var(--tm); }
+.prefs::before { content: ''; display: block; width: 1px; height: .72em; background: var(--crumb); }
+body.events-open .prefs::before { visibility: hidden; } /* (over a work the counter stands left of the rule) */
+.prefs button { display: block; color: var(--red); }
+.prefs button:hover { color: var(--ink); }
+body.intro .prefs { opacity: 0; pointer-events: none; }
+body.intro-ui .prefs { opacity: 1; }
+body.detail-open .prefs, body.events-open .prefs { z-index: 25; }
+.view-btn { display: block; color: var(--red); }
+
+.views button, .views .sep { font-size: var(--tm); line-height: 1.15; color: var(--red); text-box: trim-both cap alphabetic; }
+.views .sep { color: var(--ink); }
+/* the two-way switches (Gallery | Overview, 2D | 3D): the current one in black, the other a red link */
+.switch-opt.is-on { color: var(--ink); cursor: default; }
+.sep { color: var(--ink); pointer-events: none; }
+body.view-index .gallery, body.view-list .gallery { visibility: hidden; pointer-events: none; }
+/* a work opened from the overview stands on the gallery, not on the grid */
+/* About, top-right */
+.about-link {
+  position: fixed; bottom: var(--pad); right: var(--pad); z-index: 12;
+  font-size: var(--tm); line-height: 1.15; color: var(--red); text-box: trim-both cap alphabetic;
+}
+.about-link:hover { color: var(--ink); }
+/* opening a work, the gallery's switches fade out and the work's own fade in, never swapped in one frame */
+/* a work open: the whole top bar stays, above the work; language and sound step left of Close */
+/* a work open: a back arrow where the view icons stand, no media; language and sound stay, left of Close */
+body.detail-open .views, body.detail-open .menu, body.events-open .views, body.events-open .menu { visibility: hidden; opacity: 0; pointer-events: none; }
+body.detail-open .about-link, body.events-open .about-link { z-index: 25; }
+/* events: a page of their own, rows like the list (dates, title, place) */
+.overlay.events, .overlay.events.is-open { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; transition: none; z-index: 21; }
+.events-scroll { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; padding: calc(var(--bar) + 14vh) calc(100vw - var(--ce)) 20vh var(--cs); }
+.events-title { margin: 0 0 10vh; font-size: var(--label); line-height: .92; letter-spacing: -.03em; text-box: trim-both cap alphabetic; }
+.events-rows { list-style: none; margin: 0; padding: 0; font-size: var(--tm); }
+.events-row { display: grid; grid-template-columns: var(--span3) 1fr auto; gap: 0 var(--gut); padding: .9em 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: -1px; }
+.events-dates { color: var(--red); }
+.detail-back { position: absolute; top: var(--row); left: var(--pad); z-index: 3; display: flex; align-items: center; gap: .45em; font-size: var(--tm); color: var(--red); white-space: nowrap; }
+/* Back to: Medium (the words in black, the medium in red, like a link) */
+.back-text { font-size: var(--tm); line-height: 1.15; text-box: trim-both cap alphabetic; }
+.back-pre { color: var(--ink); }
+.detail-back:hover, .detail-back:hover .back-cat { color: var(--ink); }
+/* a work's top bar, where the media stand: Back to: Medium, then (once the big title has scrolled
+   away) the work's name */
+.detail-bar { position: absolute; font-size: var(--tm); top: var(--row); left: var(--cs); right: calc(var(--pad) + 10em); z-index: 3; display: flex; align-items: flex-start; gap: .35em; white-space: nowrap; }
+.detail-bar > * { flex: none; font-size: var(--tm); line-height: 1.15; text-box: trim-both cap alphabetic; }
+.crumb-cat { color: var(--ink); }
+.crumb-cat:hover { color: var(--red); }
+/* scrolled past the big title: / and the title come in, the medium greys like Home */
+.detail-bar .dt { display: none; }
+.detail.title-on .detail-bar .dt { display: block; }
+.detail.title-on .crumb-cat { color: var(--crumb); }
+.detail.title-on .crumb-cat:hover { color: var(--ink); }
+.detail-navtitle { flex: 0 1 auto !important; min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--ink); padding-bottom: .25em; margin-bottom: -.25em; }
+@keyframes chrome-in { from { opacity: 0; } }
+
+/* Overview: five in a row from the grid column to the right edge */
+.index {
+  position: fixed; inset: 0; z-index: 3; overflow-y: auto; overscroll-behavior: contain;
+  padding: 21vh var(--pad) calc(var(--pad) * 3 + var(--label)) var(--pad); /* the full width of the grid */
+}
+.index[hidden] { display: none; }
+/* the overview and the list fade out just before the top bar, so nothing runs into it (no band, no colour) */
+.index, .list {
+  --fade: linear-gradient(to bottom, transparent calc(var(--pad) + var(--tm)), #000 calc(var(--bar) + var(--pad)));
+  -webkit-mask-image: var(--fade); mask-image: var(--fade);
+}
+.index-grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; align-items: start;
+  gap: 6vh var(--gut);
+  grid-template-columns: repeat(4, minmax(0, 1fr)); /* four in a row, three columns each */
+}
+.index-item { display: block; width: 100%; aspect-ratio: 1; }
+/* switching to the overview: the works pop in one after another */
+/* flights between the gallery and the overview */
+.fly-layer { position: fixed; inset: 0; z-index: 6; pointer-events: none; }
+.fly { position: absolute; background: center / 100% 100% no-repeat; transform-origin: 0 0; will-change: transform; }
+.index-item img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: left center; pointer-events: none; }
+
+/* List: one row per work, from the grid column to the end of the details column */
+.list {
+  position: fixed; inset: 0; z-index: 3; overflow-y: auto; overscroll-behavior: contain;
+  padding: 21vh var(--pad) calc(var(--pad) * 3 + var(--label)) var(--cs); /* to the right edge */
+}
+.list[hidden] { display: none; }
+.list-rows { list-style: none; margin: 0; padding: 0; font-size: var(--tm); }
+.list-rows li { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: -1px; }
+.list-row {
+  display: grid; width: 100%; text-align: left; padding: .9em 0; gap: 0 var(--gut);
+  /* thumb + title on columns 4–6, year on 7, medium on 8–9 */
+  grid-template-columns: 3.2em calc(var(--span3) - 3.2em - var(--gut)) var(--span1) var(--span2) 1fr; align-items: center;
+}
+.list-year { color: var(--red); }
+.list-thumb { display: block; width: 3.2em; height: 3.2em; }
+.list-thumb img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: left center; }
+.list-row { padding: .6em 0; }
+.list-row:hover .list-title, .list-row.is-hover .list-title { color: var(--red); }
+
+/* language and sound, on the about page next to Close */
+.lang { display: flex; align-items: flex-end; gap: .6em; font-size: var(--tm); }
+.lang button { display: block; color: var(--red); }
+.lang button:hover { color: var(--ink); }
+.top-link {
+  font-size: var(--t0); line-height: 1; color: var(--red); white-space: nowrap;
+  border: 1px solid var(--red); padding: .5em .6em;
+  text-box: trim-both cap alphabetic;
+  /* bottom right: its text baseline on the bottom row's (the frame hangs below by its padding and border) */
+  margin-bottom: calc(-.5em - 1px);
+}
+.top-link[hidden] { display: none; }
+/* (a block, so its text is trimmed to the caps and its baseline meets the menu's; the arrow sits in the line) */
+.lang .ex-arrow { display: inline-block; vertical-align: baseline; margin-left: .4em; }
+.lang .top-link { color: var(--red); }
+.lang .top-link:hover, body.events-open .lang #eventsLink { color: var(--ink); border-color: var(--ink); }
+/* the language on show, as letters: HR / EN */
+.lang-code { display: block; font-size: var(--tm); line-height: 1.15; text-box: trim-both cap alphabetic; }
+#soundToggle .sound-off { display: none; }
+#soundToggle.is-off .sound-off { display: inline; }
+/* language and sound as icons, the size and colour of the view icons */
+/* the globe with the language now on show beside it: HR or EN */
+.prefix { font-size: var(--tm); line-height: 1.15; color: var(--ink); text-box: trim-both cap alphabetic; }
+
+/* ---------- overlays ---------- */
+.overlay {
+  position: fixed; inset: 0; z-index: 20;
+  background: var(--veil);
+  background: rgba(228, 228, 228, 0);
+  -webkit-backdrop-filter: blur(0px);
+  backdrop-filter: blur(0px);
+  transition: none;
+  opacity: 0;
+  outline: none;
+}
+.overlay.is-open {
+  opacity: 1;
+  background: var(--veil);
+  -webkit-backdrop-filter: blur(64px) saturate(.9);
+  backdrop-filter: blur(64px) saturate(.9);
+}
+.overlay[hidden] { display: block; visibility: hidden; pointer-events: none; }
+/* about: the page behind blurs the same way as when the medium menu is open */
+.overlay.info, .overlay.info.is-open { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+
+/* about: one left-aligned column; click anywhere closes */
+.info { cursor: pointer; }
+.info-inner {
+  position: absolute; inset: 0; overflow-y: auto;
+  padding: var(--pad);
+  display: flex; justify-content: flex-start;
+}
+.info-inner { padding-top: calc(var(--pad) * 2 + var(--tm)); } /* text starts below the top row */
+.info-inner { justify-content: flex-start; padding-left: var(--cs); } /* on the content column */
+.info-col { width: calc(var(--ce) - var(--cs)); align-self: flex-start; font-size: var(--label); display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--pad) * 1.5); } /* as tall as its content: the page scrolls */
+.info-body { width: 100%; }
+.info-body { text-box: trim-start cap alphabetic; font-size: var(--label); line-height: 1.08; letter-spacing: -.035em; } /* as big as VLADO / MARTEK */
+.info-body p { margin: 0; display: inline; }
+.info-body p + p::before { content: ' '; }
+/* the karmas: each in a frame of its own, the full width of the column */
+.karma { display: block; width: 100%; margin-top: calc(var(--pad) * 1.5); padding: .3em .4em .35em; border: 1px solid var(--ink); }
+.karma p { display: block; }
+.karma p + p::before { content: none; }
+.karma-k { color: var(--red); }
+/* contact, at the bottom */
+.info-mail { font-size: var(--t1); color: var(--red); text-decoration: none; margin-top: calc(var(--pad) * .5); padding-bottom: 10vh; }
+.info-mail:hover { color: var(--ink); }
+.info-mail[hidden] { display: none; }
+.info-body .rest { color: transparent; }
+.info-photo { flex: none; margin: 0; width: min(13.6em, 100%); aspect-ratio: 470 / 652; background: #c6c6c6 center / cover no-repeat; display: grid; place-items: center; position: relative; overflow: hidden; }
+.info-photo-layer { position: absolute; inset: 0; background: center / cover no-repeat; opacity: 0; }
+.info-photo-layer.is-on { opacity: 1; }
+.info:not(.is-typed) .info-photo, .info:not(.is-typed) .info-mail { visibility: hidden; } /* the portrait and the address show once the text is typed */
+.info-photo.has-photo { background-color: transparent; }
+.info-photo span { font-size: var(--t0); color: #777; }
+.info-imprint {
+  margin: 1.6em 0 0; padding-top: .7em; border-top: 1px solid var(--ink);
+  display: flex; justify-content: space-between; gap: 1em; flex-wrap: wrap;
+  font-size: var(--t0); line-height: 1.2;
+}
+.info-imprint span:last-child { color: var(--red); }
+
+/* detail: the work on top of the gallery; scrolling brings up its details on a white sheet */
+.overlay.detail, .overlay.detail.is-open { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; transition: none; }
+/* the picture, as large as the frame from below the top bar to above the title allows */
+.detail-figure { position: absolute; margin: 0; left: var(--cs); right: calc(100vw - var(--ce)); top: calc(var(--bar) + 2vh); bottom: calc(var(--label) * 3 + var(--pad) * 2.5); pointer-events: none; } /* room for a title in two lines and the year */
+.detail-figure img { position: absolute; display: block; object-fit: contain; }
+.fly-top { position: fixed; z-index: 40; pointer-events: none; }
+/* previous / next, with where this work stands in the medium, bottom right */
+.detail-steps { position: fixed; top: var(--row); right: calc(var(--pad) + var(--prefs-w, 3.3em) + .6em); z-index: 26; display: flex; align-items: flex-start; gap: .5em; font-size: var(--tm); } /* over a work: where the view icons stand, left of the rule */ /* previous / next and the count, top-left */
+.detail-steps button { color: var(--red); }
+.detail-steps button:hover { color: var(--ink); }
+.detail-count { font-size: var(--tm); line-height: 1.15; text-box: trim-both cap alphabetic; font-variant-numeric: tabular-nums; color: var(--ink); }
+.count-all { color: var(--crumb); } /* "/ 21" in the path's grey */
+.detail-scroll { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; scroll-behavior: auto; }
+.detail-hero { position: relative; height: 80vh; height: 80svh; pointer-events: none; } /* the work and its title take 80 % of the screen; the details start below */
+.detail-hero > * { pointer-events: auto; }
+.detail-head { transform-origin: 0 0; text-box: trim-end text alphabetic; position: absolute; bottom: var(--pad); left: var(--cs); max-width: calc(var(--ce) - var(--cs)); pointer-events: none; }
+.detail-title, .detail-year { margin: 0; font-size: var(--label); line-height: .92; letter-spacing: -.03em; }
+.detail-title { text-box: trim-start cap alphabetic; overflow-wrap: anywhere; }
+.detail-year { color: var(--red); }
+.detail-panel {
+  position: relative;
+  background: var(--sheet);
+  padding: calc(var(--pad) * 2) var(--pad) calc(var(--pad) * 5) var(--cs);
+  user-select: text; -webkit-user-select: text;
+}
+/* the sheet carries on up under the top bar: a strip of it sticks at the top and covers the text
+   scrolling beneath, so nothing runs into the bar and there is no band of another colour */
+.detail-panel::before {
+  content: ''; display: block; position: sticky; top: 0; z-index: 2; height: var(--bar);
+  margin: calc(var(--pad) * -2) calc(var(--pad) * -1) calc(var(--pad) * 2 - var(--bar)) calc(var(--cs) * -1);
+  background: var(--sheet); /* the sheet's own colour, so the bar sits on the sheet, not on a band */
+  pointer-events: none;
+}
+.detail-desc { margin: 0 0 14vh; max-width: calc(var(--ce) - var(--cs)); font-size: calc(var(--tm) * 1.1); line-height: 1.25; }
+.detail-facts { width: calc(var(--ce) - var(--cs)); border-collapse: collapse; font-size: var(--tm); margin-bottom: 4vh; }
+.detail-facts tr { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.detail-facts th, .detail-facts td { text-align: left; padding: .9em 0; font-weight: inherit; vertical-align: top; }
+.detail-facts th { width: calc(var(--c2) - var(--cs)); }
+.detail-facts td { color: var(--red); }
+/* photo strip: the current photo big on the grid column, the one before small at the left
+   edge, the next ones to the right, cut by the screen */
+.detail-strip {
+  --big: calc(var(--ce) - var(--cs));
+  --small: var(--span3); /* the one before, on columns 1–3 */
+  position: relative; height: var(--big); margin: 0 calc(var(--pad) * -1) 16vh calc(var(--cs) * -1);
+  overflow: hidden;
+}
+.strip-item { /* a gutter between every two photos */
+  position: absolute; top: 0; left: calc(var(--cs) + var(--r) * (var(--big) + var(--gut))); width: var(--big); height: var(--big);
+  overflow: hidden;
+  transition: left 1s cubic-bezier(.6, 0, .15, 1), width 1s cubic-bezier(.6, 0, .15, 1), height 1s cubic-bezier(.6, 0, .15, 1); /* pictures: smooth, a second */
+}
+.strip-item[data-r="-1"] { left: var(--pad); width: var(--small); height: var(--small); }
+.strip-item[data-r="-2"] { left: calc(var(--small) * -1 - 20px); width: var(--small); height: var(--small); }
+.strip-item img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.detail-links-title { margin: 0 0 22vh; font-size: var(--label); line-height: .9; letter-spacing: -.02em; text-box: trim-both cap alphabetic; }
+.detail-links-list { list-style: none; margin: 0; padding: 0; width: calc(var(--ce) - var(--cs)); font-size: var(--tm); }
+.detail-links-list li { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: -1px; }
+.detail-links-list a { display: flex; justify-content: space-between; padding: .9em 0; color: var(--red); text-decoration: none; }
+.detail-links-list a:hover { color: var(--ink); }
+.detail-links-list .arrow { color: var(--red); }
+/* footer: a window at the end of the page through which the fixed names show */
+.detail-end { height: 42vh; pointer-events: auto; }
+.detail-names {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 42vh; z-index: 0; background: var(--bg); visibility: hidden; pointer-events: none;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-size: var(--label); line-height: .76; letter-spacing: -.035em;
+}
+.detail-names.is-on { visibility: visible; }
+.detail-names span { padding: 0 var(--pad) var(--pad); text-box: trim-both cap alphabetic; }
+.detail-scroll { z-index: 1; }
+.foot-first { color: var(--ink); margin-left: -.06em; }
+.foot-last { color: var(--red); margin-right: -.04em; }
+
+
+/* ---------- tablet / mobile ---------- */
+@media (max-width: 700px), (orientation: portrait) and (max-width: 900px) {
+  :root { --pad: 10px; }
+  .menu-list button { padding: 2px 0; }
+  .menu { left: var(--pad); }
+  .menu-list { max-width: calc(100vw - var(--pad) * 4 - 3.4em - 6em); }
+  .list { padding-left: var(--pad); }
+  /* on a phone the medium goes under the title */
+  .list-row { grid-template-columns: 3.2em 1fr auto; grid-template-areas: 'th t y' 'th c c'; row-gap: .3em; }
+  .list-thumb { grid-area: th; } .list-title { grid-area: t; } .list-year { grid-area: y; } .list-cat { grid-area: c; }
+  /* the grid column sits at the margin on a phone */
+  :root { --cs: var(--pad); --ce: calc(100vw - var(--pad)); --c2: 45vw; }
+  .hover-title { left: var(--pad); bottom: calc(var(--pad) * 2 + var(--tm) * 2.4); max-width: calc(100vw - var(--pad) * 2); } /* above About */
+  /* no names on a phone: after the splash they drop out of the screen */
+  body:not(.names-up) .label { opacity: 0; pointer-events: none; }
+  /* a phone keeps its top row: view icons top-left, language and sound top-right */
+  .index { padding-top: calc(var(--pad) * 3.5 + var(--tm)); padding-bottom: calc(var(--pad) * 2); bottom: calc(var(--pad) * 2 + var(--t1) * 2.4); }
+  .detail-strip { margin-bottom: 9vh; }
+  .index-grid { gap: 5vh var(--pad); }
+  .detail-head { max-width: calc(100vw - var(--pad) * 2); }
+  /* on a phone the title is a size smaller, and the arrows sit under the top bar, clear of it */
+  .detail-title, .detail-year { font-size: var(--t2); }
+  .detail-figure { left: var(--pad); right: var(--pad); top: calc(var(--bar) + var(--pad) * 2); bottom: calc(var(--t2) * 4.6 + var(--pad) * 3); }
+  .detail-steps { font-size: var(--tm); } /* a phone: the same place, left of language and sound */
+  .detail-desc { max-width: none; margin-bottom: 8vh; }
+  .detail-strip { --big: calc(100vw - var(--pad) * 2 - 12vw); }
+  /* on a phone the photos are simply the pictures, one under the other, the full width of the screen */
+  .detail-strip { height: auto; overflow: visible; display: grid; gap: var(--pad); margin-left: calc(var(--pad) * -1); margin-right: calc(var(--pad) * -1); }
+  .strip-item, .strip-item[data-r] { position: static; width: 100%; height: auto; padding: 0; background: none; transition: none; cursor: default; }
+  .strip-item img { display: block; width: 100%; height: auto; max-height: none; }
+  .detail-links-title { margin-bottom: 10vh; }
+  /* on a phone the three sit on one line, without their Category: / View: labels to save room */
+  /* little room between the names on a phone: the title may wrap there */
+  .hover-title { white-space: normal; text-wrap: balance; }
+  body.focus-menu .views, body.focus-menu .about-link { visibility: hidden; } /* the open category list runs over them */
+  .index-grid { gap: 3vh 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); } /* two in a row on a phone */
+  .info-col { width: 100%; } /* a phone: the full width */
+  .info-photo { width: 100%; }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  :root { --label: 13vh; }
+}
+
+
+/* pointer: over anything clickable it turns into a red dot that shrinks into place */
+.cursor-dot { position: fixed; left: 0; top: 0; z-index: 100; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--red); pointer-events: none; display: none; }
+body.is-pointing .cursor-dot { display: block; }
+.cursor-dot i { display: block; width: 100%; height: 100%; border-radius: 50%; background: inherit; }
+body.is-pointing .cursor-dot i { animation: dot-in .2s steps(3, end) both; }
+@keyframes dot-in { from { transform: scale(2.8); } to { transform: scale(1); } }
+body.is-pointing, body.is-pointing * { cursor: none !important; }
+/* only the words of the menu take clicks: its long hidden list must not cover the view switch */
+.menu, .menu-pick, .menu-list { pointer-events: none; }
+.menu-label, .menu-back { pointer-events: auto; }
+body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
+
+/* desktop: the media stand in one row, always on show, the current one in black (no dropdown) */
+@media (min-width: 901px), (min-width: 701px) and (orientation: landscape) {
+  .menu-label { display: none; }
+  .menu-list li:has(.is-active) { display: flex; }
+  .menu-list button, body.focus-menu .menu-list button { visibility: visible; pointer-events: auto; }
+  .menu-list button.is-active { color: var(--ink); cursor: default; }
+  body.intro .menu-list button { pointer-events: none; }
+}
+@media (max-width: 700px), (orientation: portrait) and (max-width: 900px) {
+  .back-pre { display: none; } /* a phone: the arrow and the medium */
+  .detail-bar { left: var(--pad); right: calc(var(--pad) + 10.5em); }
+}
+@media (max-width: 700px), (orientation: portrait) and (max-width: 900px) {
+  .events-scroll { padding-left: var(--pad); padding-right: var(--pad); }
+  .events-row { grid-template-columns: 1fr auto; grid-template-areas: 'd p' 'n n'; row-gap: .3em; }
+  .events-dates { grid-area: d; } .events-name { grid-area: n; } .events-place { grid-area: p; }
+}
+@media (max-width: 700px), (orientation: portrait) and (max-width: 900px) {
+  .top-link { white-space: normal; max-width: 42vw; line-height: 1.15; } /* on a phone the exhibition may wrap */
+  body.detail-open .top-link { display: none; } /* over a work the counter needs the room */
+}
+/* the events page: its back link on the grid column, the names keep the corner */
+.crumb-here { color: var(--ink); }

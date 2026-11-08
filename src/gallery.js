@@ -1,0 +1,337 @@
+// Carousel. One work is featured on the page grid (third column of the grid); the works after it
+// stand behind it to the right like a fanned-out deck, each a step further right and a little
+// smaller; the one before it waits small on the left. Scrolling moves the featured work out to the
+// left while the next one comes forward from the deck. The line is endless (works repeat).
+// In detail mode (a work is open) the featured work stays where it is, its neighbours move to the
+// edges and the rest slide out of the screen. Nothing fades: works only move.
+
+import { sound, unlock } from './sound.js';
+
+const mod = (a, n) => ((a % n) + n) % n;
+const lerp = (a, b, t) => a + (b - a) * t;
+const WHEEL = 320;        // px of wheel travel per work
+const SNAP_AFTER = 160;   // ms of quiet before the line settles on a work
+const EASE = 9;           // how quickly the line follows the wheel / hand (1/s)
+export const OPEN_MS = 900; // opening / closing a work: the title grows in step with this
+const GROW = 1.15;          // how much bigger the open work stands
+
+// CSS-style cubic-bezier easing, so the line and the title can move in the same rhythm
+export function bezier(x1, y1, x2, y2) {
+  const c = (a, b, t) => ((1 - 3 * b + 3 * a) * t + (3 * b - 6 * a)) * t * t + 3 * a * t;
+  return (x) => {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    let lo = 0, hi = 1, t = x;
+    for (let i = 0; i < 24; i++) { t = (lo + hi) / 2; if (c(x1, x2, t) < x) lo = t; else hi = t; }
+    return c(y1, y2, t);
+  };
+}
+export const OPEN_EASE = 'cubic-bezier(.65, 0, .2, 1)';
+const openEase = bezier(0.65, 0, 0.2, 1);
+
+
+
+export class Gallery {
+  constructor(root, track, { onOpen, onHover, onFeature }) {
+    this.root = root;
+    this.track = track;
+    this.onOpen = onOpen;
+    this.onHover = onHover;
+    this.onFeature = onFeature;
+    this.works = [];
+    this.slots = new Map();   // absolute index k → { el, img, k }
+    this.p = 0;               // current position (index of the featured work, fractional while moving)
+    this.target = 0;
+    this.mode = 0;            // 0 = gallery, 1 = a work is open
+    this.modeTarget = 0;
+    this.hovered = null;
+    this.paused = false;
+    this.hidden = false;
+    this.lastInput = 0;
+    this.featured = null;
+    this.hiddenK = new Set();  // works whose 3D model stands in their place (drawn by main.js)
+    this.flying = new Set();   // works being flown in from the overview (drawn by main.js meanwhile)
+    this.holdAll = false;      // hide every work for a moment (until the flight is set up)
+    this.scrollBlur = 0;       // px, set by the open work's page as it scrolls
+    this.enterAt = null;       // when the works last started sliding in from the right
+    this.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.last = performance.now();
+    this.bindInput();
+    addEventListener('resize', () => { this.m = this.metrics(); });
+    this.m = this.metrics();
+    requestAnimationFrame((t) => this.frame(t));
+  }
+
+  metrics() {
+    const vw = innerWidth, vh = innerHeight;
+    const phone = matchMedia('(max-width: 700px), (orientation: portrait) and (max-width: 900px)').matches; // same as the CSS
+    // the page's 12-column grid (as in style.css): margins and gutters of --pad
+    const pad = Math.min(22, Math.max(10, vw * 0.011)), gut = pad;
+    const colg = (vw - pad * 2 - gut * 11) / 12 + gut; // a column and its gutter
+    const cs = phone ? vw * 0.14 : pad + colg * 3;      // the featured work stands on column 4
+    return {
+      vw, vh, phone, cs,
+      h0: phone ? vh * 0.4 : vh * 0.47,                // featured height
+      maxW: phone ? vw * 0.76 : colg * 6 - gut,        // featured width cap: columns 4–9
+      step: phone ? vw * 0.11 : colg,                  // deck: each work one column further right
+      shrink: 0.06,                                    // ... and this much smaller
+      gap: phone ? vw * 0.04 : colg + gut,             // the work on the left ends at the end of column 2
+      left: 0.7,                                       // size of the work on the left
+      yc: vh * 0.5,
+      yc1: vh * (phone ? 0.46 : 0.45),                 // a work open: everything moves up a little
+    };
+  }
+
+  setWorks(works) {
+    for (const s of this.slots.values()) s.el.remove();
+    this.slots.clear();
+    this.works = works;
+    this.p = this.target = 0;
+    this.hovered = null;
+    this.featured = null;
+    this.fk = undefined; // so the next frame names the new featured work (and the title follows)
+  }
+
+  // jump (or glide) so that `work` is featured
+  show(work, { animate = true } = {}) {
+    const n = this.works.length;
+    const i = this.works.indexOf(work);
+    if (i < 0 || !n) return;
+    const base = Math.round(this.target);
+    let k = base - mod(base, n) + i;
+    if (k - base > n / 2) k -= n;
+    if (base - k > n / 2) k += n;
+    this.target = k;
+    if (!animate) this.p = k;
+  }
+  featuredWork() { return this.works.length ? this.works[mod(Math.round(this.target), this.works.length)] : null; }
+  step(dir) { this.target = Math.round(this.target) + dir; this.lastInput = 0; }
+  setMode(open) {
+    const t = open ? 1 : 0;
+    if (t === this.modeTarget) return;
+    this.modeTarget = t;
+    this.modeFrom = this.mode;
+    this.modeAt = performance.now();
+  }
+  focusK(k) { this.target = k; this.lastInput = 0; }
+  // where work k stands once the line has settled with a work open
+  restRect(k) {
+    const m = this.m, work = this.works[mod(k, this.works.length)];
+    const a = work?.aspect ?? 1, g = this.key(k - Math.round(this.target), a, 1);
+    const w = Math.min(m.h0 * a, m.maxW) * g.s, h = w / a;
+    return { x: g.x, y: m.yc1 - h / 2, w, h, s: g.s };
+  }
+  // where the featured work stands once the line has settled (for the flight back from a work)
+  featuredRect() {
+    const m = this.m, work = this.featuredWork();
+    if (!work) return null;
+    const a = work.aspect ?? 1, g = this.key(0, a, 0);
+    const w = Math.min(m.h0 * a, m.maxW) * g.s, h = w / a;
+    return { x: g.x, y: m.yc - h / 2, w, h };
+  }
+  // the works slide in from the right, one after another (each time the gallery is shown)
+  enter() { this.enterAt = this.reduced ? null : performance.now(); }
+  // where each work on screen stands (without the slide-in), for flights to and from the overview
+  rects() {
+    return [...this.slots.values()].filter((s) => s.r && s.r.o > 0.01 && s.r.x < this.m.vw && s.r.x + s.r.w > 0)
+      .map((s) => ({ k: s.k, work: s.work, d: s.k - this.p, rect: s.r, z: Number(s.el.style.zIndex) || 0 }));
+  }
+  // the neighbour (one step left or right) under a point, while a work is open
+  neighbourAt(x, y) {
+    const c = Math.round(this.target);
+    for (const k of [c - 1, c + 1]) {
+      const r = this.slots.get(k)?.r;
+      if (r && x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return { k, work: this.slots.get(k).work };
+    }
+    return null;
+  }
+
+  slot(k) {
+    let s = this.slots.get(k);
+    if (s) return s;
+    const work = this.works[mod(k, this.works.length)];
+    const el = document.createElement('figure');
+    el.className = 'work' + (work.cutout ? ' is-cutout' : '');
+    el.setAttribute('role', 'listitem');
+    el.setAttribute('aria-label', `${work.title}, ${work.year}`);
+    const img = new Image();
+    img.alt = ''; img.decoding = 'async'; img.draggable = false;
+    img.src = work.thumb || work.image;
+    el.append(img);
+    this.track.append(el);
+    s = { el, k, work };
+    this.slots.set(k, s);
+    return s;
+  }
+
+  // where a work with this aspect sits at whole-number distance d from the featured one
+  key(d, aspect, mode) {
+    const m = this.m;
+    const w0 = Math.min(m.h0 * aspect, m.maxW);
+    if (m.phone && !mode) {
+      // phone: the featured work in the middle, its neighbours peeking in at the edges
+      const s = Math.max(0.55, 1 - 0.18 * Math.abs(d));
+      return { x: m.vw / 2 + d * m.vw * 0.62 - (w0 * s) / 2, s, o: 1 };
+    }
+    if (mode) {
+      // detail: only the neighbours stay, small, at the edges
+      const s = 0.6;
+      if (d === -1) return { x: m.vw * (m.phone ? 0.06 : 0.104) - w0 * s, s, o: 1 };
+      if (d === 1) return { x: m.vw * (m.phone ? 0.94 : 0.84), s, o: 1 };
+      if (d === 0) return { x: m.phone ? (m.vw - w0 * GROW) / 2 : m.cs, s: GROW, o: 1 };
+      return { x: d < 0 ? -w0 * s - 40 - (-d) * 40 : m.vw + 40 + d * 40, s, o: 1 };
+    }
+    if (d >= 0) return { x: m.cs + d * m.step, s: Math.max(0.3, 1 - m.shrink * d), o: 1 };
+    const s = d === -1 ? m.left : m.left * 0.8;
+    const right = d === -1 ? m.cs - m.gap : m.cs - m.gap * 2 - w0 * m.left * (-1 - d);
+    return { x: right - w0 * s, s, o: 1 };
+  }
+  place(d, aspect, mode) {
+    const a = Math.floor(d), t = d - a;
+    const k0 = this.key(a, aspect, mode), k1 = t ? this.key(a + 1, aspect, mode) : k0;
+    return { x: lerp(k0.x, k1.x, t), s: lerp(k0.s, k1.s, t), o: lerp(k0.o, k1.o, t) };
+  }
+
+  bindInput() {
+    const r = this.root;
+    this.mouse = null;
+    addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') this.mouse = { x: e.clientX, y: e.clientY }; }, { passive: true });
+    document.addEventListener('mouseleave', () => { this.mouse = null; });
+    // the wheel works anywhere on the page, over the names and menus too
+    addEventListener('wheel', (e) => {
+      if (this.paused || this.hidden) return;
+      if (e.target.closest?.('.overlay, .menu-list')) return;
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      const px = e.deltaMode === 1 ? delta * 32 : e.deltaMode === 2 ? delta * innerWidth : delta;
+      this.target += px / WHEEL;
+      this.lastInput = performance.now();
+      unlock();
+    }, { passive: true });
+    // drag with the mouse, swipe with a finger (sideways or up/down)
+    r.addEventListener('pointerdown', (e) => {
+      if (this.paused || e.button > 0) return;
+      this.drag = { id: e.pointerId, x: e.clientX, y: e.clientY, p: this.target, moved: false, t: performance.now(), v: 0, lp: this.target, target: e.target.closest('.work') };
+    });
+    addEventListener('pointermove', (e) => {
+      const d = this.drag;
+      if (!d || d.id !== e.pointerId) return;
+      const dx = e.clientX - d.x, dy = e.clientY - d.y;
+      if (!d.moved && Math.hypot(dx, dy) > 8) { d.moved = true; r.setPointerCapture?.(e.pointerId); this.setHover(null); }
+      if (!d.moved) return;
+      const along = Math.abs(dx) >= Math.abs(dy) || e.pointerType === 'mouse' ? dx : dy;
+      const next = d.p - along / (this.m.phone ? this.m.vw * 0.62 : this.m.step * 2.2);
+      const now = performance.now();
+      d.v = (next - d.lp) / Math.max(1, now - d.t) * 1000; d.lp = next; d.t = now;
+      this.target = this.p = next;
+      this.lastInput = now;
+    });
+    const end = (e) => {
+      const d = this.drag;
+      if (!d || d.id !== e.pointerId) return;
+      this.drag = null;
+      if (d.moved) {
+        // a flick carries on to the next work
+        if (this.m.phone) {
+          // phone: one swipe is one work
+          const delta = this.target - d.p;
+          const dir = Math.abs(delta) > 0.08 || Math.abs(d.v) > 0.8 ? Math.sign(Math.abs(delta) > 0.08 ? delta : d.v) : 0;
+          this.target = Math.round(d.p) + dir;
+        } else this.target = Math.round(this.target + Math.max(-3, Math.min(3, d.v * 0.12)));
+        this.lastInput = 0;
+      } else if (d.target && e.type === 'pointerup') {
+        const s = [...this.slots.values()].find((x) => x.el === d.target);
+        // a click on a work further off first brings it to the front; a click on the front one opens it
+        if (s && s.k === Math.round(this.target) && Math.abs(this.p - s.k) < 0.3) this.onOpen(s.work);
+        else if (s) { this.target = s.k; this.lastInput = 0; }
+      }
+    };
+    addEventListener('pointerup', end);
+    addEventListener('pointercancel', end);
+  }
+
+  setHover(work) {
+    if (this.hovered === work) return;
+    this.hovered = work;
+    this.onHover?.(work);
+  }
+
+  frame(now) {
+    const dt = Math.min(0.05, (now - this.last) / 1000);
+    this.last = now;
+    requestAnimationFrame((t) => this.frame(t));
+    const n = this.works.length;
+    if (!n || !this.m) return;
+    // settle on the nearest work once the wheel has been quiet for a moment
+    if (!this.drag && now - this.lastInput > SNAP_AFTER) this.target = Math.round(this.target);
+    const f = this.reduced ? 1 : 1 - Math.exp(-EASE * (this.modeTarget ? 0.5 : 1) * dt); // calmer with a work open
+    this.p += (this.target - this.p) * f;
+    if (Math.abs(this.target - this.p) < 0.0005) this.p = this.target;
+    // a work opening / closing: on a fixed time and curve, the same as the title's
+    if (this.mode !== this.modeTarget) {
+      const k = this.reduced ? 1 : openEase((now - this.modeAt) / OPEN_MS);
+      this.mode = this.modeFrom + (this.modeTarget - this.modeFrom) * k;
+      if (k >= 1) this.mode = this.modeTarget;
+    }
+
+    // a notch sound and a new title each time another work comes to the front
+    const fk = Math.round(this.p);
+    if (fk !== this.fk) {
+      if (this.fk !== undefined && !this.paused) sound.notch();
+      this.fk = fk;
+      const w = this.works[mod(fk, n)];
+      if (w !== this.featured) { this.featured = w; this.onFeature?.(w); }
+    }
+
+    if (this.hidden) return;
+    const m = this.m;
+    if (this.enterAt !== null && now - this.enterAt > 1500) this.enterAt = null;
+    const lo = Math.floor(this.p) - 2;
+    const hi = m.phone ? Math.ceil(this.p) + 2 : Math.ceil(this.p) + Math.ceil((m.vw - m.cs) / m.step) + 1;
+    for (const [k, s] of this.slots) if (k < lo || k > hi) { s.el.remove(); this.slots.delete(k); }
+    for (let k = lo; k <= hi; k++) {
+      const s = this.slot(k);
+      const aspect = s.work.aspect ?? 1;
+      const d = k - this.p;
+      const g = this.place(d, aspect, 0);
+      const q = this.mode ? this.place(d, aspect, 1) : g;
+      // the works that leave when one opens go first, quickly, still as one deck, so the
+      // neighbour that comes out from behind the opened work never crosses them
+      const mx = Math.abs(d) > 1.5 ? Math.min(1, Math.sqrt(this.mode) * 1.5) : this.mode;
+      const x = lerp(g.x, q.x, mx), sc = lerp(g.s, q.s, mx), o = lerp(g.o, q.o, this.mode);
+      const w = Math.min(m.h0 * aspect, m.maxW) * sc;
+      const h = w / aspect, y = lerp(m.yc, m.yc1, this.mode) - h / 2;
+      s.r = { x, y, w, h, o };
+      // sliding in: from beyond the right edge, the ones on the left first
+      let ex = x, fade = 1;
+      if (this.enterAt !== null && !this.flying.has(k)) {
+        // smooth, a second each, the ones on the left first
+        const t = Math.max(0, (now - this.enterAt - Math.max(0, x) / m.vw * 320) / 1000);
+        if (t < 1) ex = lerp(m.vw + 60 + Math.max(0, x - m.cs) * 0.4, x, 1 - Math.pow(1 - t, 4));
+      }
+      const st = s.el.style;
+      st.width = `${w.toFixed(1)}px`;
+      st.height = `${h.toFixed(1)}px`;
+      st.transform = `translate3d(${ex.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+      st.opacity = (o * fade).toFixed(3);
+      // the gallery itself is sharp; only with a work open does scrolling its page blur what is behind
+      const bl = this.mode * this.scrollBlur;
+      const f = bl > 0.05 ? `blur(${bl.toFixed(1)}px)` : '';
+      if (s.f !== f) { st.filter = f; s.f = f; }
+      // a work open: the neighbours at the edges go out of focus
+      st.visibility = o * fade < 0.01 || ex > m.vw || ex + w < 0 || this.holdAll || this.flying.has(k) || this.hiddenK.has(k) ? 'hidden' : '';
+      st.zIndex = String(1000 - Math.round(Math.abs(d) * 10) - (d < 0 ? 5 : 0));
+    }
+
+    // hover by hit-testing, so a work that slides under a still pointer counts too
+    if (this.mouse && !this.paused && !this.drag?.moved && !document.body.classList.contains('focus-menu')) {
+      const hit = document.elementFromPoint(this.mouse.x, this.mouse.y)?.closest?.('.work');
+      const s = hit ? [...this.slots.values()].find((x) => x.el === hit) : null;
+      this.setHover(s ? s.work : null);
+    } else if (this.hovered && (this.paused || !this.mouse)) this.setHover(null);
+  }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+export { escapeHtml };

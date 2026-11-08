@@ -1,0 +1,696 @@
+{
+  "artist": {
+    "first": "Vlado",
+    "last": "Martek",
+    "photo": "img/martek-1.jpg",
+    "bio": {
+      "hr": [
+        "Vlado Martek, pjesnik, predpjesnik, 10% umjetnik. Hoda s Poezijom od 1966. (s Predpoezijom od 1978. godine). Prema mandatu: kvantni svaštar u Jugoistočnoj Europi. Sonetski rečeno:"
+      ],
+      "en": [
+        "Vlado Martek, poet, pre-poet, 10% artist. Has been walking with Poetry since 1966 (with Pre-poetry since 1978). By mandate: a quantum jack-of-all-trades in South-East Europe. In sonnet terms:"
+      ]
+    },
+    "facts": [
+      [
+        "Rođen / Born",
+        "1951, Zagreb"
+      ],
+      [
+        "Grupa / Group",
+        "Grupa šestorice autora, 1975–1981"
+      ],
+      [
+        "Kontakt / Contact",
+        "info@example.com"
+      ]
+    ],
+    "photos": [
+      "img/martek-1.jpg",
+      "img/martek-2.jpg"
+    ],
+    "karma": [
+      [
+        "FAMILY KARMA",
+        "father butcher"
+      ],
+      [
+        "GEO KARMA",
+        "Balkan"
+      ],
+      [
+        "TIME KARMA",
+        "second half of XX c."
+      ],
+      [
+        "ART KARMA",
+        "conceptualism"
+      ]
+    ],
+    "email": "info@example.com"
+  },
+  "cursors": [
+    {
+      "src": "img/cursors/pointer-1.png",
+      "src2x": "img/cursors/pointer-1@2x.png",
+      "hotspot": [
+        28,
+        28
+      ]
+    },
+    {
+      "src": "img/cursors/pointer-2.png",
+      "src2x": "img/cursors/pointer-2@2x.png",
+      "hotspot": [
+        28,
+        28
+      ]
+    },
+    {
+      "src": "img/cursors/pointer-3.png",
+      "src2x": "img/cursors/pointer-3@2x.png",
+      "hotspot": [
+        28,
+        28
+      ]
+    },
+    {
+      "src": "img/cursors/pointer-4.png",
+      "src2x": "img/cursors/pointer-4@2x.png",
+      "hotspot": [
+        28,
+        28
+      ]
+    },
+    {
+      "src": "img/cursors/pointer-5.png",
+      "src2x": "img/cursors/pointer-5@2x.png",
+      "hotspot": [
+        28,
+        28
+      ]
+    },
+    {
+      "src": "img/cursors/pointer-6.png",
+      "src2x": "img/cursors/pointer-6@2x.png",
+      "hotspot": [
+        28,
+        28
+      ]
+    },
+    {
+      "src": "img/cursors/pointer-7.png",
+      "src2x": "img/cursors/pointer-7@2x.png",
+      "hotspot": [
+        28,
+        28
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": "poetry",
+      "label": "Poezija",
+      "label_en": "Poetry",
+      "viewer": "sheet"
+    },
+    {
+      "id": "books",
+      "label": "Knjige",
+      "label_en": "Books",
+      "viewer": "book"
+    },
+    {
+      "id": "sculpture",
+      "label": "Kiparstvo",
+      "label_en": "Sculpture",
+      "viewer": "sculpture"
+    },
+    {
+      "id": "painting",
+      "label": "Slikarstvo",
+      "label_en": "Painting",
+      "viewer": "sheet"
+    },
+    {
+      "id": "actions",
+      "label": "Akcije",
+      "label_en": "Actions",
+      "viewer": "sheet"
+    },
+    {
+      "id": "texts",
+      "label": "Tekst",
+      "label_en": "Text",
+      "viewer": "sheet"
+    },
+    {
+      "id": "photography",
+      "label": "Fotografija",
+      "label_en": "Photography",
+      "viewer": "sheet"
+    }
+  ],
+  "works": [
+    {
+      "id": "imajte-me",
+      "title": "Imajte me: predpoezija – poezija – postpoezija",
+      "year": "1995",
+      "category": "books",
+      "image": "works/books/imajte-me.webp",
+      "thumb": "works/books/imajte-me-thumb.webp",
+      "cutout": true,
+      "pages": [
+        "works/books/imajte-me.webp"
+      ],
+      "aspect": 0.6477,
+      "pageAspect": 0.6477,
+      "medium": "Autorska knjiga",
+      "description": "",
+      "en": {
+        "title": "Have Me: Pre-Poetry – Poetry – Post-Poetry",
+        "medium": "Artist's book",
+        "description": ""
+      }
+    },
+    {
+      "id": "citajte-pjesme-majakovskog",
+      "title": "Čitajte pjesme Majakovskog",
+      "year": "1978",
+      "category": "actions",
+      "image": "works/citajte.svg",
+      "aspect": 1.32,
+      "size": 0.62,
+      "width": 42,
+      "height": 32,
+      "medium": "Tuš na papiru",
+      "description": "Privremeni tekst. Agitacija: tipografski poziv na čitanje Majakovskog, napravljen za ulicu, a ne za zid galerije.",
+      "en": {
+        "title": "Read the Poems of Mayakovsky",
+        "medium": "Ink on paper",
+        "description": "Placeholder text. Agitation: a typographic call to read Mayakovsky, made for the street rather than the gallery wall."
+      },
+      "links": [
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        },
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        }
+      ]
+    },
+    {
+      "id": "manija-za-sonetima",
+      "title": "Manija za sonetima",
+      "year": "2014",
+      "category": "books",
+      "image": "works/books/manija-za-sonetima.webp",
+      "thumb": "works/books/manija-za-sonetima-thumb.webp",
+      "cutout": true,
+      "pages": [
+        "works/books/manija-za-sonetima.webp"
+      ],
+      "aspect": 0.693,
+      "pageAspect": 0.693,
+      "medium": "Autorska knjiga, meki uvez",
+      "description": "",
+      "en": {
+        "title": "Sonnet Mania",
+        "medium": "Artist's book, softcover",
+        "description": ""
+      }
+    },
+    {
+      "id": "les-artistes-aux-armes",
+      "title": "Les artistes aux armes",
+      "year": "2001",
+      "category": "sculpture",
+      "model": "box",
+      "image": "works/kutija-thumb.svg",
+      "textures": {
+        "front": "works/kutija-front.svg",
+        "side": "works/kutija-side.svg",
+        "inner": "works/kutija-inner.svg"
+      },
+      "aspect": 0.92,
+      "size": 1.0,
+      "width": 30,
+      "height": 24,
+      "medium": "Kartonska kutija, papir",
+      "description": "Privremeni tekst. Pronađena kartonska kutija pretvorena u objekt-pjesmu, s preklopima otvorenima poput pozornice.",
+      "en": {
+        "title": "Les artistes aux armes",
+        "medium": "Cardboard box, paper",
+        "description": "Placeholder text. A found cardboard box turned into an object-poem, its flaps open like a stage."
+      },
+      "links": [
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        },
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        }
+      ]
+    },
+    {
+      "id": "konceptualisticka-poezija",
+      "title": "Konceptualistička poezija (1975–1983)",
+      "year": "2010",
+      "category": "books",
+      "image": "works/books/konceptualisticka-poezija.webp",
+      "thumb": "works/books/konceptualisticka-poezija-thumb.webp",
+      "cutout": true,
+      "pages": [
+        "works/books/konceptualisticka-poezija.webp"
+      ],
+      "aspect": 0.6917,
+      "pageAspect": 0.6917,
+      "medium": "Autorska knjiga",
+      "description": "",
+      "en": {
+        "title": "Conceptualist Poetry (1975–1983)",
+        "medium": "Artist's book",
+        "description": ""
+      }
+    },
+    {
+      "id": "karta-poezije",
+      "title": "Karta poezije",
+      "year": "1979",
+      "category": "poetry",
+      "image": "works/crvena-karta.svg",
+      "aspect": 0.89,
+      "size": 0.85,
+      "width": 40,
+      "height": 45,
+      "medium": "Sprej na papiru",
+      "description": "Privremeni tekst. Crveni teritorij na crnome: karta zemlje sazdane samo od poezije.",
+      "en": {
+        "title": "Map of Poetry",
+        "medium": "Spray paint on paper",
+        "description": "Placeholder text. A red territory on black: the map of a country made only of poetry."
+      },
+      "links": [
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        },
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        }
+      ]
+    },
+    {
+      "id": "poeziju-treba-jebati",
+      "title": "Poeziju treba jebati",
+      "year": "",
+      "category": "books",
+      "image": "works/books/poeziju-treba-jebati.webp",
+      "thumb": "works/books/poeziju-treba-jebati-thumb.webp",
+      "cutout": true,
+      "pages": [
+        "works/books/poeziju-treba-jebati.webp"
+      ],
+      "aspect": 0.7094,
+      "pageAspect": 0.7094,
+      "medium": "Autorska knjiga",
+      "description": "",
+      "en": {
+        "title": "Poetry Should Be Fucked",
+        "medium": "Artist's book",
+        "description": ""
+      }
+    },
+    {
+      "id": "tisina-je-rijec",
+      "title": "Tišina je riječ",
+      "year": "1983",
+      "category": "poetry",
+      "image": "works/zeleno.svg",
+      "aspect": 0.78,
+      "size": 0.55,
+      "width": 35,
+      "height": 45,
+      "medium": "Akril na papiru",
+      "description": "Privremeni tekst. Tri riječi na zelenom polju, napisane dovoljno sporo da se čuju.",
+      "en": {
+        "title": "Silence Is a Word",
+        "medium": "Acrylic on paper",
+        "description": "Placeholder text. Three words on a green field, written slowly enough to be heard."
+      },
+      "links": [
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        },
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        }
+      ]
+    },
+    {
+      "id": "dobra-knjiga-losa-knjiga",
+      "title": "Dobra knjiga, loša knjiga",
+      "year": "1981",
+      "category": "books",
+      "image": "works/books/dobra-knjiga-losa-knjiga.webp",
+      "thumb": "works/books/dobra-knjiga-losa-knjiga-thumb.webp",
+      "cutout": true,
+      "pages": [
+        "works/books/dobra-knjiga-losa-knjiga.webp"
+      ],
+      "aspect": 0.6984,
+      "pageAspect": 0.6984,
+      "medium": "Autorska knjiga, Zagreb",
+      "description": "",
+      "en": {
+        "title": "Good Book, Bad Book",
+        "medium": "Artist's book, Zagreb",
+        "description": ""
+      }
+    },
+    {
+      "id": "rijec-po-rijec",
+      "title": "Riječ po riječ",
+      "year": "1986",
+      "category": "sculpture",
+      "model": "accordion",
+      "image": "works/harmonika.svg",
+      "aspect": 2.4,
+      "size": 0.5,
+      "width": 120,
+      "height": 50,
+      "medium": "Presavijeni papir",
+      "description": "Privremeni tekst. Presavijeni leporelo: rečenica koja se može pročitati tek kad se razmota.",
+      "en": {
+        "title": "Word by Word",
+        "medium": "Folded paper",
+        "description": "Placeholder text. A folded leporello: a sentence that can only be read once it is unfolded."
+      },
+      "links": [
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        },
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        }
+      ]
+    },
+    {
+      "id": "knjige-poezije",
+      "title": "Knjige poezije",
+      "year": "2015/16",
+      "category": "books",
+      "image": "works/books/knjige-poezije.webp",
+      "thumb": "works/books/knjige-poezije-thumb.webp",
+      "cutout": true,
+      "pages": [
+        "works/books/knjige-poezije.webp"
+      ],
+      "aspect": 0.7189,
+      "pageAspect": 0.7189,
+      "medium": "Autorska knjiga",
+      "description": "",
+      "en": {
+        "title": "Books of Poetry",
+        "medium": "Artist's book",
+        "description": ""
+      }
+    },
+    {
+      "id": "pjesnik-nije-tu",
+      "title": "Pjesnik nije tu",
+      "year": "1981",
+      "category": "photography",
+      "image": "works/pjesnik.svg",
+      "aspect": 1.0,
+      "size": 0.75,
+      "width": 50,
+      "height": 50,
+      "medium": "Tuš i tempera na papiru",
+      "description": "Privremeni tekst. Crveni krug oko odsutnosti: pjesnik je napustio pjesmu.",
+      "en": {
+        "title": "The Poet Is Not Here",
+        "medium": "Ink and tempera on paper",
+        "description": "Placeholder text. A red circle around an absence: the poet has left the poem."
+      },
+      "links": [
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        },
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        }
+      ]
+    },
+    {
+      "id": "pazi-ostri-tekstovi",
+      "title": "Pazi, oštri tekstovi",
+      "year": "2004",
+      "category": "books",
+      "image": "works/books/pazi-ostri-tekstovi.webp",
+      "thumb": "works/books/pazi-ostri-tekstovi-thumb.webp",
+      "cutout": true,
+      "pages": [
+        "works/books/pazi-ostri-tekstovi.webp"
+      ],
+      "aspect": 0.7036,
+      "pageAspect": 0.7036,
+      "medium": "Autorska knjiga, 56 str., meki uvez",
+      "description": "",
+      "en": {
+        "title": "Careful, Sharp Texts",
+        "medium": "Artist's book, 56 pp., softcover",
+        "description": ""
+      }
+    },
+    {
+      "id": "zvijezda",
+      "title": "Zvijezda",
+      "year": "1990",
+      "category": "sculpture",
+      "model": "star",
+      "image": "works/zvijezda.svg",
+      "color": "#E63323",
+      "aspect": 1.0,
+      "size": 0.6,
+      "width": 30,
+      "height": 30,
+      "medium": "Presavijeni papir",
+      "description": "Privremeni tekst. Presavijena papirnata zvijezda, politički simbol sveden na krhak predmet.",
+      "en": {
+        "title": "Star",
+        "medium": "Folded paper",
+        "description": "Placeholder text. A folded paper star, a political symbol reduced to a fragile object."
+      },
+      "links": [
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        },
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        }
+      ]
+    },
+    {
+      "id": "volim-citati-poeziju",
+      "title": "Volim čitati poeziju – Sram me je što još moram pisati pjesme",
+      "year": "2001",
+      "category": "books",
+      "image": "works/books/volim-citati-poeziju.webp",
+      "thumb": "works/books/volim-citati-poeziju-thumb.webp",
+      "cutout": true,
+      "pages": [
+        "works/books/volim-citati-poeziju.webp"
+      ],
+      "aspect": 0.6276,
+      "pageAspect": 0.6276,
+      "medium": "Autorska knjiga",
+      "description": "",
+      "en": {
+        "title": "I Like Reading Poetry – I'm Ashamed I Still Have to Write Poems",
+        "medium": "Artist's book",
+        "description": ""
+      }
+    },
+    {
+      "id": "olovka-je-oruzje",
+      "title": "Olovka je oružje",
+      "year": "1982",
+      "category": "painting",
+      "image": "works/olovka.svg",
+      "aspect": 1.92,
+      "size": 0.5,
+      "width": 70,
+      "height": 36,
+      "medium": "Kolaž na papiru",
+      "description": "Privremeni tekst. Olovka kao oružje predpjesnika.",
+      "en": {
+        "title": "The Pencil Is a Weapon",
+        "medium": "Collage on paper",
+        "description": "Placeholder text. The pencil as the pre-poet's weapon."
+      },
+      "links": [
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        },
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        }
+      ]
+    },
+    {
+      "id": "the-manners-of-the-nomad",
+      "title": "The Manners of the Nomad",
+      "year": "1995",
+      "category": "books",
+      "image": "works/books/the-manners-of-the-nomad.webp",
+      "thumb": "works/books/the-manners-of-the-nomad-thumb.webp",
+      "cutout": true,
+      "pages": [
+        "works/books/the-manners-of-the-nomad.webp"
+      ],
+      "aspect": 0.7317,
+      "pageAspect": 0.7317,
+      "medium": "Autorska knjiga, Zagreb",
+      "description": "",
+      "en": {
+        "title": "The Manners of the Nomad",
+        "medium": "Artist's book, Zagreb",
+        "description": ""
+      }
+    },
+    {
+      "id": "poezija",
+      "title": "Poezija",
+      "year": "1977",
+      "category": "actions",
+      "image": "works/zastava.svg",
+      "aspect": 1.45,
+      "size": 0.68,
+      "width": 58,
+      "height": 40,
+      "medium": "Sitotisak",
+      "description": "Privremeni tekst. Zastava za naciju čitatelja.",
+      "en": {
+        "title": "Poetry",
+        "medium": "Screen print",
+        "description": "Placeholder text. A flag for a nation of readers."
+      },
+      "links": [
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        },
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        }
+      ]
+    },
+    {
+      "id": "na-umjetnicima-svijet-ostaje",
+      "title": "Na umjetnicima svijet ostaje",
+      "year": "2023",
+      "category": "books",
+      "image": "works/books/na-umjetnicima-svijet-ostaje.webp",
+      "thumb": "works/books/na-umjetnicima-svijet-ostaje-thumb.webp",
+      "cutout": true,
+      "pages": [
+        "works/books/na-umjetnicima-svijet-ostaje.webp"
+      ],
+      "aspect": 0.723,
+      "pageAspect": 0.723,
+      "medium": "Samizdat br. 26, Dotrščina",
+      "description": "",
+      "en": {
+        "title": "The World Rests on Artists",
+        "medium": "Samizdat no. 26, Dotrščina",
+        "description": ""
+      }
+    },
+    {
+      "id": "citaj-mallarmea",
+      "title": "Čitaj Mallarméa",
+      "year": "1985",
+      "category": "texts",
+      "image": "works/mallarme.svg",
+      "aspect": 0.75,
+      "size": 0.95,
+      "width": 36,
+      "height": 48,
+      "medium": "Tuš i olovka na papiru",
+      "description": "Privremeni tekst. Uputa ispisana preko polja škrabotina.",
+      "en": {
+        "title": "Read Mallarmé",
+        "medium": "Ink and pencil on paper",
+        "description": "Placeholder text. An instruction written over a field of scribbles."
+      },
+      "links": [
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        },
+        {
+          "label": "somelink.com/vlado-martek",
+          "url": "https://example.com/vlado-martek"
+        }
+      ]
+    },
+    {
+      "id": "pre-poetry",
+      "title": "Pre-Poetry",
+      "year": "2026",
+      "category": "books",
+      "image": "works/books/manija-za-sonetima-1.webp",
+      "thumb": "works/books/manija-za-sonetima-1-thumb.webp",
+      "cutout": true,
+      "pages": [
+        "works/books/manija-za-sonetima-1.webp"
+      ],
+      "aspect": 0.6419,
+      "pageAspect": 0.6419,
+      "medium": "Knjiga",
+      "description": "",
+      "en": {
+        "title": "Pre-Poetry",
+        "medium": "Book",
+        "description": ""
+      }
+    }
+  ],
+  "labels": {
+    "all": "Početna",
+    "close": "Zatvori",
+    "photo": "Fotografija",
+    "en": {
+      "all": "Home",
+      "close": "Close",
+      "photo": "Photo"
+    }
+  },
+  "events": [
+    {
+      "title": "Every Artist is Deluded by America",
+      "dates": "18.11.–22.12.2026.",
+      "place": "Zagreb",
+      "en": {
+        "place": "Zagreb"
+      }
+    }
+  ]
+}
