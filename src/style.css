@@ -74,16 +74,6 @@ body {
   --bar: calc(var(--row) + var(--tm) + var(--pad) * 1.5); /* height of the top bar (no colour of its own) */
 }
 html, body { margin: 0; height: 100%; }
-/* a fine grain over every page ground (not over the works): the same tile, fixed to the screen, so
-   the grain of the page, the sheet under a work and the overlays lines up wherever they meet */
-:root { --noise: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='1.4 1.4 1.4 0 -1.6  1.4 1.4 1.4 0 -1.6  1.4 1.4 1.4 0 -1.6  0 0 0 0 1'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); --noise-a: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='1.4 1.4 1.4 0 -1.6  1.4 1.4 1.4 0 -1.6  1.4 1.4 1.4 0 -1.6  0 0 0 0 1'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.055'/></svg>"); /* the same grain, see-through: for the fades */ --noise-o: .05; }
-body.cat-americas { --noise-o: .06; }
-.overlay.events, .overlay.info, .overlay.detail, .detail-panel, .loader { isolation: isolate; }
-body::before, .overlay.events::before, .overlay.info::before, .overlay.detail::before, .detail-panel::before, .loader::before {
-  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background: var(--noise); opacity: var(--noise-o);
-}
-.detail-panel::before { position: absolute; } /* the sheet scrolls under the work: its grain stays inside it, never over the picture above */
 body {
   background: var(--bg);
   transition: none;
@@ -149,7 +139,7 @@ body.loaded .loader { display: none; }
 .bottom-fade {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 4; pointer-events: none; /* under the names and the title */
   height: calc(var(--t1h) * 2.3 + var(--pad) * 5); /* the title and its year, with room to fade */
-  background: var(--noise-a) fixed, var(--bg); -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .92) 35%, transparent 100%); mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .92) 35%, transparent 100%); /* the page ground with its grain, fading out (like --grey-fade) */
+  background: var(--grey-fade);
 }
 body.detail-open .bottom-fade, body.events-open .bottom-fade { z-index: 22; } /* over a work and the events page too */
 /* over a work the big title stands low (the hero is 90 % tall): the fade only covers the bottom row there */
@@ -506,7 +496,7 @@ body.detail-open .prefs::before { display: none; } /* over a work the view icons
 .overlay.detail::after, .overlay.events::after {
   content: ''; position: absolute; left: 0; right: 0; top: 0; z-index: 2; pointer-events: none;
   height: calc(var(--bar) + var(--pad) * 3);
-  background: var(--noise-a), var(--bg); -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .92) 35%, transparent 100%); mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .92) 35%, transparent 100%); transform: scaleY(-1);
+  background: var(--grey-fade); transform: scaleY(-1);
 }
 .detail-desc:empty { display: none; } /* no description yet: nothing, no gap */
 .detail-desc { margin: 0 0 14vh; max-width: none; /* to the right edge */ font-size: calc(var(--tm) * 1.1); line-height: 1.25; }

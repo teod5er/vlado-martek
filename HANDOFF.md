@@ -115,8 +115,6 @@ Uz donji rub je uvijek sivi gradijent (`.bottom-fade`, boja stranice prema prozi
 
 Nova knjiga: obrezati prozirne rubove, spremiti `ime.webp` (najviše 1600 px, kvaliteta 80) i `ime-thumb.webp` (640 px, kvaliteta 76) u `public/works/books/`, a originalni PNG u `originals/works/books/`, zatim dodati unos s `"categories": ["books"]`, `cutout: true` i točnim `aspect`. Rad u više kategorija: datoteke u mapu prve kategorije, a ostale samo dopisati u `categories`, npr. `["books", "poetry"]`.
 
-**Šum (zrno):** sve pozadine stranica (stranica, rad, panel ispod rada, Događanja, O autoru, splash i prijelazi uz rubove) imaju fino crno-bijelo zrno: SVG `feTurbulence` u `--noise` / `--noise-a` na vrhu `style.css`, jačina `--noise-o` (0,05; na Amerikama 0,06). Preko samih radova ga nema.
-
 **Boja:** na cijeloj stranici je samo jedna crvena, `--red` (`#E63323`): tekst, splash, O autoru, favicon, ikona za iOS, OG slika i `theme-color`.
 
 ## 7. Animacije (dogovoreni jezik)
