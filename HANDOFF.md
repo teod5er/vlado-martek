@@ -113,7 +113,7 @@ Uz donji rub je uvijek sivi gradijent (`.bottom-fade`, boja stranice prema prozi
 
 **Stranica ne vidi datoteke sama.** Slika ubačena u mapu ne pojavljuje se dok za nju ne postoji unos u `works.json`. Isto tako, unos čija je datoteka obrisana ostaje prazan.
 
-Nova knjiga: obrezati prozirne rubove, spremiti `ime.webp` (najviše 2000 px) i `ime-thumb.webp` (900 px) u `public/works/books/`, zatim dodati unos s `"categories": ["books"]`, `cutout: true` i točnim `aspect`. Rad u više kategorija: datoteke u mapu prve kategorije, a ostale samo dopisati u `categories`, npr. `["books", "poetry"]`.
+Nova knjiga: obrezati prozirne rubove, spremiti `ime.webp` (najviše 1600 px, kvaliteta 80) i `ime-thumb.webp` (640 px, kvaliteta 76) u `public/works/books/`, a originalni PNG u `originals/works/books/`, zatim dodati unos s `"categories": ["books"]`, `cutout: true` i točnim `aspect`. Rad u više kategorija: datoteke u mapu prve kategorije, a ostale samo dopisati u `categories`, npr. `["books", "poetry"]`.
 
 **Boja:** na cijeloj stranici je samo jedna crvena, `--red` (`#E63323`): tekst, splash, O autoru, favicon, ikona za iOS, OG slika i `theme-color`.
 
@@ -144,7 +144,7 @@ Nova knjiga: obrezati prozirne rubove, spremiti `ime.webp` (najviše 2000 px) i 
 2. **Izložba:** godina 2026 je pretpostavljena, prostor nije upisan, a ostala događanja nedostaju.
 3. **Prijevodi:** engleski tekst O autoru i engleski naslovi knjiga prevedeni su na brzinu i treba ih provjeriti.
 4. **Privremeni radovi su obrisani** (svi SVG-ovi i „Privremeni tekst.”). Svi radovi su pravi, ali nijedan nema opis, a većina nema tehniku ni dimenzije. **Poezija** trenutno nema nijedan rad, pa je skrivena u izborniku. Pojavit će se sama kad dobije prvi rad.
-5. **Originalni PNG-ovi** knjiga, skulptura i slika su u `public/works/` i ulaze u build (oko 92 MB koji se ne koriste). Treba ih premjestiti izvan `public/`.
+5. ~~Originalni PNG-ovi~~ su premješteni u `originals/works/…` (izvan `public/`, ne ulaze u build; oko 295 MB). Stranica koristi samo WebP: velike slike najviše 1600 px, sličice 640 px (ukupno oko 9 MB za 61 rad; build oko 12 MB). Splash čeka samo prvih 8 sličica prikazane kategorije, najviše 3 s, a ostale se učitavaju u pozadini. `loader.svg` je smanjen sa 680 na 125 KB (ugrađena slika pretvorena u WebP upola manje rezolucije). U donjoj galeriji rada je samo jedna fotografija: sam rad, ili `photos` ako ih rad ima.
 8. **Popis radova (studeni 2026.):** naslovi, godine i kategorije usklađeni su s Martekovim popisom. Na stranici je sada 61 rad (s Amerikama), tj. svi za koje postoji slika i jasan naslov. Radovi s popisa bez slike nisu dodani. **Kategorije su spojene:** Poezija i Autorske knjige → **Knjige**; Kiparstvo, Fotofigure i Fotografija → **Fotografije** (`photography`; datoteke iz `works/sculpture/` premještene su u `works/photography/`). Ostaju Samizdat, Slikarstvo, Akcije, Tekst i Parole, slogani (`slogans`). **Ništa se ne uparuje po pretpostavci:** slike `painting/bez-naziva` i `photography/razlog.png` nisu na stranici dok Martek ne kaže koji su to radovi, a `menti-lo-stato` je ostao „Menti lo stato” bez godine. Engleski naslovi novih radova prevedeni su na brzinu.
 9. **Točka:** stranica sama dodaje točku iza svakog naslova (osim ako završava s ? ili !) i iza svakog broja u godini (2015./16., 1978.–2026.). U `works.json` se može pisati s točkom ili bez nje.
 10. **Tablica rada:** Kategorija / Kategorije (sve kategorije rada, odvojene zarezom), Dimenzije (ako postoje), Godina. **Tehnika** se više ne prikazuje (polje `medium` ostaje u podacima).

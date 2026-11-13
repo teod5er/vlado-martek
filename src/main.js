@@ -157,16 +157,13 @@ async function boot() {
   showPortrait();
   if (portraits.length > 1) setInterval(() => { pi++; showPortrait(); }, PORTRAIT_EVERY);
 
-  // preload thumbnails behind the splash screen
-  const urls = [...new Set(data.works.map((w) => w.thumb || w.image))];
-  await Promise.all([
-    minTime,
-    ...urls.map((u) => new Promise((res) => {
-      const img = new Image();
-      img.onload = img.onerror = () => res();
-      img.src = u;
-    })),
-  ]);
+  // behind the splash only the first works of the gallery are waited for (at most 3 s on a slow
+  // line); the other thumbnails load afterwards, in the background
+  const load = (u) => new Promise((res) => { const img = new Image(); img.onload = img.onerror = () => res(); img.src = u; });
+  const h0 = parseHash(), first = worksFor(h0.cat && data.categories.some((c) => c.id === h0.cat) ? h0.cat : 'all');
+  const urls = [...new Set(first.map((w) => w.thumb || w.image))];
+  await Promise.all([minTime, Promise.race([Promise.all(urls.slice(0, 8).map(load)), new Promise((r) => setTimeout(r, 3000))])]);
+  setTimeout(() => { for (const w of data.works) load(w.thumb || w.image); }, 400);
 
   initMenu();
   initMobileNav();
@@ -703,12 +700,8 @@ function fillDetail(work) {
   $('detailDesc').textContent = work.description || '';
   $('detailNavTitle').textContent = work.title || '';
   $('detailFacts').innerHTML = factsFor(work).map(([k, v]) => `<tr><th scope="row">${escapeHtml(k)}</th><td>${escapeHtml(v)}</td></tr>`).join('');
-  // photos of the work: its own list, otherwise every picture we have of it
-  // every work has two more pictures besides its main one (`photos`); until they are in, the
-  // pages or textures stand in, and the main picture fills any gap
-  const extra = work.photos?.length ? work.photos
-    : [...new Set([...(work.pages || []).slice(1), ...Object.values(work.textures || {})])].filter((u) => u && u !== work.image);
-  stripPhotos = [...extra, work.image, work.image].slice(0, 2);
+  // photos of the work: its own extra photos when it has them, otherwise the work itself, once
+  stripPhotos = work.photos?.length ? work.photos : [work.image];
   // the photos side by side, each on a grey ground with the picture in its middle
   $('detailStrip').innerHTML = stripPhotos.map((u) => `<figure class="strip-item"><img src="${escapeHtml(u)}" alt="" loading="lazy" decoding="async"></figure>`).join('');
   $('detailStrip').hidden = !stripPhotos.length;
