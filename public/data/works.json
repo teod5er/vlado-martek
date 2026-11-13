@@ -428,7 +428,8 @@
       "title": "Vi čitajte pjesme Rimbauda",
       "year": "2026.",
       "categories": [
-        "painting"
+        "painting",
+        "americas"
       ],
       "image": "works/painting/vi-citajte-pjesme-rimbauda.webp",
       "thumb": "works/painting/vi-citajte-pjesme-rimbauda-thumb.webp",
@@ -466,7 +467,8 @@
       "title": "Adolescenti",
       "year": "2008.",
       "categories": [
-        "painting"
+        "painting",
+        "americas"
       ],
       "image": "works/painting/adolescenti.webp",
       "thumb": "works/painting/adolescenti-thumb.webp",
@@ -485,7 +487,8 @@
       "title": "Pseudorimbaud",
       "year": "2010.",
       "categories": [
-        "painting"
+        "painting",
+        "americas"
       ],
       "image": "works/painting/pseudorimbaud.webp",
       "thumb": "works/painting/pseudorimbaud-thumb.webp",
@@ -788,7 +791,8 @@
       "title": "Balkan",
       "year": "2014.",
       "categories": [
-        "painting"
+        "painting",
+        "americas"
       ],
       "image": "works/painting/balkan.webp",
       "thumb": "works/painting/balkan-thumb.webp",
@@ -864,7 +868,8 @@
       "title": "Muzej suvremene umjetnosti",
       "year": "",
       "categories": [
-        "painting"
+        "painting",
+        "americas"
       ],
       "image": "works/painting/muzej-suvremene-umjetnosti.webp",
       "thumb": "works/painting/muzej-suvremene-umjetnosti-thumb.webp",
@@ -883,7 +888,8 @@
       "title": "Shakespeare",
       "year": "2002.",
       "categories": [
-        "painting"
+        "painting",
+        "americas"
       ],
       "image": "works/painting/shakespeare.webp",
       "thumb": "works/painting/shakespeare-thumb.webp",
@@ -902,7 +908,8 @@
       "title": "Starost",
       "year": "2002.",
       "categories": [
-        "painting"
+        "painting",
+        "americas"
       ],
       "image": "works/painting/starost.webp",
       "thumb": "works/painting/starost-thumb.webp",
@@ -921,7 +928,8 @@
       "title": "Tržište",
       "year": "2005.",
       "categories": [
-        "painting"
+        "painting",
+        "americas"
       ],
       "image": "works/painting/trziste.webp",
       "thumb": "works/painting/trziste-thumb.webp",
@@ -988,6 +996,407 @@
       "description": "",
       "en": {
         "title": "Les artistes - aux armes",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "amerika-za-corave",
+      "title": "Amerika za ćorave",
+      "year": "2008.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/amerika-za-corave.webp",
+      "thumb": "works/painting/amerika-za-corave-thumb.webp",
+      "cutout": true,
+      "aspect": 0.7075,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "America for the Blind",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "balkani",
+      "title": "Balkani",
+      "year": "2019.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/balkani.webp",
+      "thumb": "works/painting/balkani-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3396,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Balkans",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "every-artist-is-deluded-by-america",
+      "title": "Every Artist is Deluded by America",
+      "year": "2005.",
+      "categories": [
+        "slogans",
+        "texts",
+        "americas"
+      ],
+      "image": "works/slogans/every-artist-is-deluded-by-america.webp",
+      "thumb": "works/slogans/every-artist-is-deluded-by-america-thumb.webp",
+      "cutout": true,
+      "aspect": 1.443,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Every Artist is Deluded by America",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "crna-amerika",
+      "title": "Crna amerika",
+      "year": "2026.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/crna-amerika.webp",
+      "thumb": "works/painting/crna-amerika-thumb.webp",
+      "cutout": true,
+      "aspect": 1.5588,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Black America",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "izgubljena-olovka",
+      "title": "Izgubljena olovka",
+      "year": "2003.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/izgubljena-olovka.webp",
+      "thumb": "works/painting/izgubljena-olovka-thumb.webp",
+      "cutout": true,
+      "aspect": 1.4276,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Lost Pencil",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "isus-misli-ameriku",
+      "title": "Isus misli Ameriku",
+      "year": "2014.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/isus-misli-ameriku.webp",
+      "thumb": "works/painting/isus-misli-ameriku-thumb.webp",
+      "cutout": true,
+      "aspect": 0.694,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Jesus Thinks America",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "djevica-marija-misli-ameriku",
+      "title": "Djevica Marija misli Ameriku",
+      "year": "2008.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/djevica-marija-misli-ameriku.webp",
+      "thumb": "works/painting/djevica-marija-misli-ameriku-thumb.webp",
+      "cutout": true,
+      "aspect": 0.553,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Virgin Mary Thinks America",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "izmedu-mora-i-amerike-biraj-more",
+      "title": "Između mora i Amerike biraj more",
+      "year": "2010.",
+      "categories": [
+        "photography",
+        "americas"
+      ],
+      "image": "works/photography/izmedu-mora-i-amerike-biraj-more.webp",
+      "thumb": "works/photography/izmedu-mora-i-amerike-biraj-more-thumb.webp",
+      "cutout": true,
+      "aspect": 0.6265,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Between the Sea and America Choose the Sea",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "staklena-amerika",
+      "title": "Staklena Amerika",
+      "year": "2002.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/staklena-amerika.webp",
+      "thumb": "works/painting/staklena-amerika-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3918,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Glass America",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "empatija-i-mrznja",
+      "title": "Empatija i mržnja",
+      "year": "2020.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/empatija-i-mrznja.webp",
+      "thumb": "works/painting/empatija-i-mrznja-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3504,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Empathy and Hatred",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "svaki-je-umjetnik-obmanut-od-amerike",
+      "title": "Svaki je umjetnik obmanut od Amerike",
+      "year": "2009.",
+      "categories": [
+        "texts",
+        "americas"
+      ],
+      "image": "works/texts/svaki-je-umjetnik-obmanut-od-amerike.webp",
+      "thumb": "works/texts/svaki-je-umjetnik-obmanut-od-amerike-thumb.webp",
+      "cutout": true,
+      "aspect": 1.4124,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Every Artist is Deluded by America",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "hanna-arendt",
+      "title": "Hanna Arendt",
+      "year": "2026.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/hanna-arendt.webp",
+      "thumb": "works/painting/hanna-arendt-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3468,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Hannah Arendt",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "blazenka",
+      "title": "Blaženka",
+      "year": "2005./2006.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/blazenka.webp",
+      "thumb": "works/painting/blazenka-thumb.webp",
+      "cutout": true,
+      "aspect": 1.5004,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Blaženka",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "ideja-amerike",
+      "title": "Ideja Amerike",
+      "year": "2020.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/ideja-amerike.webp",
+      "thumb": "works/painting/ideja-amerike-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3324,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "The Idea of America",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "covjek-je-covjeku-amerika",
+      "title": "Čovjek je čovjeku amerika",
+      "year": "2012.",
+      "categories": [
+        "texts",
+        "americas"
+      ],
+      "image": "works/texts/covjek-je-covjeku-amerika.webp",
+      "thumb": "works/texts/covjek-je-covjeku-amerika-thumb.webp",
+      "cutout": true,
+      "aspect": 1.2571,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Man is America to Man",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "crveno-crno",
+      "title": "Crveno, crno",
+      "year": "2003.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/crveno-crno.webp",
+      "thumb": "works/painting/crveno-crno-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3596,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Red, Black",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "pseudorimbaud-2026",
+      "title": "Pseudorimbaud",
+      "year": "2026.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/pseudorimbaud-2026.webp",
+      "thumb": "works/painting/pseudorimbaud-2026-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3578,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Pseudorimbaud",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "balkan-2008-26",
+      "title": "Balkan",
+      "year": "2008./26.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/balkan-2008-26.webp",
+      "thumb": "works/painting/balkan-2008-26-thumb.webp",
+      "cutout": true,
+      "aspect": 1.2523,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Balkan",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "balkan-2016-26",
+      "title": "Balkan",
+      "year": "2016./26.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/balkan-2016-26.webp",
+      "thumb": "works/painting/balkan-2016-26-thumb.webp",
+      "cutout": true,
+      "aspect": 1.287,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Balkan",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "pubertet",
+      "title": "Pubertet",
+      "year": "2010.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/pubertet.webp",
+      "thumb": "works/painting/pubertet-thumb.webp",
+      "cutout": true,
+      "aspect": 1.2878,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Puberty",
         "medium": "",
         "description": ""
       }

@@ -63,7 +63,7 @@ function buildLangMenu() {
     $('eventsLink').innerHTML = `<span class="ex-t">${escapeHtml(text)}</span>${EX_ARROW}`;
   }
   // a phone: the word Menu bottom right (Close while the menu is open)
-  $('burgerText').textContent = mobileNav() ? (en ? 'Close' : 'Zatvori') : (en ? 'Menu' : 'Izbornik');
+  updateBurger();
   fitTopRight();
   // the globe switches to the other language, the speaker turns sound on / off (struck through when off)
   $('langToggle').setAttribute('aria-label', en ? 'Language: English (switch to Hrvatski)' : 'Jezik: hrvatski (prebaci na English)');
@@ -185,6 +185,7 @@ async function boot() {
   if (fromHash.cat && cats.has(fromHash.cat)) currentCat = fromHash.cat;
   visibleWorks = worksFor(currentCat);
   body.classList.toggle('cat-americas', currentCat === 'americas');
+  updateBurger();
   updateMenu();
 
   gallery.setWorks(visibleWorks);
@@ -484,9 +485,17 @@ function buildMenu() {
 // the word Menu top right (the view icons left of it); it opens a page with the media
 // (large) and language and sound under them, down at his portrait in the bottom-left corner. Each item works through the same controls as on a computer.
 const mobileNav = () => !$('mnav').hidden;
+// the word top right says what is on show, like a drop-down: Show all, or the chosen medium;
+// Close while the menu is open
+function updateBurger() {
+  const en = lang === 'en';
+  const c = currentCat !== 'all' && data?.categories.find((x) => x.id === currentCat);
+  $('burgerText').textContent = mobileNav() ? (en ? 'Close' : 'Zatvori') : c ? c.label : (en ? 'Show all' : 'Prikaži sve');
+  if (data) fitTopRight(); // the view icons stand left of the word, whatever its length
+}
 function buildMobileNav() {
   const en = lang === 'en';
-  const items = [{ id: 'all', label: L('all') }, ...data.categories.filter((c) => worksFor(c.id).length)];
+  const items = [{ id: 'all', label: en ? 'Show all' : 'Prikaži sve' }, ...data.categories.filter((c) => worksFor(c.id).length)];
   $('mnavCats').innerHTML = items.map((c) => `<li><button type="button" data-cat="${c.id}"${c.id === currentCat ? ' class="is-on" aria-current="page"' : ''}>${catLabel(c.id, c.label)}</button></li>`).join('');
   // language and sound: the same two as on a computer, the language on show (a tap switches) and the speaker
   const on = isEnabled();
@@ -499,7 +508,7 @@ function setMobileNav(v) {
   if (v) buildMobileNav();
   $('mnav').hidden = !v;
   body.classList.toggle('mnav-open', v);
-  $('burgerText').textContent = v ? (lang === 'en' ? 'Close' : 'Zatvori') : (lang === 'en' ? 'Menu' : 'Izbornik');
+  updateBurger();
   fitTopRight(); // Close is longer than Menu: the view icons move along
   $('burger').setAttribute('aria-expanded', String(v));
 }
@@ -508,7 +517,7 @@ function initMobileNav() {
   $('mnav').addEventListener('click', (e) => {
     e.stopPropagation();
     const b = e.target.closest('button');
-    if (!b) return;
+    if (!b) { setMobileNav(false); return; } // a tap on the blurred page closes it
     sound.click();
     const closePages = () => { if (!$('info').hidden) closeInfo(); if (!$('events').hidden) closeEvents(); if (openWork) closeDetail(); };
     if (b.dataset.cat) { setMobileNav(false); closePages(); setCategory(b.dataset.cat); return; }
@@ -574,6 +583,7 @@ function setCategory(cat, { push = true } = {}) {
   catToken++;
   currentCat = cat;
   body.classList.toggle('cat-americas', cat === 'americas'); // Amerike: the whole page in black
+  updateBurger();
   if (push) setHash(cat === 'all' ? '' : `#/${cat}`);
   visibleWorks = worksFor(cat);
   updateMenu();

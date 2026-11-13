@@ -45,17 +45,19 @@
   --jerk: .5s steps(8, end);            /* the interface's movement: eight hard steps, like the names after the splash */
   color-scheme: light;
 }
-/* Amerike: the whole page in black while that medium is chosen (its works open on black too) */
+/* Amerike: the whole page on the accent red while that medium is chosen (its works open on it too),
+   and all the text black (the red of links, years and Martek turns black with it) */
 body.cat-americas {
-  --ink: #F2F2F2;
-  --bg: #000;
-  --veil: rgba(0, 0, 0, .6);
-  --line: #2A2A2A;
-  --sheet: #0A0A0A;
-  --crumb: #7A7A7A;
-  --grey-fade: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .92) 35%, rgba(0, 0, 0, 0) 100%);
-  color-scheme: dark;
+  --bg: #E63323;
+  --red: #111111;
+  --ink: #111111;
+  --veil: rgba(230, 51, 35, .6);
+  --line: rgba(17, 17, 17, .22);
+  --sheet: #E63323;
+  --crumb: rgba(17, 17, 17, .55);
+  --grey-fade: linear-gradient(to top, #E63323 0%, rgba(230, 51, 35, .92) 35%, rgba(230, 51, 35, 0) 100%);
 }
+body.cat-americas .overlay.info { background: #E63323; } /* About keeps its red (the --red above is black here) */
 
 * { box-sizing: border-box; }
 /* the page frame: two rows
@@ -153,7 +155,8 @@ body.detail-open .bottom-fade, body.events-open .bottom-fade { height: calc(var(
 }
 .about-thumb { flex: none; width: 2.4em; height: 2.4em; background: #c6c6c6 center / cover no-repeat; transition: width var(--jerk), height var(--jerk); } /* grows and shrinks in eight steps, like the names */
 body.intro .about-btn { opacity: 0; pointer-events: none; }
-body.detail-open .about-btn, body.events-open .about-btn, body.focus-info .about-btn { z-index: 25; }
+body.events-open .about-btn, body.focus-info .about-btn { z-index: 25; }
+body.detail-open .about-btn { display: none; } /* a work's page: no portrait in the corner */
 /* during the splash the names sit on the vertical middle, Vlado at the left edge and Martek at the
    right (Martek in black there, so it shows on the red); once the page is in, they glide up together
    into the top-left corner */
@@ -589,7 +592,7 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   .back-pre { display: none; } /* a phone: the arrow and the medium */
   /* a work's path on column 3, beside the names: only its category (the names lead home) */
   .detail-bar { left: var(--cs-top); right: calc(var(--pad) + var(--burger-w, 4em) + var(--group-gap)); } /* a work on a phone: the path beside the names, Menu top right as on every page */
-  #dHome, #dHome + .crumb-sep, .detail.title-on .detail-bar .dt { display: none; }
+  #detailBar { display: none; } /* a work on a phone: no path and no × (the names lead home, Menu top right) */
   .detail.title-on .crumb-cat { color: var(--ink); }
 }
 @media (max-width: 700px), (orientation: portrait) and (max-width: 900px) {
@@ -614,11 +617,17 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   .menu, .prefs, #langBox { display: none !important; }
   /* the word sits in the top-right corner, the view icons left of it */
   .burger {
-    display: block; position: fixed; top: var(--pad); right: var(--pad); z-index: 32;
-    padding: 0; font-size: var(--tm); line-height: 1.15; color: var(--ink); text-box: trim-both cap alphabetic;
+    position: fixed; top: var(--pad); right: var(--pad); z-index: 32;
+    padding: 0; font-size: var(--tm); line-height: 1.15; color: var(--ink);
+    display: flex; align-items: center; gap: .35em;
   }
+  #burgerText { display: block; text-box: trim-both cap alphabetic; }
+  /* the chevron: the same as the menu's on a computer (cap-height, 1.5 lines), red; it turns over while open */
+  .burger-chevron { color: var(--red); }
+  .burger-chevron .s { stroke-width: 2.3; } /* as heavy as the close X and the letters beside it */
+  body.mnav-open .burger-chevron { transform: rotate(180deg); }
   .burger::after { content: ''; position: absolute; inset: -12px; } /* a finger-sized target */
-  .burger:hover { color: var(--red); }
+  @media (hover: hover) { .burger:hover { color: var(--red); } } /* (no sticky red after a tap) */
   body.intro .burger { visibility: hidden; }
   /* the view icons, beside it */
   .views { top: calc(var(--pad) + var(--tm) * .72 - var(--tm) * 1.3 * .72); right: calc(var(--pad) + var(--burger-w, 4em) + var(--group-gap) * 1.5); z-index: 32; gap: .75em; font-size: calc(var(--tm) * 1.3); } /* the view icons, larger for a finger, left of the word, their bottoms on its baseline */
@@ -629,23 +638,22 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   /* over the events and About their own path and × lead out: the button steps aside (a work keeps it, as every page) */
   body.events-open:not(.mnav-open) .burger, body.focus-info:not(.mnav-open) .burger,
   body.focus-info .views { display: none; }
+  /* a drop-down under Show all: the items right-aligned from the top, over the page blurred */
   .mnav:not([hidden]) {
-    display: flex; flex-direction: column; justify-content: flex-end; gap: calc(var(--pad) * 3); /* down at his portrait */
+    display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-start; gap: calc(var(--pad) * 1.5);
     position: fixed; inset: 0; z-index: 29; overflow-y: auto; overscroll-behavior: contain;
-    background: var(--bg);
-    padding: var(--top) var(--pad) calc(var(--pad) * 3 + 2.4 * var(--tm)) var(--pad); /* under the names, on their left edge; the last line just above his portrait */
+    background: var(--veil);
+    -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur));
+    padding: calc(var(--pad) * 2.5 + var(--tm)) var(--pad) calc(var(--pad) * 3); /* right under the word */
   }
-  body.mnav-open .label { z-index: 30; } /* the names stay in the corner, over the menu */
-  body.mnav-open .about-btn { z-index: 31; } /* and his portrait in the bottom-left corner */
-  .mnav-cats { list-style: none; margin: 0; padding: 0; font-size: var(--t2); line-height: 1.1; letter-spacing: -.02em; }
-  .mnav-cats button { display: block; padding: .12em 0; color: var(--red); text-align: left; }
+  .mnav-cats { list-style: none; margin: 0; padding: 0; font-size: var(--t2); line-height: 1.1; letter-spacing: -.02em; text-align: right; }
+  .mnav-cats button { display: block; margin-left: auto; padding: .1em 0; color: var(--red); text-align: right; }
   .mnav-cats button.is-on { color: var(--ink); }
-  .mnav-group { display: flex; flex-wrap: wrap; gap: .3em 1.1em; font-size: var(--tm); padding-top: calc(var(--pad) * 1.5); border-top: 1px solid var(--line); }
+  .mnav-group { display: flex; justify-content: flex-end; gap: .3em 1.1em; font-size: var(--tm); }
   .mnav-group button { color: var(--red); padding: .35em 0; display: inline-flex; align-items: center; gap: .3em; }
   .mnav-group button.is-on { color: var(--ink); }
-  .mnav-group .ex-arrow { width: .62em; height: .62em; }
-  .mnav-cats + .mnav-group { margin-top: calc(var(--pad) * -1.5); } /* language right under the media */
   body.mnav-open .hover-title, body.mnav-open .bottom-fade { visibility: hidden; }
+  body.mnav-open .label, body.mnav-open .about-btn { visibility: hidden; } /* the open menu: no names, no portrait */
   body.mnav-open .views { visibility: hidden; } /* the menu shows no views */
   /* language and sound in the menu: the same two icons as on a computer, a size up */
   #mnavPrefs { font-size: calc(var(--tm) * 1.3); gap: 1em; align-items: center; }
