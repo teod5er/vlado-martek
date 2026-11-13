@@ -699,9 +699,11 @@ function fillDetail(work) {
   detailTimer = typeInto($('detailTitle'), work, 30, $('detailYear'));
   $('detailDesc').textContent = work.description || '';
   $('detailNavTitle').textContent = work.title || '';
-  // photos of the work: its own extra photos when it has them, otherwise the work itself, once
-  stripPhotos = work.photos?.length ? work.photos : [work.image];
-  // the photos side by side, each on a grey ground with the picture in its middle
+  // under the work: its own extra photos when it has them, otherwise three details cut from it
+  // (`details`, square crops of where most is going on), otherwise the work itself, once
+  const crops = !work.photos?.length && work.details?.length;
+  stripPhotos = work.photos?.length ? work.photos : crops ? work.details : [work.image];
+  $('detailStrip').classList.toggle('is-details', !!crops);
   $('detailStrip').innerHTML = stripPhotos.map((u) => `<figure class="strip-item"><img src="${escapeHtml(u)}" alt="" loading="lazy" decoding="async"></figure>`).join('');
   $('detailStrip').hidden = !stripPhotos.length;
   // at the end, after a grey rule: the other works of its medium, in the overview's grid
@@ -838,7 +840,7 @@ function fillCount() {
   $('countAll').textContent = `/ ${pad2(list.length)}`;
 }
 // the browser tab: the open work's title, otherwise his name
-function setDocTitle() { document.title = openWork ? `${openWork.title} — Vlado Martek` : 'Vlado Martek'; }
+function setDocTitle() { document.title = openWork ? `Vlado Martek. ${openWork.title}` : 'Vlado Martek'; } // the title already ends in its full stop (or ? !)
 function openDetail(work, { push = true, dir = 0 } = {}) {
   if (!data) return;
   const swap = !!openWork;

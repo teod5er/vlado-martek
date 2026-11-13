@@ -520,6 +520,10 @@ body.detail-open .prefs::before { display: none; } /* over a work the view icons
 .detail-more-grid .index-item:hover img { opacity: .85; }
 .strip-item { margin: 0; aspect-ratio: 1; background: var(--bg); display: grid; place-items: center; padding: 8%; }
 .strip-item img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; pointer-events: none; }
+/* three details of the work: smaller, three in a row, each crop filling its square edge to edge */
+.detail-strip.is-details { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.detail-strip.is-details .strip-item { padding: 0; }
+.detail-strip.is-details .strip-item img { width: 100%; height: 100%; object-fit: cover; }
 .detail-links-title { margin: 0 0 22vh; font-size: var(--label); line-height: .9; letter-spacing: -.02em; text-box: trim-both cap alphabetic; }
 .detail-links-list { list-style: none; margin: 0; padding: 0; width: 100%; font-size: var(--tm); }
 .detail-links-list li { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: -1px; }
@@ -563,6 +567,7 @@ body.detail-open .prefs::before { display: none; } /* over a work the view icons
   .detail-figure { left: calc(var(--pad) + var(--colg)); right: calc(var(--pad) + var(--colg)); top: calc(var(--top) + var(--pad) * 2); bottom: calc(var(--t2) * 4.6 + var(--pad) * 3); } /* a phone: the work on columns 2–5, centred, never edge to edge */
   .detail-desc { max-width: none; margin-bottom: 8vh; }
   .detail-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } /* a phone: two side by side, as on a computer */
+  .detail-strip.is-details { grid-template-columns: repeat(3, minmax(0, 1fr)); } /* the three details stay in one row */
   .detail-links-title { margin-bottom: 10vh; }
   /* on a phone the three sit on one line, without their Category: / View: labels to save room */
   /* little room between the names on a phone: the title may wrap there */
@@ -600,6 +605,10 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   .menu-list button, body.focus-menu .menu-list button { visibility: visible; pointer-events: auto; }
   .menu-list button.is-active { color: var(--ink); cursor: default; }
   body.intro .menu-list button { pointer-events: none; }
+  /* a medium chosen: the row of media stays, the chosen one in black (no Home / Medium × path) */
+  body.has-cat .menu-back { display: none; }
+  body.has-cat .menu-pick { display: flex !important; }
+  body.cat-americas .menu-list button.is-active { color: #fff; } /* on Amerike all the text is red: the chosen medium in white */
 }
 @media (max-width: 700px), (orientation: portrait) and (max-width: 900px) {
   .back-pre { display: none; } /* a phone: the arrow and the medium */

@@ -187,7 +187,12 @@
         "title": "Have Me",
         "medium": "Artist's book",
         "description": ""
-      }
+      },
+      "details": [
+        "works/books/imajte-me-d1.webp",
+        "works/books/imajte-me-d2.webp",
+        "works/books/imajte-me-d3.webp"
+      ]
     },
     {
       "id": "manija-za-sonetima",
@@ -210,7 +215,12 @@
         "title": "Sonnet Mania",
         "medium": "Artist's book, softcover",
         "description": ""
-      }
+      },
+      "details": [
+        "works/books/manija-za-sonetima-d1.webp",
+        "works/books/manija-za-sonetima-d2.webp",
+        "works/books/manija-za-sonetima-d3.webp"
+      ]
     },
     {
       "id": "forte",
@@ -229,7 +239,12 @@
         "title": "Forte",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/photography/forte-d1.webp",
+        "works/photography/forte-d2.webp",
+        "works/photography/forte-d3.webp"
+      ]
     },
     {
       "id": "snimaj",
@@ -248,7 +263,12 @@
         "title": "Shoot",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/photography/snimaj-d1.webp",
+        "works/photography/snimaj-d2.webp",
+        "works/photography/snimaj-d3.webp"
+      ]
     },
     {
       "id": "jednorog",
@@ -267,7 +287,12 @@
         "title": "Unicorn",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/photography/jednorog-d1.webp",
+        "works/photography/jednorog-d2.webp",
+        "works/photography/jednorog-d3.webp"
+      ]
     },
     {
       "id": "mama",
@@ -286,7 +311,12 @@
         "title": "Mum",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/photography/mama-d1.webp",
+        "works/photography/mama-d2.webp",
+        "works/photography/mama-d3.webp"
+      ]
     },
     {
       "id": "konceptualisticka-poezija",
@@ -309,7 +339,12 @@
         "title": "Conceptualist Poetry (1975–1983.)",
         "medium": "Artist's book",
         "description": ""
-      }
+      },
+      "details": [
+        "works/books/konceptualisticka-poezija-d1.webp",
+        "works/books/konceptualisticka-poezija-d2.webp",
+        "works/books/konceptualisticka-poezija-d3.webp"
+      ]
     },
     {
       "id": "poeziju-treba-jebati",
@@ -332,7 +367,12 @@
         "title": "Poetry Should Be Fucked",
         "medium": "Artist's book",
         "description": ""
-      }
+      },
+      "details": [
+        "works/books/poeziju-treba-jebati-d1.webp",
+        "works/books/poeziju-treba-jebati-d2.webp",
+        "works/books/poeziju-treba-jebati-d3.webp"
+      ]
     },
     {
       "id": "dobra-knjiga-losa-knjiga",
@@ -355,7 +395,12 @@
         "title": "Good Book, Bad Book",
         "medium": "Artist's book, Zagreb",
         "description": ""
-      }
+      },
+      "details": [
+        "works/books/dobra-knjiga-losa-knjiga-d1.webp",
+        "works/books/dobra-knjiga-losa-knjiga-d2.webp",
+        "works/books/dobra-knjiga-losa-knjiga-d3.webp"
+      ]
     },
     {
       "id": "knjige-poezije",
@@ -378,7 +423,12 @@
         "title": "Books of Poetry",
         "medium": "Artist's book",
         "description": ""
-      }
+      },
+      "details": [
+        "works/books/knjige-poezije-d1.webp",
+        "works/books/knjige-poezije-d2.webp",
+        "works/books/knjige-poezije-d3.webp"
+      ]
     },
     {
       "id": "pazi-ostri-tekstovi",
@@ -401,7 +451,12 @@
         "title": "Careful, Sharp Texts",
         "medium": "Artist's book, 56 pp., softcover",
         "description": ""
-      }
+      },
+      "details": [
+        "works/books/pazi-ostri-tekstovi-d1.webp",
+        "works/books/pazi-ostri-tekstovi-d2.webp",
+        "works/books/pazi-ostri-tekstovi-d3.webp"
+      ]
     },
     {
       "id": "volim-citati-poeziju",
@@ -425,7 +480,12 @@
         "title": "I Like Reading Poetry – I'm Ashamed I Still Have to Write Poems",
         "medium": "Artist's book",
         "description": ""
-      }
+      },
+      "details": [
+        "works/books/volim-citati-poeziju-d1.webp",
+        "works/books/volim-citati-poeziju-d2.webp",
+        "works/books/volim-citati-poeziju-d3.webp"
+      ]
     },
     {
       "id": "vi-citajte-pjesme-rimbauda",
@@ -445,7 +505,12 @@
         "title": "You Read Rimbaud's Poems",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/vi-citajte-pjesme-rimbauda-d1.webp",
+        "works/painting/vi-citajte-pjesme-rimbauda-d2.webp",
+        "works/painting/vi-citajte-pjesme-rimbauda-d3.webp"
+      ]
     },
     {
       "id": "idealiziram-granicu-izmedu-umjetnosti-i-zivota",
@@ -464,7 +529,12 @@
         "title": "I Idealise",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/idealiziram-granicu-izmedu-umjetnosti-i-zivota-d1.webp",
+        "works/painting/idealiziram-granicu-izmedu-umjetnosti-i-zivota-d2.webp",
+        "works/painting/idealiziram-granicu-izmedu-umjetnosti-i-zivota-d3.webp"
+      ]
     },
     {
       "id": "adolescenti",
@@ -484,7 +554,12 @@
         "title": "Adolescents",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/adolescenti-d1.webp",
+        "works/painting/adolescenti-d2.webp",
+        "works/painting/adolescenti-d3.webp"
+      ]
     },
     {
       "id": "pseudorimbaud",
@@ -501,10 +576,15 @@
       "medium": "",
       "description": "",
       "en": {
-        "title": "Pseudo-Rimbaud",
+        "title": "Pseudorimbaud",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/pseudorimbaud-d1.webp",
+        "works/painting/pseudorimbaud-d2.webp",
+        "works/painting/pseudorimbaud-d3.webp"
+      ]
     },
     {
       "id": "the-manners-of-the-nomad",
@@ -528,11 +608,16 @@
         "title": "The Manners of the Nomad",
         "medium": "Artist's book, Zagreb",
         "description": ""
-      }
+      },
+      "details": [
+        "works/books/the-manners-of-the-nomad-d1.webp",
+        "works/books/the-manners-of-the-nomad-d2.webp",
+        "works/books/the-manners-of-the-nomad-d3.webp"
+      ]
     },
     {
       "id": "breton",
-      "title": "Postavljanje antispomenika Andre Bretonu",
+      "title": "Postavljanje antispomenika André Bretonu",
       "year": "1987.",
       "categories": [
         "actions",
@@ -548,7 +633,12 @@
         "title": "Erecting an Anti-Monument to André Breton",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/actions/breton-d1.webp",
+        "works/actions/breton-d2.webp",
+        "works/actions/breton-d3.webp"
+      ]
     },
     {
       "id": "na-umjetnicima-svijet-ostaje",
@@ -572,7 +662,12 @@
         "title": "The World Rests on Artists",
         "medium": "Samizdat no. 26, Dotrščina",
         "description": ""
-      }
+      },
+      "details": [
+        "works/books/na-umjetnicima-svijet-ostaje-d1.webp",
+        "works/books/na-umjetnicima-svijet-ostaje-d2.webp",
+        "works/books/na-umjetnicima-svijet-ostaje-d3.webp"
+      ]
     },
     {
       "id": "write-its-name",
@@ -591,7 +686,12 @@
         "title": "Write its Name on Each Thing You Possess or Buy",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/texts/write-its-name-d1.webp",
+        "works/texts/write-its-name-d2.webp",
+        "works/texts/write-its-name-d3.webp"
+      ]
     },
     {
       "id": "citajte-pjesme-rimbauda",
@@ -610,7 +710,12 @@
         "title": "Read Rimbaud's Poems",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/texts/citajte-pjesme-rimbauda-d1.webp",
+        "works/texts/citajte-pjesme-rimbauda-d2.webp",
+        "works/texts/citajte-pjesme-rimbauda-d3.webp"
+      ]
     },
     {
       "id": "citajte-pjesme-majakovskog",
@@ -629,7 +734,12 @@
         "title": "Read the Poems of Mayakovsky",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/texts/citajte-pjesme-majakovskog-d1.webp",
+        "works/texts/citajte-pjesme-majakovskog-d2.webp",
+        "works/texts/citajte-pjesme-majakovskog-d3.webp"
+      ]
     },
     {
       "id": "read-larkins-poems",
@@ -648,7 +758,12 @@
         "title": "Read Larkin’s Poems",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/texts/read-larkins-poems-d1.webp",
+        "works/texts/read-larkins-poems-d2.webp",
+        "works/texts/read-larkins-poems-d3.webp"
+      ]
     },
     {
       "id": "drzavo-unakazit-cu-te-artom",
@@ -667,7 +782,12 @@
         "title": "State, I Will Disfigure You with Art",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/texts/drzavo-unakazit-cu-te-artom-d1.webp",
+        "works/texts/drzavo-unakazit-cu-te-artom-d2.webp",
+        "works/texts/drzavo-unakazit-cu-te-artom-d3.webp"
+      ]
     },
     {
       "id": "pre-poetry",
@@ -690,7 +810,12 @@
         "title": "Pre-poetry",
         "medium": "Book",
         "description": ""
-      }
+      },
+      "details": [
+        "works/books/manija-za-sonetima-1-d1.webp",
+        "works/books/manija-za-sonetima-1-d2.webp",
+        "works/books/manija-za-sonetima-1-d3.webp"
+      ]
     },
     {
       "id": "menti-lo-stato",
@@ -709,7 +834,12 @@
         "title": "Menti lo stato",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/photography/menti-lo-stato-d1.webp",
+        "works/photography/menti-lo-stato-d2.webp",
+        "works/photography/menti-lo-stato-d3.webp"
+      ]
     },
     {
       "id": "pazi-ostar-pjesnik",
@@ -729,7 +859,12 @@
         "title": "Beware, Sharp Poet",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/photography/pazi-ostar-pjesnik-d1.webp",
+        "works/photography/pazi-ostar-pjesnik-d2.webp",
+        "works/photography/pazi-ostar-pjesnik-d3.webp"
+      ]
     },
     {
       "id": "sto-je-umjetnost-prema-ovom-bicu",
@@ -749,7 +884,12 @@
         "title": "What Is Art Compared to This Being",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/photography/sto-je-umjetnost-prema-ovom-bicu-d1.webp",
+        "works/photography/sto-je-umjetnost-prema-ovom-bicu-d2.webp",
+        "works/photography/sto-je-umjetnost-prema-ovom-bicu-d3.webp"
+      ]
     },
     {
       "id": "umjetnik-artifex",
@@ -768,7 +908,12 @@
         "title": "Artist Artifex",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/photography/umjetnik-artifex-d1.webp",
+        "works/photography/umjetnik-artifex-d2.webp",
+        "works/photography/umjetnik-artifex-d3.webp"
+      ]
     },
     {
       "id": "ame-rika",
@@ -788,27 +933,37 @@
         "title": "Ame_rica",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/ame-rika-d1.webp",
+        "works/painting/ame-rika-d2.webp",
+        "works/painting/ame-rika-d3.webp"
+      ]
     },
     {
-      "id": "balkan",
-      "title": "Balkan",
+      "id": "nove-tendencije",
+      "title": "Nove tendencije",
       "year": "2014.",
       "categories": [
         "painting",
         "americas"
       ],
-      "image": "works/painting/balkan.webp",
-      "thumb": "works/painting/balkan-thumb.webp",
+      "image": "works/painting/nove-tendencije.webp",
+      "thumb": "works/painting/nove-tendencije-thumb.webp",
       "cutout": true,
       "aspect": 1.2862,
       "medium": "",
       "description": "",
       "en": {
-        "title": "Balkan",
+        "title": "New Tendencies",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/nove-tendencije-d1.webp",
+        "works/painting/nove-tendencije-d2.webp",
+        "works/painting/nove-tendencije-d3.webp"
+      ]
     },
     {
       "id": "dobrota",
@@ -827,7 +982,12 @@
         "title": "Kindness",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/dobrota-d1.webp",
+        "works/painting/dobrota-d2.webp",
+        "works/painting/dobrota-d3.webp"
+      ]
     },
     {
       "id": "kucice",
@@ -846,7 +1006,12 @@
         "title": "Little Houses",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/kucice-d1.webp",
+        "works/painting/kucice-d2.webp",
+        "works/painting/kucice-d3.webp"
+      ]
     },
     {
       "id": "ljubav-odgovornost",
@@ -865,7 +1030,12 @@
         "title": "Love, Responsibility",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/ljubav-odgovornost-d1.webp",
+        "works/painting/ljubav-odgovornost-d2.webp",
+        "works/painting/ljubav-odgovornost-d3.webp"
+      ]
     },
     {
       "id": "muzej-suvremene-umjetnosti",
@@ -885,7 +1055,12 @@
         "title": "Museum of Contemporary Art",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/muzej-suvremene-umjetnosti-d1.webp",
+        "works/painting/muzej-suvremene-umjetnosti-d2.webp",
+        "works/painting/muzej-suvremene-umjetnosti-d3.webp"
+      ]
     },
     {
       "id": "shakespeare",
@@ -905,7 +1080,12 @@
         "title": "Shakespeare",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/shakespeare-d1.webp",
+        "works/painting/shakespeare-d2.webp",
+        "works/painting/shakespeare-d3.webp"
+      ]
     },
     {
       "id": "starost",
@@ -925,7 +1105,12 @@
         "title": "Old Age",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/starost-d1.webp",
+        "works/painting/starost-d2.webp",
+        "works/painting/starost-d3.webp"
+      ]
     },
     {
       "id": "trziste",
@@ -945,7 +1130,12 @@
         "title": "The Market",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/trziste-d1.webp",
+        "works/painting/trziste-d2.webp",
+        "works/painting/trziste-d3.webp"
+      ]
     },
     {
       "id": "zvijezde",
@@ -957,14 +1147,19 @@
       "image": "works/painting/zvijezde.webp",
       "thumb": "works/painting/zvijezde-thumb.webp",
       "cutout": true,
-      "aspect": 1.4472,
+      "aspect": 0.6907,
       "medium": "",
       "description": "",
       "en": {
         "title": "Stars",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/zvijezde-d1.webp",
+        "works/painting/zvijezde-d2.webp",
+        "works/painting/zvijezde-d3.webp"
+      ]
     },
     {
       "id": "efke",
@@ -983,7 +1178,12 @@
         "title": "Efke",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/photography/efke-d1.webp",
+        "works/photography/efke-d2.webp",
+        "works/photography/efke-d3.webp"
+      ]
     },
     {
       "id": "les-artistes-aux-armes",
@@ -1002,7 +1202,12 @@
         "title": "Les artistes - aux armes",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/texts/lesartistes-auxarmes-d1.webp",
+        "works/texts/lesartistes-auxarmes-d2.webp",
+        "works/texts/lesartistes-auxarmes-d3.webp"
+      ]
     },
     {
       "id": "amerika-za-corave",
@@ -1022,7 +1227,12 @@
         "title": "America for the Blind",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/amerika-za-corave-d1.webp",
+        "works/painting/amerika-za-corave-d2.webp",
+        "works/painting/amerika-za-corave-d3.webp"
+      ]
     },
     {
       "id": "balkani",
@@ -1042,7 +1252,12 @@
         "title": "Balkans",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/balkani-d1.webp",
+        "works/painting/balkani-d2.webp",
+        "works/painting/balkani-d3.webp"
+      ]
     },
     {
       "id": "every-artist-is-deluded-by-america",
@@ -1062,7 +1277,12 @@
         "title": "Every Artist is Deluded by America",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/texts/every-artist-is-deluded-by-america-d1.webp",
+        "works/texts/every-artist-is-deluded-by-america-d2.webp",
+        "works/texts/every-artist-is-deluded-by-america-d3.webp"
+      ]
     },
     {
       "id": "crna-amerika",
@@ -1082,7 +1302,12 @@
         "title": "Black America",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/crna-amerika-d1.webp",
+        "works/painting/crna-amerika-d2.webp",
+        "works/painting/crna-amerika-d3.webp"
+      ]
     },
     {
       "id": "izgubljena-olovka",
@@ -1102,7 +1327,12 @@
         "title": "Lost Pencil",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/izgubljena-olovka-d1.webp",
+        "works/painting/izgubljena-olovka-d2.webp",
+        "works/painting/izgubljena-olovka-d3.webp"
+      ]
     },
     {
       "id": "isus-misli-ameriku",
@@ -1122,7 +1352,12 @@
         "title": "Jesus Thinks America",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/isus-misli-ameriku-d1.webp",
+        "works/painting/isus-misli-ameriku-d2.webp",
+        "works/painting/isus-misli-ameriku-d3.webp"
+      ]
     },
     {
       "id": "djevica-marija-misli-ameriku",
@@ -1142,7 +1377,12 @@
         "title": "Virgin Mary Thinks America",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/djevica-marija-misli-ameriku-d1.webp",
+        "works/painting/djevica-marija-misli-ameriku-d2.webp",
+        "works/painting/djevica-marija-misli-ameriku-d3.webp"
+      ]
     },
     {
       "id": "izmedu-mora-i-amerike-biraj-more",
@@ -1162,7 +1402,12 @@
         "title": "Between the Sea and America Choose the Sea",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/photography/izmedu-mora-i-amerike-biraj-more-d1.webp",
+        "works/photography/izmedu-mora-i-amerike-biraj-more-d2.webp",
+        "works/photography/izmedu-mora-i-amerike-biraj-more-d3.webp"
+      ]
     },
     {
       "id": "staklena-amerika",
@@ -1182,7 +1427,12 @@
         "title": "Glass America",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/staklena-amerika-d1.webp",
+        "works/painting/staklena-amerika-d2.webp",
+        "works/painting/staklena-amerika-d3.webp"
+      ]
     },
     {
       "id": "empatija-i-mrznja",
@@ -1202,7 +1452,12 @@
         "title": "Empathy and Hatred",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/empatija-i-mrznja-d1.webp",
+        "works/painting/empatija-i-mrznja-d2.webp",
+        "works/painting/empatija-i-mrznja-d3.webp"
+      ]
     },
     {
       "id": "svaki-je-umjetnik-obmanut-od-amerike",
@@ -1222,11 +1477,16 @@
         "title": "Every Artist is Deluded by America",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/texts/svaki-je-umjetnik-obmanut-od-amerike-d1.webp",
+        "works/texts/svaki-je-umjetnik-obmanut-od-amerike-d2.webp",
+        "works/texts/svaki-je-umjetnik-obmanut-od-amerike-d3.webp"
+      ]
     },
     {
       "id": "hanna-arendt",
-      "title": "Hanna Arendt",
+      "title": "Hannah Arendt",
       "year": "2026.",
       "categories": [
         "painting",
@@ -1242,7 +1502,12 @@
         "title": "Hannah Arendt",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/hanna-arendt-d1.webp",
+        "works/painting/hanna-arendt-d2.webp",
+        "works/painting/hanna-arendt-d3.webp"
+      ]
     },
     {
       "id": "blazenka",
@@ -1262,7 +1527,12 @@
         "title": "Blaženka",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/blazenka-d1.webp",
+        "works/painting/blazenka-d2.webp",
+        "works/painting/blazenka-d3.webp"
+      ]
     },
     {
       "id": "ideja-amerike",
@@ -1282,7 +1552,12 @@
         "title": "The Idea of America",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/ideja-amerike-d1.webp",
+        "works/painting/ideja-amerike-d2.webp",
+        "works/painting/ideja-amerike-d3.webp"
+      ]
     },
     {
       "id": "covjek-je-covjeku-amerika",
@@ -1302,7 +1577,12 @@
         "title": "Man is America to Man",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/texts/covjek-je-covjeku-amerika-d1.webp",
+        "works/texts/covjek-je-covjeku-amerika-d2.webp",
+        "works/texts/covjek-je-covjeku-amerika-d3.webp"
+      ]
     },
     {
       "id": "crveno-crno",
@@ -1322,7 +1602,12 @@
         "title": "Red, Black",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/crveno-crno-d1.webp",
+        "works/painting/crveno-crno-d2.webp",
+        "works/painting/crveno-crno-d3.webp"
+      ]
     },
     {
       "id": "pseudorimbaud-2026",
@@ -1342,27 +1627,37 @@
         "title": "Pseudorimbaud",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/pseudorimbaud-2026-d1.webp",
+        "works/painting/pseudorimbaud-2026-d2.webp",
+        "works/painting/pseudorimbaud-2026-d3.webp"
+      ]
     },
     {
-      "id": "balkan-2008-26",
-      "title": "Balkan",
+      "id": "exat",
+      "title": "Exat",
       "year": "2008./26.",
       "categories": [
         "painting",
         "americas"
       ],
-      "image": "works/painting/balkan-2008-26.webp",
-      "thumb": "works/painting/balkan-2008-26-thumb.webp",
+      "image": "works/painting/exat.webp",
+      "thumb": "works/painting/exat-thumb.webp",
       "cutout": true,
       "aspect": 1.2523,
       "medium": "",
       "description": "",
       "en": {
-        "title": "Balkan",
+        "title": "Exat",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/exat-d1.webp",
+        "works/painting/exat-d2.webp",
+        "works/painting/exat-d3.webp"
+      ]
     },
     {
       "id": "balkan-2016-26",
@@ -1382,7 +1677,12 @@
         "title": "Balkan",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/balkan-2016-26-d1.webp",
+        "works/painting/balkan-2016-26-d2.webp",
+        "works/painting/balkan-2016-26-d3.webp"
+      ]
     },
     {
       "id": "pubertet",
@@ -1402,7 +1702,12 @@
         "title": "Puberty",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/pubertet-d1.webp",
+        "works/painting/pubertet-d2.webp",
+        "works/painting/pubertet-d3.webp"
+      ]
     },
     {
       "id": "estetika-uber-alles",
@@ -1422,7 +1727,12 @@
         "title": "Aesthetics Über Alles",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/estetika-uber-alles-d1.webp",
+        "works/painting/estetika-uber-alles-d2.webp",
+        "works/painting/estetika-uber-alles-d3.webp"
+      ]
     },
     {
       "id": "hocu-ameriku-bez-amerike",
@@ -1442,7 +1752,12 @@
         "title": "I Want America Without America",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/hocu-ameriku-bez-amerike-d1.webp",
+        "works/painting/hocu-ameriku-bez-amerike-d2.webp",
+        "works/painting/hocu-ameriku-bez-amerike-d3.webp"
+      ]
     },
     {
       "id": "amerika-na-romobilu",
@@ -1462,7 +1777,12 @@
         "title": "America on a Scooter",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/amerika-na-romobilu-d1.webp",
+        "works/painting/amerika-na-romobilu-d2.webp",
+        "works/painting/amerika-na-romobilu-d3.webp"
+      ]
     },
     {
       "id": "point-de-caption",
@@ -1482,7 +1802,12 @@
         "title": "Proposal for the Cover of Miško Šuvaković’s Book Point de Caption",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/painting/point-de-caption-d1.webp",
+        "works/painting/point-de-caption-d2.webp",
+        "works/painting/point-de-caption-d3.webp"
+      ]
     },
     {
       "id": "art-has-no-alternative",
@@ -1500,7 +1825,12 @@
         "title": "Art Has No Alternative, Istanbul",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/actions/art-has-no-alternative-d1.webp",
+        "works/actions/art-has-no-alternative-d2.webp",
+        "works/actions/art-has-no-alternative-d3.webp"
+      ]
     },
     {
       "id": "read-orwell",
@@ -1518,7 +1848,12 @@
         "title": "Read Orwell, Istanbul",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/actions/read-orwell-d1.webp",
+        "works/actions/read-orwell-d2.webp",
+        "works/actions/read-orwell-d3.webp"
+      ]
     },
     {
       "id": "sve-vise-se-sramim-poezije",
@@ -1537,7 +1872,12 @@
         "title": "I Am Increasingly Ashamed of Poetry",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/texts/sve-vise-se-sramim-poezije-d1.webp",
+        "works/texts/sve-vise-se-sramim-poezije-d2.webp",
+        "works/texts/sve-vise-se-sramim-poezije-d3.webp"
+      ]
     },
     {
       "id": "granice-unakazit-cu-vas",
@@ -1557,7 +1897,60 @@
         "title": "Borders! I Will Disfigure You with an Exhibition!",
         "medium": "",
         "description": ""
-      }
+      },
+      "details": [
+        "works/texts/granice-unakazit-cu-vas-d1.webp",
+        "works/texts/granice-unakazit-cu-vas-d2.webp",
+        "works/texts/granice-unakazit-cu-vas-d3.webp"
+      ]
+    },
+    {
+      "id": "bez-naziva",
+      "title": "Bez naziva",
+      "year": "1990.",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/bez-naziva.webp",
+      "thumb": "works/painting/bez-naziva-thumb.webp",
+      "cutout": true,
+      "aspect": 0.7544,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Untitled",
+        "medium": "",
+        "description": ""
+      },
+      "details": [
+        "works/painting/bez-naziva-d1.webp",
+        "works/painting/bez-naziva-d2.webp",
+        "works/painting/bez-naziva-d3.webp"
+      ]
+    },
+    {
+      "id": "friedrich-holderlin",
+      "title": "Friedrich Hölderlin",
+      "year": "2002.",
+      "categories": [
+        "photography"
+      ],
+      "image": "works/photography/friedrich-holderlin.webp",
+      "thumb": "works/photography/friedrich-holderlin-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3998,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Friedrich Hölderlin",
+        "medium": "",
+        "description": ""
+      },
+      "details": [
+        "works/photography/friedrich-holderlin-d1.webp",
+        "works/photography/friedrich-holderlin-d2.webp",
+        "works/photography/friedrich-holderlin-d3.webp"
+      ]
     }
   ],
   "labels": {
