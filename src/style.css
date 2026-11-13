@@ -492,12 +492,8 @@ body.detail-open .prefs::before { display: none; } /* over a work the view icons
   height: calc(var(--bar) + var(--pad) * 3);
   background: var(--grey-fade); transform: scaleY(-1);
 }
+.detail-desc:empty { display: none; } /* no description yet: nothing, no gap */
 .detail-desc { margin: 0 0 14vh; max-width: none; /* to the right edge */ font-size: calc(var(--tm) * 1.1); line-height: 1.25; }
-.detail-facts { width: 100%; /* to the right edge */ border-collapse: collapse; font-size: var(--tm); margin-bottom: 4vh; }
-.detail-facts tr { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.detail-facts th, .detail-facts td { text-align: left; padding: .9em 0; font-weight: inherit; vertical-align: top; }
-.detail-facts th { width: calc(var(--c2) - var(--cs)); }
-.detail-facts td { color: var(--red); }
 /* the photos: side by side to the right edge, each on a grey ground, the picture whole in its middle */
 .detail-strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gut); margin: 0 0 16vh; }
 .detail-strip[hidden] { display: none; }
@@ -559,6 +555,7 @@ body.detail-open .prefs::before { display: none; } /* over a work the view icons
   .index { padding-left: var(--pad); padding-right: var(--pad); } /* a phone: the grid from edge to edge, no indent on the left */
   .index-grid { gap: 5vh calc(var(--gut) * 2); grid-template-columns: repeat(3, minmax(0, 1fr)); } /* three in a row on a phone */
   .info-inner { padding-left: var(--pad); } /* a phone: the text from the left edge, no indent */
+  #infoBar { display: none; } /* a phone: no Home / About × path (a tap anywhere closes the page) */
   .info-col { width: calc(100vw - var(--pad) * 2); font-size: var(--t1); padding-bottom: calc(var(--pad) * 3 + 2.4 * var(--tm)); } /* clear of his portrait at the bottom */
   body.focus-info .about-thumb { width: 2.4em; height: 2.4em; } /* a phone: his portrait stays small in its corner, the text runs the full width */
   .info-body { font-size: var(--t1); }
@@ -603,7 +600,7 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
 @media (max-width: 700px), (orientation: portrait) and (max-width: 900px) {
   .top-link { white-space: normal; max-width: 42vw; line-height: 1.15; } /* on a phone the exhibition may wrap */
   body.detail-open .top-link { display: none; } /* over a work the counter needs the room */
-  .bottom-fade { height: calc(var(--tm) * 2.4 + var(--t1h) * 4.6 + var(--pad) * 9); } /* a phone: the title stands above the bottom row */
+  .bottom-fade { height: calc(var(--tm) * 2.4 + var(--t1h) * 3.8 + var(--pad) * 7); } /* a phone: the title stands above the bottom row */
 }
 /* the events page: its back link on the grid column, the names keep the corner */
 .crumb-here { color: var(--ink); }

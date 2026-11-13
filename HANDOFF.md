@@ -95,7 +95,7 @@ Uz donji rub je uvijek sivi gradijent (`.bottom-fade`, boja stranice prema prozi
 
 - **`artist`:**
   - `first`, `last`
-  - `lead.hr` / `lead.en` (rečenica iznad svega na stranici O autoru, manja i bijela)
+  - `lead.hr` / `lead.en` (po želji: rečenica iznad svega na stranici O autoru, manja i bijela; trenutno maknuta)
   - `bio.hr` / `bio.en` (odlomci)
   - `karma` (parovi naslov/vrijednost)
   - `photos` (Martekove fotografije: O autoru i sličica dolje lijevo)
@@ -147,9 +147,11 @@ Nova knjiga: obrezati prozirne rubove, spremiti `ime.webp` (najviše 1600 px, kv
 5. ~~Originalni PNG-ovi~~ su premješteni u `originals/works/…` (izvan `public/`, ne ulaze u build; oko 295 MB). Stranica koristi samo WebP: velike slike najviše 1600 px, sličice 640 px (ukupno oko 9 MB za 61 rad; build oko 12 MB). Splash čeka samo prvih 8 sličica prikazane kategorije, najviše 3 s, a ostale se učitavaju u pozadini. `loader.svg` je smanjen sa 680 na 125 KB (ugrađena slika pretvorena u WebP upola manje rezolucije). U donjoj galeriji rada je samo jedna fotografija: sam rad, ili `photos` ako ih rad ima.
 8. **Popis radova (studeni 2026.):** naslovi, godine i kategorije usklađeni su s Martekovim popisom. Na stranici je sada 61 rad (s Amerikama), tj. svi za koje postoji slika i jasan naslov. Radovi s popisa bez slike nisu dodani. **Kategorije su spojene:** Poezija i Autorske knjige → **Knjige**; Kiparstvo, Fotofigure i Fotografija → **Fotografije** (`photography`; datoteke iz `works/sculpture/` premještene su u `works/photography/`). Ostaju Samizdat, Slikarstvo, Akcije, Tekst i Parole, slogani (`slogans`). **Ništa se ne uparuje po pretpostavci:** slike `painting/bez-naziva` i `photography/razlog.png` nisu na stranici dok Martek ne kaže koji su to radovi, a `menti-lo-stato` je ostao „Menti lo stato” bez godine. Engleski naslovi novih radova prevedeni su na brzinu.
 9. **Točka:** stranica sama dodaje točku iza svakog naslova (osim ako završava s ? ili !) i iza svakog broja u godini (2015./16., 1978.–2026.). U `works.json` se može pisati s točkom ili bez nje.
-10. **Tablica rada:** Kategorija / Kategorije (sve kategorije rada, odvojene zarezom), Dimenzije (ako postoje), Godina. **Tehnika** se više ne prikazuje (polje `medium` ostaje u podacima).
+10. **Tablice na stranici rada više nema** (ni kategorije, ni godine, ni tehnike): ispod naslova je samo opis (ako postoji), fotografija i mreža ostalih radova iz kategorije. Polja `medium`, `width`, `height` ostaju u podacima.
 - **Naslov kartice preglednika:** dok je rad otvoren, „Naslov. — Vlado Martek” (`setDocTitle`, prati i jezik), inače „Vlado Martek”.
 - **Na kraju svakog rada** je sivi razdjelnik (bez naslova) i mreža ostalih radova iste kategorije, istog izgleda kao Pregled (`#detailMore`). Klik otvara rad na istoj stranici, od vrha.
+- **O autoru na mobitelu** nema putanje „Početna / O autoru ×” (`#infoBar` skriven); stranica se zatvara dodirom bilo gdje. Sivi prijelaz uz donji rub na mobitelu je nešto niži.
+- **„Amerika” u naslovima** uvijek s velikim početnim slovom (Crna Amerika, Čovjek je čovjeku Amerika).
 - **Mobitel, provjereno u WebKitu (Safari):** slika rada stoji na stupcima 2–5 i po sredini, nikad od ruba do ruba. Dodatne fotografije su dvije u retku. O autoru ide od lijevog ruba cijelom širinom, sličica ostaje mala u kutu, a tekst se iznad nje stapa s pozadinom. Za testiranje: `npx playwright install webkit`, pa `devices['iPhone 14']`.
 - **Stranica rada na mobitelu:** gore su samo imena (vode na Početnu) i „Prikaži sve” (ili naziv kategorije) gore desno. Putanje (kategorija ×) nema.
 - **Na stranici rada nema Martekove sličice** u donjem lijevom kutu, ni na računalu ni na mobitelu.

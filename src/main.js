@@ -683,23 +683,11 @@ function closeInfo({ fromPop = false } = {}) {
 
 // ---------- detail: the work at the top, its details below (scroll, or Read more) ----------
 let detailTimer = 0, stripPhotos = [];
-function factsFor(work) {
-  const en = lang === 'en';
-  const size = work.size_label || (work.width && work.height ? `${work.width}×${work.height}` : '');
-  // every medium the work belongs to (one work may stand in several), comma-separated
-  const cats = catsOf(work).map((id) => data.categories.find((c) => c.id === id)?.label).filter(Boolean).join(', ');
-  return [
-    [en ? (catsOf(work).length > 1 ? 'Categories' : 'Category') : (catsOf(work).length > 1 ? 'Kategorije' : 'Kategorija'), cats],
-    [en ? 'Size' : 'Dimenzije', size],
-    [en ? 'Year' : 'Godina', work.year],
-  ].filter(([, v]) => v);
-}
 function fillDetail(work) {
   clearInterval(detailTimer);
   detailTimer = typeInto($('detailTitle'), work, 30, $('detailYear'));
   $('detailDesc').textContent = work.description || '';
   $('detailNavTitle').textContent = work.title || '';
-  $('detailFacts').innerHTML = factsFor(work).map(([k, v]) => `<tr><th scope="row">${escapeHtml(k)}</th><td>${escapeHtml(v)}</td></tr>`).join('');
   // photos of the work: its own extra photos when it has them, otherwise the work itself, once
   stripPhotos = work.photos?.length ? work.photos : [work.image];
   // the photos side by side, each on a grey ground with the picture in its middle

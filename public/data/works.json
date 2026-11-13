@@ -3,10 +3,6 @@
     "first": "Vlado",
     "last": "Martek",
     "photo": "img/martek-1.jpg",
-    "lead": {
-      "hr": "Vlado Martek (Zagreb, 1951.) je umjetnik i pjesnik.",
-      "en": "Vlado Martek (Zagreb, 1951) is an artist and poet."
-    },
     "bio": {
       "hr": [
         "Vlado Martek, pjesnik, predpjesnik, 10% umjetnik. Hoda s Poezijom od 1966. (s Predpoezijom od 1978. godine). Prema mandatu: kvantni svaštar u Jugoistočnoj Europi. Sonetski rečeno:"
@@ -1063,7 +1059,7 @@
     },
     {
       "id": "crna-amerika",
-      "title": "Crna amerika",
+      "title": "Crna Amerika",
       "year": "2026.",
       "categories": [
         "painting",
@@ -1283,7 +1279,7 @@
     },
     {
       "id": "covjek-je-covjeku-amerika",
-      "title": "Čovjek je čovjeku amerika",
+      "title": "Čovjek je čovjeku Amerika",
       "year": "2012.",
       "categories": [
         "texts",
