@@ -56,7 +56,9 @@
       "hotspot": [
         28,
         28
-      ]
+      ],
+      "inv": "img/cursors/pointer-1-inv.png",
+      "inv2x": "img/cursors/pointer-1-inv@2x.png"
     },
     {
       "src": "img/cursors/pointer-2.png",
@@ -64,7 +66,9 @@
       "hotspot": [
         28,
         28
-      ]
+      ],
+      "inv": "img/cursors/pointer-2-inv.png",
+      "inv2x": "img/cursors/pointer-2-inv@2x.png"
     },
     {
       "src": "img/cursors/pointer-3.png",
@@ -72,7 +76,9 @@
       "hotspot": [
         28,
         28
-      ]
+      ],
+      "inv": "img/cursors/pointer-3-inv.png",
+      "inv2x": "img/cursors/pointer-3-inv@2x.png"
     },
     {
       "src": "img/cursors/pointer-4.png",
@@ -80,7 +86,9 @@
       "hotspot": [
         28,
         28
-      ]
+      ],
+      "inv": "img/cursors/pointer-4-inv.png",
+      "inv2x": "img/cursors/pointer-4-inv@2x.png"
     },
     {
       "src": "img/cursors/pointer-5.png",
@@ -88,7 +96,9 @@
       "hotspot": [
         28,
         28
-      ]
+      ],
+      "inv": "img/cursors/pointer-5-inv.png",
+      "inv2x": "img/cursors/pointer-5-inv@2x.png"
     },
     {
       "src": "img/cursors/pointer-6.png",
@@ -96,7 +106,9 @@
       "hotspot": [
         28,
         28
-      ]
+      ],
+      "inv": "img/cursors/pointer-6-inv.png",
+      "inv2x": "img/cursors/pointer-6-inv@2x.png"
     },
     {
       "src": "img/cursors/pointer-7.png",
@@ -104,7 +116,9 @@
       "hotspot": [
         28,
         28
-      ]
+      ],
+      "inv": "img/cursors/pointer-7-inv.png",
+      "inv2x": "img/cursors/pointer-7-inv@2x.png"
     }
   ],
   "categories": [
@@ -117,8 +131,8 @@
     {
       "viewer": "sheet",
       "id": "samizdat",
-      "label": "Samizdat",
-      "label_en": "Self-publishing"
+      "label": "Samizdati",
+      "label_en": "Samizdat"
     },
     {
       "id": "painting",
@@ -134,15 +148,9 @@
     },
     {
       "id": "texts",
-      "label": "Tekst",
-      "label_en": "Text",
+      "label": "Tekstovi i parole",
+      "label_en": "Texts",
       "viewer": "sheet"
-    },
-    {
-      "viewer": "sheet",
-      "id": "slogans",
-      "label": "Parole, slogani",
-      "label_en": "Slogans"
     },
     {
       "id": "photography",
@@ -1041,12 +1049,11 @@
       "title": "Every Artist is Deluded by America",
       "year": "2005.",
       "categories": [
-        "slogans",
         "texts",
         "americas"
       ],
-      "image": "works/slogans/every-artist-is-deluded-by-america.webp",
-      "thumb": "works/slogans/every-artist-is-deluded-by-america-thumb.webp",
+      "image": "works/texts/every-artist-is-deluded-by-america.webp",
+      "thumb": "works/texts/every-artist-is-deluded-by-america-thumb.webp",
       "cutout": true,
       "aspect": 1.443,
       "medium": "",
@@ -1248,7 +1255,7 @@
       "image": "works/painting/blazenka.webp",
       "thumb": "works/painting/blazenka-thumb.webp",
       "cutout": true,
-      "aspect": 1.5004,
+      "aspect": 1.7734,
       "medium": "",
       "description": "",
       "en": {
@@ -1393,6 +1400,161 @@
       "description": "",
       "en": {
         "title": "Puberty",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "estetika-uber-alles",
+      "title": "Estetika über alles",
+      "year": "2010.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/estetika-uber-alles.webp",
+      "thumb": "works/painting/estetika-uber-alles-thumb.webp",
+      "cutout": true,
+      "aspect": 1.273,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Aesthetics Über Alles",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "hocu-ameriku-bez-amerike",
+      "title": "Hoću Ameriku bez Amerike",
+      "year": "2010.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/hocu-ameriku-bez-amerike.webp",
+      "thumb": "works/painting/hocu-ameriku-bez-amerike-thumb.webp",
+      "cutout": true,
+      "aspect": 1.4991,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "I Want America Without America",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "amerika-na-romobilu",
+      "title": "Amerika na romobilu",
+      "year": "2004.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/amerika-na-romobilu.webp",
+      "thumb": "works/painting/amerika-na-romobilu-thumb.webp",
+      "cutout": true,
+      "aspect": 1.4379,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "America on a Scooter",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "point-de-caption",
+      "title": "Prijedlog naslovnice knjige Miška Šuvakovića Point de Caption",
+      "year": "1995.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/point-de-caption.webp",
+      "thumb": "works/painting/point-de-caption-thumb.webp",
+      "cutout": true,
+      "aspect": 1.4251,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Proposal for the Cover of Miško Šuvaković’s Book Point de Caption",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "art-has-no-alternative",
+      "title": "Art Has No Alternative, Istanbul",
+      "year": "2025.",
+      "categories": [
+        "actions"
+      ],
+      "image": "works/actions/art-has-no-alternative.webp",
+      "thumb": "works/actions/art-has-no-alternative-thumb.webp",
+      "aspect": 1.3333,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Art Has No Alternative, Istanbul",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "read-orwell",
+      "title": "Read Orwell, Istanbul",
+      "year": "2025.",
+      "categories": [
+        "actions"
+      ],
+      "image": "works/actions/read-orwell.webp",
+      "thumb": "works/actions/read-orwell-thumb.webp",
+      "aspect": 1.3333,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Read Orwell, Istanbul",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "sve-vise-se-sramim-poezije",
+      "title": "Sve više se sramim poezije",
+      "year": "2024.",
+      "categories": [
+        "texts"
+      ],
+      "image": "works/texts/sve-vise-se-sramim-poezije.webp",
+      "thumb": "works/texts/sve-vise-se-sramim-poezije-thumb.webp",
+      "cutout": true,
+      "aspect": 1.0617,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "I Am Increasingly Ashamed of Poetry",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "granice-unakazit-cu-vas",
+      "title": "Granice! Unakazit ću vas izložbom!",
+      "year": "",
+      "categories": [
+        "texts",
+        "americas"
+      ],
+      "image": "works/texts/granice-unakazit-cu-vas.webp",
+      "thumb": "works/texts/granice-unakazit-cu-vas-thumb.webp",
+      "cutout": true,
+      "aspect": 1.6403,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Borders! I Will Disfigure You with an Exhibition!",
         "medium": "",
         "description": ""
       }

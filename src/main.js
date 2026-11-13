@@ -3,6 +3,12 @@ import { Gallery, escapeHtml, steppedCss } from './gallery.js';
 import { sound, unlock, isEnabled, setEnabled } from './sound.js';
 
 const $ = (id) => document.getElementById(id);
+// the text shows only once the typeface is in (at most 3 s), so it never flashes in another one
+const fontsIn = new Promise((done) => {
+  const on = () => { document.documentElement.classList.add('fonts'); done(); };
+  setTimeout(on, 3000);
+  if (document.fonts?.load) document.fonts.load('500 1em Malamocco').then(on, on); else on();
+});
 const body = document.body;
 
 let data;
@@ -126,12 +132,16 @@ function setCursor() {
   const img = c.src2x ? `image-set(url("${c.src}") 1x, url("${c.src2x}") 2x)` : `url("${c.src}")`;
   if (!cursorStyle) { cursorStyle = document.createElement('style'); document.head.append(cursorStyle); }
   // over anything clickable the ordinary pointer (the hand) takes over
+  // on the black Amerike the same pointer, white (About keeps its red page, so the black one)
+  const inv = c.inv ? (c.inv2x ? `image-set(url("${c.inv}") 1x, url("${c.inv2x}") 2x)` : `url("${c.inv}")`) : '';
+  const dark = 'body.cat-americas:not(.focus-info)';
   cursorStyle.textContent = `html, html * { cursor: url("${c.src}") ${x} ${y}, auto !important; cursor: ${img} ${x} ${y}, auto !important; }
+    ${inv ? `${dark}, ${dark} * { cursor: url("${c.inv}") ${x} ${y}, auto !important; cursor: ${inv} ${x} ${y}, auto !important; }` : ''}
     :is(${CLICKABLE}), :is(${CLICKABLE}) * { cursor: pointer !important; }`;
 }
 function initCursors() {
   const list = data.cursors || [];
-  for (const c of list) { const im = new Image(); im.src = typeof c === 'string' ? c : c.src; } // preload so a swap is instant
+  for (const c of list) for (const u of typeof c === 'string' ? [c] : [c.src, c.inv]) if (u) { const im = new Image(); im.src = u; } // preload so a swap is instant
   setCursor();
   addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse') setCursor(); }, true);
 }
@@ -140,6 +150,7 @@ const PORTRAIT_EVERY = 10000; // ms between Martek's photos at the bottom left
 async function boot() {
   body.classList.add('intro'); // hidden behind the splash until the intro plays
   const deepStart = /^#\/(work|info|events)/.test(location.hash);
+  await fontsIn; // the names are measured in their own typeface
   if (!deepStart) typeNames(); // VLADO MARTEK types out over the splash, centred left and right
   // the splash stays for the full 4 s of its animation, counted from when the animated mark shows
   const mark = document.querySelector('.loader-mark');
@@ -579,7 +590,7 @@ function setCategory(cat, { push = true } = {}) {
   if (openWork) closeDetail({ fromPop: true }); // a new medium from inside a work: back to the gallery
   catToken++;
   currentCat = cat;
-  body.classList.toggle('cat-americas', cat === 'americas'); // Amerike: the whole page in black
+  body.classList.toggle('cat-americas', cat === 'americas'); // Amerike: the whole page black, the text red
   updateBurger();
   if (push) setHash(cat === 'all' ? '' : `#/${cat}`);
   visibleWorks = worksFor(cat);
@@ -734,12 +745,74 @@ function layoutFigure(work) {
   const head = fig.parentElement.querySelector('.detail-head');
   const pad = app.gallery?.m.phone ? 10 : Math.min(22, Math.max(10, innerWidth * 0.011)); // --pad
   fig.style.bottom = `${fig.parentElement.clientHeight - head.offsetTop + pad * 3}px`;
+  const tilted = fig.style.transform;
+  fig.style.transform = ''; // measure the frame flat, not tilted
   const f = fig.getBoundingClientRect();
+  fig.style.transform = tilted;
   const c = containIn(f, work.aspect ?? 1, app.gallery?.m.phone);
   Object.assign(img.style, { left: `${c.x - f.left}px`, top: `${c.y - f.top}px`, width: `${c.w}px`, height: `${c.h}px` });
+  fig.style.transformOrigin = `${c.x - f.left + c.w / 2}px ${c.y - f.top + c.h / 2}px`; // the tilt turns about the middle of the picture
   return c;
 }
 addEventListener('resize', () => { if (openWork) layoutFigure(openWork); });
+
+// ---------- the open work tilts: after the mouse on a computer, after the gyroscope on a phone ----------
+// smooth, not stepped: like the gallery under the hand, it follows the body
+const tilt = (() => {
+  const MAX = 14; // degrees, either way
+  const fine = matchMedia('(pointer: fine)');
+  let x = 0, y = 0, tx = 0, ty = 0, raf = 0, on = false;
+  let b0 = null, g0 = null; // the phone's resting angle when the work opened
+  let asked = false; // iOS: the gyroscope is granted
+  const clamp = (v) => Math.max(-1, Math.min(1, v));
+  const fig = () => $('detailFigure');
+  function frame() {
+    x += (tx - x) * 0.12; y += (ty - y) * 0.12;
+    fig().style.transform = `perspective(1100px) rotateX(${(-y * MAX).toFixed(2)}deg) rotateY(${(x * MAX).toFixed(2)}deg)`;
+    raf = on || Math.abs(x) + Math.abs(y) > 0.002 ? requestAnimationFrame(frame) : 0;
+    if (!raf) fig().style.transform = '';
+  }
+  const run = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  addEventListener('pointermove', (e) => {
+    if (!on || e.pointerType !== 'mouse') return;
+    // measured from the middle of the picture: the mouse over its centre leaves it flat
+    const r = $('detailImg').getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    tx = clamp((e.clientX - cx) / (innerWidth / 2));
+    ty = clamp((e.clientY - cy) / (innerHeight / 2));
+    run();
+  }, { passive: true });
+  document.addEventListener('mouseleave', () => { tx = ty = 0; });
+  addEventListener('deviceorientation', (e) => {
+    if (!on || fine.matches || e.beta == null) return;
+    // the screen may be turned: map the device's axes onto the screen's
+    const a = ((typeof window.orientation === 'number' ? window.orientation : screen.orientation?.angle) || 0) % 360; // iOS: window.orientation is the reliable one
+    let lr = e.gamma, fb = e.beta;
+    if (a === 90) [lr, fb] = [e.beta, -e.gamma];
+    else if (a === 270 || a === -90) [lr, fb] = [-e.beta, e.gamma];
+    else if (a === 180) [lr, fb] = [-e.gamma, -e.beta];
+    if (g0 == null) { g0 = lr; b0 = fb; }
+    // the resting angle slowly follows the hand, so however the phone is held, it returns to flat
+    g0 += (lr - g0) * 0.01; b0 += (fb - b0) * 0.01;
+    tx = clamp((lr - g0) / 25);
+    ty = clamp((fb - b0) / 25);
+    run();
+  });
+  return {
+    // called from the tap that opens a work: iOS asks for the gyroscope only inside a user gesture
+    start() {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      on = true; g0 = b0 = null;
+      const D = window.DeviceOrientationEvent;
+      if (fine.matches || !D || typeof D.requestPermission !== 'function' || asked) return;
+      const ask = () => D.requestPermission().then((r) => { asked = r === 'granted'; }).catch(() => {});
+      ask();
+      // opened from a link, not a tap: iOS refuses, so ask again at the next touch
+      addEventListener('touchend', () => { if (on && !asked) ask(); }, { once: true });
+    },
+    // flat at once: the picture flies back from where it lies
+    stop() { on = false; tx = ty = x = y = 0; cancelAnimationFrame(raf); raf = 0; fig().style.transform = ''; },
+  };
+})();
 // one picture flying between two places, above everything
 function flyPicture(src, from, to) {
   const el = document.createElement('div');
@@ -772,6 +845,7 @@ function openDetail(work, { push = true, dir = 0 } = {}) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const from = !swap && !reduced ? sourceRect(work) : null;
   openWork = work;
+  tilt.start();
   sound.click();
   fillDetail(work);
   fillCount();
@@ -817,6 +891,7 @@ function closeDetail({ fromPop = false } = {}) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // the view behind takes up the work the page ended on
   if (view === 'surf' && app.gallery.featuredWork() !== work) app.gallery.show(work, { animate: false });
+  tilt.stop();
   const imgRect = $('detailImg').getBoundingClientRect();
   const back = view === 'surf' ? app.gallery.featuredRect() : sourceRect(work);
   const done = () => {
