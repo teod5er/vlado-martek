@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Vlado Martek</title>
   <meta name="description" content="Vlado Martek — pjesnik i umjetnik. Odabrani radovi: vizualna poezija, akcije, knjige, kiparstvo, tekstovi." />
-  <meta name="theme-color" content="#FA0203" />
+  <meta name="theme-color" content="#E63323" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <meta property="og:type" content="website" />
@@ -42,7 +42,14 @@
   <button type="button" class="switch-opt view-btn" data-view="list" id="viewList" aria-pressed="false" aria-label="Popis"><svg class="icon view-icon" viewBox="0 0 12 12" aria-hidden="true"><rect x="1" y="1" width="10" height="2.33"/><rect x="1" y="4.83" width="10" height="2.33"/><rect x="1" y="8.67" width="10" height="2.33"/></svg></button></nav>
 
   <div class="lang about-link blurrable" id="langBox"><button class="top-link" id="eventsLink" type="button">Događanja</button></div>
-  <div class="prefs blurrable" id="prefBox"><button id="langToggle" type="button" aria-label="English"><span class="lang-code" id="langCode">HR</span></button><button id="soundToggle" type="button" aria-pressed="true" aria-label="Zvuk"><svg class="icon" viewBox="0 0 12 12" aria-hidden="true"><mask id="soundCut"><rect width="12" height="12" fill="#fff"/><path d="M1.5 1.5l9 9" stroke="#000" stroke-width="4"/></mask><path class="s spk" d="M2.25 4.6h2.6l4.15-3.1v9L4.85 7.4h-2.6z"/><path class="s sound-off" d="M1.5 1.5l9 9"/></svg></button></div>
+  <div class="prefs blurrable" id="prefBox"><button id="langToggle" type="button" aria-label="English"><span class="lang-code" id="langCode">HR</span></button><button id="soundToggle" type="button" aria-pressed="true" aria-label="Zvuk"><svg class="icon" viewBox="0 0 12 12" aria-hidden="true"><mask id="soundCut"><rect width="12" height="12" fill="#fff"/><path d="M1.5 1.5l9 9" stroke="#000" stroke-width="4"/></mask><path class="spk" d="M1.5 4h3.25l4.5-3.25v10.5L4.75 8H1.5z"/><path class="s sound-off" d="M1.5 1.5l9 9"/></svg></button></div>
+
+  <!-- a phone: the word Menu top right (the view icons beside it) opens the media, language and sound -->
+  <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="mnav"><span id="burgerText">Izbornik</span></button>
+  <nav class="mnav" id="mnav" aria-label="Izbornik" hidden>
+    <ul class="mnav-cats" id="mnavCats"></ul>
+    <div class="mnav-group" id="mnavPrefs"></div>
+  </nav>
 
   <p class="hover-title" id="hoverTitle" aria-live="polite"></p>
 
@@ -64,10 +71,11 @@
   <button class="label label-last blurrable" id="labelLast" type="button"><span class="label-text" id="labelLastText">Martek</span></button>
 
   <section class="overlay info" id="info" role="dialog" aria-modal="true" aria-label="O umjetniku" tabindex="-1" hidden>
+    <div class="detail-bar info-bar" id="infoBar"><button class="crumb-home" type="button" id="iHome">Početna</button><span class="crumb-sep" aria-hidden="true">/</span><span class="crumb-here" id="iHere">O autoru</span><button class="crumb-x" type="button" id="iClose" aria-label="Zatvori"><svg class="icon" viewBox="0 0 12 12" aria-hidden="true"><path class="s" d="M1.75 1.75l8.5 8.5M10.25 1.75l-8.5 8.5"/></svg></button></div>
     <div class="info-inner">
       <div class="info-col">
+        <p class="info-lead" id="infoLead"></p>
         <div class="info-body" id="infoBody"></div>
-        <figure class="info-photo" id="infoPhoto"><span id="infoPhotoLabel">Fotografija</span></figure>
         <a class="info-mail" id="infoMail" href="#"></a>
       </div>
     </div>
@@ -85,12 +93,6 @@
     <div class="detail-bar" id="detailBar">
       <button class="crumb-home" type="button" id="dHome">Početna</button><span class="crumb-sep" aria-hidden="true">/</span><button class="crumb-cat" type="button" id="dCat"></button><span class="crumb-sep dt" aria-hidden="true">/</span><span class="crumb-here dt detail-navtitle" id="detailNavTitle"></span><button class="crumb-x" type="button" id="detailClose" aria-label="Zatvori rad"><svg class="icon" viewBox="0 0 12 12" aria-hidden="true"><path class="s" d="M1.75 1.75l8.5 8.5M10.25 1.75l-8.5 8.5"/></svg></button>
     </div>
-    <nav class="detail-steps" aria-label="Radovi">
-      <button type="button" id="detailPrev" aria-label="Prethodni rad"><svg class="icon" viewBox="0 0 12 12" aria-hidden="true"><path class="s" d="M8 1.75L3.75 6 8 10.25"/></svg></button>
-      <span class="detail-count" id="detailCount"><span id="countNow"></span> <span class="count-all" id="countAll"></span></span>
-      <button type="button" id="detailNext" aria-label="Sljedeći rad"><svg class="icon" viewBox="0 0 12 12" aria-hidden="true"><path class="s" d="M4 1.75L8.25 6 4 10.25"/></svg></button>
-    </nav>
-    <div class="detail-names" id="detailNames" aria-hidden="true"><span class="foot-first">Vlado</span><span class="foot-last">Martek</span></div>
     <div class="detail-scroll" id="detailScroll">
       <div class="detail-hero">
         <figure class="detail-figure" id="detailFigure"><img id="detailImg" alt="" decoding="async"></figure>
@@ -98,17 +100,24 @@
           <h2 class="detail-title" id="detailTitle"></h2>
           <p class="detail-year" id="detailYear"></p>
         </header>
+        <nav class="detail-steps" aria-label="Radovi">
+          <button type="button" id="detailPrev" aria-label="Prethodni rad"><svg class="icon" viewBox="0 0 12 12" aria-hidden="true"><path class="s" d="M8 1.75L3.75 6 8 10.25"/></svg></button>
+          <span class="detail-count" id="detailCount"><span id="countNow"></span> <span class="count-all" id="countAll"></span></span>
+          <button type="button" id="detailNext" aria-label="Sljedeći rad"><svg class="icon" viewBox="0 0 12 12" aria-hidden="true"><path class="s" d="M4 1.75L8.25 6 4 10.25"/></svg></button>
+        </nav>
       </div>
       <article class="detail-panel" id="detailPanel">
         <p class="detail-desc" id="detailDesc"></p>
         <table class="detail-facts" id="detailFacts"></table>
         <div class="detail-strip" id="detailStrip"></div>
+        <section class="detail-more" id="detailMore" hidden>
+          <ol class="index-grid detail-more-grid" id="detailMoreGrid"></ol>
+        </section>
         <section class="detail-links" id="detailLinksBox">
           <h3 class="detail-links-title" id="detailLinksTitle">Pročitaj više</h3>
           <ul class="detail-links-list" id="detailLinks"></ul>
         </section>
       </article>
-      <footer class="detail-end" id="detailEnd"></footer>
     </div>
   </section>
 

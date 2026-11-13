@@ -3,6 +3,10 @@
     "first": "Vlado",
     "last": "Martek",
     "photo": "img/martek-1.jpg",
+    "lead": {
+      "hr": "Vlado Martek (Zagreb, 1951.) je umjetnik i pjesnik.",
+      "en": "Vlado Martek (Zagreb, 1951) is an artist and poet."
+    },
     "bio": {
       "hr": [
         "Vlado Martek, pjesnik, predpjesnik, 10% umjetnik. Hoda s Poezijom od 1966. (s Predpoezijom od 1978. godine). Prema mandatu: kvantni svaštar u Jugoistočnoj Europi. Sonetski rečeno:"
@@ -47,7 +51,7 @@
         "conceptualism"
       ]
     ],
-    "email": "info@example.com"
+    "email": "vlado.martek@gmail.com"
   },
   "cursors": [
     {
@@ -109,22 +113,16 @@
   ],
   "categories": [
     {
-      "id": "poetry",
-      "label": "Poezija",
-      "label_en": "Poetry",
-      "viewer": "sheet"
-    },
-    {
       "id": "books",
       "label": "Knjige",
       "label_en": "Books",
       "viewer": "book"
     },
     {
-      "id": "sculpture",
-      "label": "Kiparstvo",
-      "label_en": "Sculpture",
-      "viewer": "sculpture"
+      "viewer": "sheet",
+      "id": "samizdat",
+      "label": "Samizdat",
+      "label_en": "Self-publishing"
     },
     {
       "id": "painting",
@@ -145,18 +143,32 @@
       "viewer": "sheet"
     },
     {
+      "viewer": "sheet",
+      "id": "slogans",
+      "label": "Parole, slogani",
+      "label_en": "Slogans"
+    },
+    {
       "id": "photography",
-      "label": "Fotografija",
-      "label_en": "Photography",
+      "label": "Fotografije",
+      "label_en": "Photographs",
+      "viewer": "sheet"
+    },
+    {
+      "id": "americas",
+      "label": "Amerike",
+      "label_en": "Americas",
       "viewer": "sheet"
     }
   ],
   "works": [
     {
       "id": "imajte-me",
-      "title": "Imajte me: predpoezija – poezija – postpoezija",
-      "year": "1995",
-      "category": "books",
+      "title": "Imajte me",
+      "year": "1995.",
+      "categories": [
+        "books"
+      ],
       "image": "works/books/imajte-me.webp",
       "thumb": "works/books/imajte-me-thumb.webp",
       "cutout": true,
@@ -168,44 +180,18 @@
       "medium": "Autorska knjiga",
       "description": "",
       "en": {
-        "title": "Have Me: Pre-Poetry – Poetry – Post-Poetry",
+        "title": "Have Me",
         "medium": "Artist's book",
         "description": ""
       }
     },
     {
-      "id": "citajte-pjesme-majakovskog",
-      "title": "Čitajte pjesme Majakovskog",
-      "year": "1978",
-      "category": "actions",
-      "image": "works/citajte.svg",
-      "aspect": 1.32,
-      "size": 0.62,
-      "width": 42,
-      "height": 32,
-      "medium": "Tuš na papiru",
-      "description": "Privremeni tekst. Agitacija: tipografski poziv na čitanje Majakovskog, napravljen za ulicu, a ne za zid galerije.",
-      "en": {
-        "title": "Read the Poems of Mayakovsky",
-        "medium": "Ink on paper",
-        "description": "Placeholder text. Agitation: a typographic call to read Mayakovsky, made for the street rather than the gallery wall."
-      },
-      "links": [
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        },
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        }
-      ]
-    },
-    {
       "id": "manija-za-sonetima",
       "title": "Manija za sonetima",
-      "year": "2014",
-      "category": "books",
+      "year": "2014.",
+      "categories": [
+        "books"
+      ],
       "image": "works/books/manija-za-sonetima.webp",
       "thumb": "works/books/manija-za-sonetima-thumb.webp",
       "cutout": true,
@@ -223,44 +209,88 @@
       }
     },
     {
-      "id": "les-artistes-aux-armes",
-      "title": "Les artistes aux armes",
-      "year": "2001",
-      "category": "sculpture",
-      "model": "box",
-      "image": "works/kutija-thumb.svg",
-      "textures": {
-        "front": "works/kutija-front.svg",
-        "side": "works/kutija-side.svg",
-        "inner": "works/kutija-inner.svg"
-      },
-      "aspect": 0.92,
-      "size": 1.0,
-      "width": 30,
-      "height": 24,
-      "medium": "Kartonska kutija, papir",
-      "description": "Privremeni tekst. Pronađena kartonska kutija pretvorena u objekt-pjesmu, s preklopima otvorenima poput pozornice.",
+      "id": "forte",
+      "title": "Forte",
+      "year": "2018.",
+      "categories": [
+        "photography"
+      ],
+      "image": "works/photography/forte.webp",
+      "thumb": "works/photography/forte-thumb.webp",
+      "cutout": true,
+      "aspect": 1.0108,
+      "medium": "",
+      "description": "",
       "en": {
-        "title": "Les artistes aux armes",
-        "medium": "Cardboard box, paper",
-        "description": "Placeholder text. A found cardboard box turned into an object-poem, its flaps open like a stage."
-      },
-      "links": [
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        },
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        }
-      ]
+        "title": "Forte",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "snimaj",
+      "title": "Snimaj",
+      "year": "2016.",
+      "categories": [
+        "photography"
+      ],
+      "image": "works/photography/snimaj.webp",
+      "thumb": "works/photography/snimaj-thumb.webp",
+      "cutout": true,
+      "aspect": 1.0328,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Shoot",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "jednorog",
+      "title": "Jednorog",
+      "year": "2016.",
+      "categories": [
+        "photography"
+      ],
+      "image": "works/photography/jednorog.webp",
+      "thumb": "works/photography/jednorog-thumb.webp",
+      "cutout": true,
+      "aspect": 0.7452,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Unicorn",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "mama",
+      "title": "Mama",
+      "year": "2019.",
+      "categories": [
+        "photography"
+      ],
+      "image": "works/photography/mama.webp",
+      "thumb": "works/photography/mama-thumb.webp",
+      "cutout": true,
+      "aspect": 0.9204,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Mum",
+        "medium": "",
+        "description": ""
+      }
     },
     {
       "id": "konceptualisticka-poezija",
-      "title": "Konceptualistička poezija (1975–1983)",
-      "year": "2010",
-      "category": "books",
+      "title": "Konceptualistička poezija (1975–1983.)",
+      "year": "2010.",
+      "categories": [
+        "books"
+      ],
       "image": "works/books/konceptualisticka-poezija.webp",
       "thumb": "works/books/konceptualisticka-poezija-thumb.webp",
       "cutout": true,
@@ -272,44 +302,18 @@
       "medium": "Autorska knjiga",
       "description": "",
       "en": {
-        "title": "Conceptualist Poetry (1975–1983)",
+        "title": "Conceptualist Poetry (1975–1983.)",
         "medium": "Artist's book",
         "description": ""
       }
     },
     {
-      "id": "karta-poezije",
-      "title": "Karta poezije",
-      "year": "1979",
-      "category": "poetry",
-      "image": "works/crvena-karta.svg",
-      "aspect": 0.89,
-      "size": 0.85,
-      "width": 40,
-      "height": 45,
-      "medium": "Sprej na papiru",
-      "description": "Privremeni tekst. Crveni teritorij na crnome: karta zemlje sazdane samo od poezije.",
-      "en": {
-        "title": "Map of Poetry",
-        "medium": "Spray paint on paper",
-        "description": "Placeholder text. A red territory on black: the map of a country made only of poetry."
-      },
-      "links": [
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        },
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        }
-      ]
-    },
-    {
       "id": "poeziju-treba-jebati",
       "title": "Poeziju treba jebati",
-      "year": "",
-      "category": "books",
+      "year": "1983.",
+      "categories": [
+        "books"
+      ],
       "image": "works/books/poeziju-treba-jebati.webp",
       "thumb": "works/books/poeziju-treba-jebati-thumb.webp",
       "cutout": true,
@@ -327,38 +331,12 @@
       }
     },
     {
-      "id": "tisina-je-rijec",
-      "title": "Tišina je riječ",
-      "year": "1983",
-      "category": "poetry",
-      "image": "works/zeleno.svg",
-      "aspect": 0.78,
-      "size": 0.55,
-      "width": 35,
-      "height": 45,
-      "medium": "Akril na papiru",
-      "description": "Privremeni tekst. Tri riječi na zelenom polju, napisane dovoljno sporo da se čuju.",
-      "en": {
-        "title": "Silence Is a Word",
-        "medium": "Acrylic on paper",
-        "description": "Placeholder text. Three words on a green field, written slowly enough to be heard."
-      },
-      "links": [
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        },
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        }
-      ]
-    },
-    {
       "id": "dobra-knjiga-losa-knjiga",
       "title": "Dobra knjiga, loša knjiga",
-      "year": "1981",
-      "category": "books",
+      "year": "1981.",
+      "categories": [
+        "books"
+      ],
       "image": "works/books/dobra-knjiga-losa-knjiga.webp",
       "thumb": "works/books/dobra-knjiga-losa-knjiga-thumb.webp",
       "cutout": true,
@@ -376,39 +354,12 @@
       }
     },
     {
-      "id": "rijec-po-rijec",
-      "title": "Riječ po riječ",
-      "year": "1986",
-      "category": "sculpture",
-      "model": "accordion",
-      "image": "works/harmonika.svg",
-      "aspect": 2.4,
-      "size": 0.5,
-      "width": 120,
-      "height": 50,
-      "medium": "Presavijeni papir",
-      "description": "Privremeni tekst. Presavijeni leporelo: rečenica koja se može pročitati tek kad se razmota.",
-      "en": {
-        "title": "Word by Word",
-        "medium": "Folded paper",
-        "description": "Placeholder text. A folded leporello: a sentence that can only be read once it is unfolded."
-      },
-      "links": [
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        },
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        }
-      ]
-    },
-    {
       "id": "knjige-poezije",
       "title": "Knjige poezije",
-      "year": "2015/16",
-      "category": "books",
+      "year": "2015./16.",
+      "categories": [
+        "photography"
+      ],
       "image": "works/books/knjige-poezije.webp",
       "thumb": "works/books/knjige-poezije-thumb.webp",
       "cutout": true,
@@ -426,38 +377,12 @@
       }
     },
     {
-      "id": "pjesnik-nije-tu",
-      "title": "Pjesnik nije tu",
-      "year": "1981",
-      "category": "photography",
-      "image": "works/pjesnik.svg",
-      "aspect": 1.0,
-      "size": 0.75,
-      "width": 50,
-      "height": 50,
-      "medium": "Tuš i tempera na papiru",
-      "description": "Privremeni tekst. Crveni krug oko odsutnosti: pjesnik je napustio pjesmu.",
-      "en": {
-        "title": "The Poet Is Not Here",
-        "medium": "Ink and tempera on paper",
-        "description": "Placeholder text. A red circle around an absence: the poet has left the poem."
-      },
-      "links": [
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        },
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        }
-      ]
-    },
-    {
       "id": "pazi-ostri-tekstovi",
       "title": "Pazi, oštri tekstovi",
-      "year": "2004",
-      "category": "books",
+      "year": "2005.",
+      "categories": [
+        "books"
+      ],
       "image": "works/books/pazi-ostri-tekstovi.webp",
       "thumb": "works/books/pazi-ostri-tekstovi-thumb.webp",
       "cutout": true,
@@ -475,40 +400,13 @@
       }
     },
     {
-      "id": "zvijezda",
-      "title": "Zvijezda",
-      "year": "1990",
-      "category": "sculpture",
-      "model": "star",
-      "image": "works/zvijezda.svg",
-      "color": "#E63323",
-      "aspect": 1.0,
-      "size": 0.6,
-      "width": 30,
-      "height": 30,
-      "medium": "Presavijeni papir",
-      "description": "Privremeni tekst. Presavijena papirnata zvijezda, politički simbol sveden na krhak predmet.",
-      "en": {
-        "title": "Star",
-        "medium": "Folded paper",
-        "description": "Placeholder text. A folded paper star, a political symbol reduced to a fragile object."
-      },
-      "links": [
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        },
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        }
-      ]
-    },
-    {
       "id": "volim-citati-poeziju",
       "title": "Volim čitati poeziju – Sram me je što još moram pisati pjesme",
-      "year": "2001",
-      "category": "books",
+      "year": "2001.",
+      "categories": [
+        "books",
+        "photography"
+      ],
       "image": "works/books/volim-citati-poeziju.webp",
       "thumb": "works/books/volim-citati-poeziju-thumb.webp",
       "cutout": true,
@@ -526,38 +424,89 @@
       }
     },
     {
-      "id": "olovka-je-oruzje",
-      "title": "Olovka je oružje",
-      "year": "1982",
-      "category": "painting",
-      "image": "works/olovka.svg",
-      "aspect": 1.92,
-      "size": 0.5,
-      "width": 70,
-      "height": 36,
-      "medium": "Kolaž na papiru",
-      "description": "Privremeni tekst. Olovka kao oružje predpjesnika.",
+      "id": "vi-citajte-pjesme-rimbauda",
+      "title": "Vi čitajte pjesme Rimbauda",
+      "year": "2026.",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/vi-citajte-pjesme-rimbauda.webp",
+      "thumb": "works/painting/vi-citajte-pjesme-rimbauda-thumb.webp",
+      "cutout": true,
+      "aspect": 1.2834,
+      "medium": "",
+      "description": "",
       "en": {
-        "title": "The Pencil Is a Weapon",
-        "medium": "Collage on paper",
-        "description": "Placeholder text. The pencil as the pre-poet's weapon."
-      },
-      "links": [
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        },
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        }
-      ]
+        "title": "You Read Rimbaud's Poems",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "idealiziram-granicu-izmedu-umjetnosti-i-zivota",
+      "title": "Idealiziram",
+      "year": "2010.",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/idealiziram-granicu-izmedu-umjetnosti-i-zivota.webp",
+      "thumb": "works/painting/idealiziram-granicu-izmedu-umjetnosti-i-zivota-thumb.webp",
+      "cutout": true,
+      "aspect": 1.43,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "I Idealise",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "adolescenti",
+      "title": "Adolescenti",
+      "year": "2008.",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/adolescenti.webp",
+      "thumb": "works/painting/adolescenti-thumb.webp",
+      "cutout": true,
+      "aspect": 1.1329,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Adolescents",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "pseudorimbaud",
+      "title": "Pseudorimbaud",
+      "year": "2010.",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/pseudorimbaud.webp",
+      "thumb": "works/painting/pseudorimbaud-thumb.webp",
+      "cutout": true,
+      "aspect": 1.2436,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Pseudo-Rimbaud",
+        "medium": "",
+        "description": ""
+      }
     },
     {
       "id": "the-manners-of-the-nomad",
-      "title": "The Manners of the Nomad",
-      "year": "1995",
-      "category": "books",
+      "title": "The manners of the nomad",
+      "year": "1995.",
+      "categories": [
+        "samizdat",
+        "books"
+      ],
       "image": "works/books/the-manners-of-the-nomad.webp",
       "thumb": "works/books/the-manners-of-the-nomad-thumb.webp",
       "cutout": true,
@@ -575,38 +524,33 @@
       }
     },
     {
-      "id": "poezija",
-      "title": "Poezija",
-      "year": "1977",
-      "category": "actions",
-      "image": "works/zastava.svg",
-      "aspect": 1.45,
-      "size": 0.68,
-      "width": 58,
-      "height": 40,
-      "medium": "Sitotisak",
-      "description": "Privremeni tekst. Zastava za naciju čitatelja.",
+      "id": "breton",
+      "title": "Postavljanje antispomenika Andre Bretonu",
+      "year": "1987.",
+      "categories": [
+        "actions",
+        "photography"
+      ],
+      "image": "works/actions/breton.webp",
+      "thumb": "works/actions/breton-thumb.webp",
+      "cutout": true,
+      "aspect": 1.357,
+      "medium": "",
+      "description": "",
       "en": {
-        "title": "Poetry",
-        "medium": "Screen print",
-        "description": "Placeholder text. A flag for a nation of readers."
-      },
-      "links": [
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        },
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        }
-      ]
+        "title": "Erecting an Anti-Monument to André Breton",
+        "medium": "",
+        "description": ""
+      }
     },
     {
       "id": "na-umjetnicima-svijet-ostaje",
       "title": "Na umjetnicima svijet ostaje",
-      "year": "2023",
-      "category": "books",
+      "year": "2023.",
+      "categories": [
+        "samizdat",
+        "books"
+      ],
       "image": "works/books/na-umjetnicima-svijet-ostaje.webp",
       "thumb": "works/books/na-umjetnicima-svijet-ostaje-thumb.webp",
       "cutout": true,
@@ -624,38 +568,107 @@
       }
     },
     {
-      "id": "citaj-mallarmea",
-      "title": "Čitaj Mallarméa",
-      "year": "1985",
-      "category": "texts",
-      "image": "works/mallarme.svg",
-      "aspect": 0.75,
-      "size": 0.95,
-      "width": 36,
-      "height": 48,
-      "medium": "Tuš i olovka na papiru",
-      "description": "Privremeni tekst. Uputa ispisana preko polja škrabotina.",
+      "id": "write-its-name",
+      "title": "Write its Name on Each Thing You Possess or Buy",
+      "year": "1979./2009.",
+      "categories": [
+        "texts",
+        "actions"
+      ],
+      "image": "works/texts/write-its-name.webp",
+      "thumb": "works/texts/write-its-name-thumb.webp",
+      "aspect": 1.4368,
+      "medium": "",
+      "description": "",
       "en": {
-        "title": "Read Mallarmé",
-        "medium": "Ink and pencil on paper",
-        "description": "Placeholder text. An instruction written over a field of scribbles."
-      },
-      "links": [
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        },
-        {
-          "label": "somelink.com/vlado-martek",
-          "url": "https://example.com/vlado-martek"
-        }
-      ]
+        "title": "Write its Name on Each Thing You Possess or Buy",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "citajte-pjesme-rimbauda",
+      "title": "Čitajte pjesme Rimbauda",
+      "year": "1978.",
+      "categories": [
+        "texts",
+        "actions"
+      ],
+      "image": "works/texts/citajte-pjesme-rimbauda.webp",
+      "thumb": "works/texts/citajte-pjesme-rimbauda-thumb.webp",
+      "aspect": 1.3992,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Read Rimbaud's Poems",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "citajte-pjesme-majakovskog",
+      "title": "Čitajte pjesme Majakovskog",
+      "year": "1978.",
+      "categories": [
+        "texts",
+        "actions"
+      ],
+      "image": "works/texts/citajte-pjesme-majakovskog.webp",
+      "thumb": "works/texts/citajte-pjesme-majakovskog-thumb.webp",
+      "aspect": 1.4188,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Read the Poems of Mayakovsky",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "read-larkins-poems",
+      "title": "Read Larkin’s Poems",
+      "year": "2015.",
+      "categories": [
+        "texts",
+        "actions"
+      ],
+      "image": "works/texts/read-larkins-poems.webp",
+      "thumb": "works/texts/read-larkins-poems-thumb.webp",
+      "aspect": 1.4142,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Read Larkin’s Poems",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "drzavo-unakazit-cu-te-artom",
+      "title": "Državo unakazit ću te artom",
+      "year": "1999.",
+      "categories": [
+        "texts",
+        "actions"
+      ],
+      "image": "works/texts/drzavo-unakazit-cu-te-artom.webp",
+      "thumb": "works/texts/drzavo-unakazit-cu-te-artom-thumb.webp",
+      "aspect": 1.3029,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "State, I Will Disfigure You with Art",
+        "medium": "",
+        "description": ""
+      }
     },
     {
       "id": "pre-poetry",
-      "title": "Pre-Poetry",
-      "year": "2026",
-      "category": "books",
+      "title": "Pre-poetry",
+      "year": "2026.",
+      "categories": [
+        "books"
+      ],
       "image": "works/books/manija-za-sonetima-1.webp",
       "thumb": "works/books/manija-za-sonetima-1-thumb.webp",
       "cutout": true,
@@ -667,8 +680,315 @@
       "medium": "Knjiga",
       "description": "",
       "en": {
-        "title": "Pre-Poetry",
+        "title": "Pre-poetry",
         "medium": "Book",
+        "description": ""
+      }
+    },
+    {
+      "id": "menti-lo-stato",
+      "title": "Menti lo stato",
+      "year": "",
+      "categories": [
+        "photography"
+      ],
+      "image": "works/photography/menti-lo-stato.webp",
+      "thumb": "works/photography/menti-lo-stato-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3594,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Menti lo stato",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "pazi-ostar-pjesnik",
+      "title": "Pazi oštar pjesnik",
+      "year": "1978./1997.",
+      "categories": [
+        "actions",
+        "photography"
+      ],
+      "image": "works/photography/pazi-ostar-pjesnik.webp",
+      "thumb": "works/photography/pazi-ostar-pjesnik-thumb.webp",
+      "cutout": true,
+      "aspect": 0.7195,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Beware, Sharp Poet",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "sto-je-umjetnost-prema-ovom-bicu",
+      "title": "Što je umjetnost prema ovom biću",
+      "year": "1978.",
+      "categories": [
+        "actions",
+        "photography"
+      ],
+      "image": "works/photography/sto-je-umjetnost-prema-ovom-bicu.webp",
+      "thumb": "works/photography/sto-je-umjetnost-prema-ovom-bicu-thumb.webp",
+      "cutout": true,
+      "aspect": 1.4283,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "What Is Art Compared to This Being",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "umjetnik-artifex",
+      "title": "Umjetnik artifex",
+      "year": "1999.",
+      "categories": [
+        "photography"
+      ],
+      "image": "works/photography/umjetnik-artifex.webp",
+      "thumb": "works/photography/umjetnik-artifex-thumb.webp",
+      "cutout": true,
+      "aspect": 0.7221,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Artist Artifex",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "ame-rika",
+      "title": "Ame_rika",
+      "year": "2003.",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/ame-rika.webp",
+      "thumb": "works/painting/ame-rika-thumb.webp",
+      "cutout": true,
+      "aspect": 0.711,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Ame_rica",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "balkan",
+      "title": "Balkan",
+      "year": "2014.",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/balkan.webp",
+      "thumb": "works/painting/balkan-thumb.webp",
+      "cutout": true,
+      "aspect": 1.2862,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Balkan",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "dobrota",
+      "title": "Dobrota",
+      "year": "1990.",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/dobrota.webp",
+      "thumb": "works/painting/dobrota-thumb.webp",
+      "cutout": true,
+      "aspect": 0.7585,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Kindness",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "kucice",
+      "title": "Kućice",
+      "year": "1976.",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/kucice.webp",
+      "thumb": "works/painting/kucice-thumb.webp",
+      "cutout": true,
+      "aspect": 1.2755,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Little Houses",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "ljubav-odgovornost",
+      "title": "Ljubav, odgovornost",
+      "year": "2014.",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/ljubav-odgovornost.webp",
+      "thumb": "works/painting/ljubav-odgovornost-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3369,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Love, Responsibility",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "muzej-suvremene-umjetnosti",
+      "title": "Muzej suvremene umjetnosti",
+      "year": "",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/muzej-suvremene-umjetnosti.webp",
+      "thumb": "works/painting/muzej-suvremene-umjetnosti-thumb.webp",
+      "cutout": true,
+      "aspect": 1.385,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Museum of Contemporary Art",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "shakespeare",
+      "title": "Shakespeare",
+      "year": "2002.",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/shakespeare.webp",
+      "thumb": "works/painting/shakespeare-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3495,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Shakespeare",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "starost",
+      "title": "Starost",
+      "year": "2002.",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/starost.webp",
+      "thumb": "works/painting/starost-thumb.webp",
+      "cutout": true,
+      "aspect": 1.6353,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Old Age",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "trziste",
+      "title": "Tržište",
+      "year": "2005.",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/trziste.webp",
+      "thumb": "works/painting/trziste-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3055,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "The Market",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "zvijezde",
+      "title": "Zvijezde",
+      "year": "1989.",
+      "categories": [
+        "painting"
+      ],
+      "image": "works/painting/zvijezde.webp",
+      "thumb": "works/painting/zvijezde-thumb.webp",
+      "cutout": true,
+      "aspect": 1.4472,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Stars",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "efke",
+      "title": "Efke",
+      "year": "2016.",
+      "categories": [
+        "photography"
+      ],
+      "image": "works/photography/efke.webp",
+      "thumb": "works/photography/efke-thumb.webp",
+      "cutout": true,
+      "aspect": 0.6215,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Efke",
+        "medium": "",
+        "description": ""
+      }
+    },
+    {
+      "id": "les-artistes-aux-armes",
+      "title": "Les artistes - aux armes",
+      "year": "1982.",
+      "categories": [
+        "texts",
+        "actions"
+      ],
+      "image": "works/texts/lesartistes-auxarmes.webp",
+      "thumb": "works/texts/lesartistes-auxarmes-thumb.webp",
+      "aspect": 2.2173,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Les artistes - aux armes",
+        "medium": "",
         "description": ""
       }
     }
@@ -690,7 +1010,8 @@
       "place": "Zagreb",
       "en": {
         "place": "Zagreb"
-      }
+      },
+      "url": "https://www.kgz.hr/hr/dogadjanja/vlado-martek-every-artist-is-deluded-by-america/75632"
     }
   ]
 }

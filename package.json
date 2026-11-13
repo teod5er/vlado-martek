@@ -7,7 +7,6 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview --host",
-    "placeholders": "node scripts/make-placeholders.mjs",
     "build:offline": "node scripts/build-offline.mjs"
   },
   "devDependencies": {

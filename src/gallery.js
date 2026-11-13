@@ -26,8 +26,19 @@ export function bezier(x1, y1, x2, y2) {
     return c(y1, y2, t);
   };
 }
+// every movement is a little jerky, like the names after the splash: the curve is kept, but time
+// moves in hard steps (16 a second, the names' own rate: 8 in half a second)
+export const STEP_RATE = 16;
+const quant = (x, n) => (x >= 1 ? 1 : Math.floor(Math.max(0, x) * n) / n);
+export const stepped = (ease, ms) => { const n = Math.max(2, Math.round(ms / 1000 * STEP_RATE)); return (x) => ease(quant(x, n)); };
+// the same staircase as a CSS easing, for the Web Animations API
+export function steppedCss(x1, y1, x2, y2, ms) {
+  const e = bezier(x1, y1, x2, y2), n = Math.max(2, Math.round(ms / 1000 * STEP_RATE)), pts = [];
+  for (let i = 0; i < n; i++) { const v = +e(i / n).toFixed(4); pts.push(`${v} ${(i / n * 100).toFixed(3)}%`, `${v} ${((i + 1) / n * 100).toFixed(3)}%`); }
+  return `linear(${pts.join(', ')}, 1 100%)`;
+}
 export const OPEN_EASE = 'cubic-bezier(.65, 0, .2, 1)';
-const openEase = bezier(0.65, 0, 0.2, 1);
+const openEase = stepped(bezier(0.65, 0, 0.2, 1), OPEN_MS);
 
 
 
@@ -68,14 +79,16 @@ export class Gallery {
     // the page's 12-column grid (as in style.css): margins and gutters of --pad
     const pad = Math.min(22, Math.max(10, vw * 0.011)), gut = pad;
     const colg = (vw - pad * 2 - gut * 11) / 12 + gut; // a column and its gutter
-    const cs = phone ? vw * 0.14 : pad + colg * 3;      // the featured work stands on column 4
+    // a phone has its own 6-column grid (as in style.css): the featured work stands on column 3
+    const pcolg = (vw - 20 - 50) / 6 + 10;
+    const cs = phone ? 10 + pcolg * 2 : pad + colg * 3; // the featured work stands on column 4
     return {
       vw, vh, phone, cs,
-      h0: phone ? vh * 0.4 : vh * 0.47,                // featured height
-      maxW: phone ? vw * 0.76 : colg * 6 - gut,        // featured width cap: columns 4–9
-      step: phone ? vw * 0.11 : colg,                  // deck: each work one column further right
+      h0: phone ? vh * 0.42 : vh * 0.47,               // featured height
+      maxW: phone ? pcolg * 3 - 10 : colg * 6 - gut,   // featured width cap: columns 3–5 (phone), 4–9
+      step: phone ? pcolg * 0.5 : colg,                // deck: each work a step further right
       shrink: 0.06,                                    // ... and this much smaller
-      gap: phone ? vw * 0.04 : colg + gut,             // the work on the left ends at the end of column 2
+      gap: phone ? 20 : colg + gut,                    // the work on the left ends before the featured one
       left: 0.7,                                       // size of the work on the left
       yc: vh * 0.5,
       yc1: vh * (phone ? 0.46 : 0.45),                 // a work open: everything moves up a little
@@ -153,7 +166,7 @@ export class Gallery {
     const el = document.createElement('figure');
     el.className = 'work' + (work.cutout ? ' is-cutout' : '');
     el.setAttribute('role', 'listitem');
-    el.setAttribute('aria-label', `${work.title}, ${work.year}`);
+    el.setAttribute('aria-label', `${work.title} ${work.year || ''}`);
     const img = new Image();
     img.alt = ''; img.decoding = 'async'; img.draggable = false;
     img.src = work.thumb || work.image;
@@ -168,11 +181,6 @@ export class Gallery {
   key(d, aspect, mode) {
     const m = this.m;
     const w0 = Math.min(m.h0 * aspect, m.maxW);
-    if (m.phone && !mode) {
-      // phone: the featured work in the middle, its neighbours peeking in at the edges
-      const s = Math.max(0.55, 1 - 0.18 * Math.abs(d));
-      return { x: m.vw / 2 + d * m.vw * 0.62 - (w0 * s) / 2, s, o: 1 };
-    }
     if (mode) {
       // detail: only the neighbours stay, small, at the edges
       const s = 0.6;
@@ -181,9 +189,12 @@ export class Gallery {
       if (d === 0) return { x: m.phone ? (m.vw - w0 * GROW) / 2 : m.cs, s: GROW, o: 1 };
       return { x: d < 0 ? -w0 * s - 40 - (-d) * 40 : m.vw + 40 + d * 40, s, o: 1 };
     }
-    if (d >= 0) return { x: m.cs + d * m.step, s: Math.max(0.3, 1 - m.shrink * d), o: 1 };
+    const x0 = m.phone ? (m.vw - w0) / 2 : m.cs; // the featured work: on column 4, or in the middle of a phone
+    // a phone: the deck on the right runs out to the screen's edge (its fourth card cut by it)
+    const step = m.phone ? (m.vw - x0 - w0) / 3.5 + m.shrink * w0 : m.step;
+    if (d >= 0) return { x: x0 + d * step, s: Math.max(0.3, 1 - m.shrink * d), o: 1 };
     const s = d === -1 ? m.left : m.left * 0.8;
-    const right = d === -1 ? m.cs - m.gap : m.cs - m.gap * 2 - w0 * m.left * (-1 - d);
+    const right = d === -1 ? x0 - m.gap : x0 - m.gap * 2 - w0 * m.left * (-1 - d);
     return { x: right - w0 * s, s, o: 1 };
   }
   place(d, aspect, mode) {
@@ -286,7 +297,7 @@ export class Gallery {
     const m = this.m;
     if (this.enterAt !== null && now - this.enterAt > 1500) this.enterAt = null;
     const lo = Math.floor(this.p) - 2;
-    const hi = m.phone ? Math.ceil(this.p) + 2 : Math.ceil(this.p) + Math.ceil((m.vw - m.cs) / m.step) + 1;
+    const hi = m.phone ? Math.ceil(this.p) + 5 : Math.ceil(this.p) + Math.ceil((m.vw - m.cs) / m.step) + 1;
     for (const [k, s] of this.slots) if (k < lo || k > hi) { s.el.remove(); this.slots.delete(k); }
     for (let k = lo; k <= hi; k++) {
       const s = this.slot(k);

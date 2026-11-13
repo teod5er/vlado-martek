@@ -1,5 +1,5 @@
 import './style.css';
-import { Gallery, escapeHtml } from './gallery.js';
+import { Gallery, escapeHtml, steppedCss } from './gallery.js';
 import { sound, unlock, isEnabled, setEnabled } from './sound.js';
 
 const $ = (id) => document.getElementById(id);
@@ -19,6 +19,9 @@ function applyLang() {
   for (const w of data.works) {
     w.hr ||= { title: w.title, medium: w.medium, description: w.description };
     Object.assign(w, (lang === 'en' && w.en) ? { ...w.hr, ...w.en } : w.hr);
+    // a full stop after every title and every year (unless the title ends in its own ? or !)
+    if (w.title && !/[.?!…]$/.test(w.title)) w.title += '.';
+    if (w.year) w.year = String(w.year).replace(/(\d+)(?![\d.])/g, '$1.');
   }
   for (const c of data.categories) {
     c.label_hr ||= c.label;
@@ -31,7 +34,9 @@ function applyLang() {
   $('detailPrev').setAttribute('aria-label', lang === 'en' ? 'Previous work' : 'Prethodni rad');
   $('detailNext').setAttribute('aria-label', lang === 'en' ? 'Next work' : 'Sljedeći rad');
   $('detailLinksTitle').textContent = lang === 'en' ? 'Read more' : 'Pročitaj više';
-  $('infoPhotoLabel') && ($('infoPhotoLabel').textContent = L('photo'));
+  $('iHome').textContent = L('all');
+  $('iHere').textContent = lang === 'en' ? 'About' : 'O autoru';
+  $('iClose').setAttribute('aria-label', lang === 'en' ? 'Close' : 'Zatvori');
   $('menuHome').textContent = L('all');
   $('menuClear').setAttribute('aria-label', lang === 'en' ? 'Clear the medium' : 'Ukloni kategoriju');
   updateViewLabel();
@@ -44,18 +49,21 @@ function applyLang() {
   buildEvents();
   if (app.gallery) { buildIndex(); buildList(); }
   if (openWork) fillDetail(openWork);
+  setDocTitle();
 }
 // top-right: the current exhibition, the language and the sound
 const EX_ARROW = '<svg class="icon ex-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="s" d="M6 2.25L9.75 6 6 9.75M9.75 6H1"/></svg>';
 function buildLangMenu() {
   const en = lang === 'en';
-  // the current exhibition, small, in a red frame; it opens the events page
+  // the current exhibition, small, in a red frame; it opens its page (url) or the events page
   const ev = data.events?.[0];
   $('eventsLink').hidden = !ev;
   if (ev) {
     const text = `Exhibition: ${ev.title}`;
     $('eventsLink').innerHTML = `<span class="ex-t">${escapeHtml(text)}</span>${EX_ARROW}`;
   }
+  // a phone: the word Menu bottom right (Close while the menu is open)
+  $('burgerText').textContent = mobileNav() ? (en ? 'Close' : 'Zatvori') : (en ? 'Menu' : 'Izbornik');
   fitTopRight();
   // the globe switches to the other language, the speaker turns sound on / off (struck through when off)
   $('langToggle').setAttribute('aria-label', en ? 'Language: English (switch to Hrvatski)' : 'Jezik: hrvatski (prebaci na English)');
@@ -77,6 +85,7 @@ function fitTopRight() {
   const root = document.documentElement;
   root.style.setProperty('--prefs-w', `${$('prefBox').getBoundingClientRect().width.toFixed(1)}px`); // the view icons and the counter stand left of it
   root.style.setProperty('--right-w', `${Math.ceil(innerWidth - $('views').getBoundingClientRect().left + 16)}px`);
+  root.style.setProperty('--burger-w', `${$('burger').getBoundingClientRect().width.toFixed(1)}px`); // a phone: the view icons stand left of Menu
   root.style.setProperty('--ex-w', `${Math.ceil(innerWidth - $('langBox').getBoundingClientRect().left + 24)}px`);
 }
 addEventListener('resize', () => { if (data) fitTopRight(); });
@@ -94,12 +103,18 @@ function initLangMenu() {
     sound.click(); // only heard when it was just switched on
     buildLangMenu();
   });
-  $('eventsLink').addEventListener('click', () => { if ($('events').hidden) openEvents(); else closeEvents(); });
+  // the exhibition, bottom right: its own page (KGZ) in a new tab when it has one, otherwise the events
+  $('eventsLink').addEventListener('click', () => {
+    const url = data.events?.[0]?.url;
+    if (url) { window.open(url, '_blank', 'noopener'); return; }
+    if ($('events').hidden) openEvents(); else closeEvents();
+  });
 }
 
 // custom pointers from `cursors` in works.json: a random one on every page load,
 // and a different one after every click
 let cursorStyle = null, cursorIdx = -1;
+const CLICKABLE = 'button, a, .work, .index-item, .list-row';
 function setCursor() {
   const list = data.cursors || [];
   if (!list.length || !matchMedia('(pointer: fine)').matches) return;
@@ -110,7 +125,9 @@ function setCursor() {
   const [x, y] = c.hotspot || [0, 0];
   const img = c.src2x ? `image-set(url("${c.src}") 1x, url("${c.src2x}") 2x)` : `url("${c.src}")`;
   if (!cursorStyle) { cursorStyle = document.createElement('style'); document.head.append(cursorStyle); }
-  cursorStyle.textContent = `html, html * { cursor: url("${c.src}") ${x} ${y}, auto !important; cursor: ${img} ${x} ${y}, auto !important; }`;
+  // over anything clickable the ordinary pointer (the hand) takes over
+  cursorStyle.textContent = `html, html * { cursor: url("${c.src}") ${x} ${y}, auto !important; cursor: ${img} ${x} ${y}, auto !important; }
+    :is(${CLICKABLE}), :is(${CLICKABLE}) * { cursor: pointer !important; }`;
 }
 function initCursors() {
   const list = data.cursors || [];
@@ -152,6 +169,7 @@ async function boot() {
   ]);
 
   initMenu();
+  initMobileNav();
   applyLang();
   fitLabels();
 
@@ -166,6 +184,7 @@ async function boot() {
   const fromHash = parseHash();
   if (fromHash.cat && cats.has(fromHash.cat)) currentCat = fromHash.cat;
   visibleWorks = worksFor(currentCat);
+  body.classList.toggle('cat-americas', currentCat === 'americas');
   updateMenu();
 
   gallery.setWorks(visibleWorks);
@@ -186,26 +205,22 @@ async function boot() {
 
 const app = {};
 
-// ---------- intro: VLADO MARTEK types out over the splash, centred on the left and right edges;
-// once the page is loaded both names drop to their corners, then menu + language, then the gallery
+// ---------- intro: VLADO MARTEK stands large in the top-left corner over the splash;
+// once the page is loaded the names shrink into place, then menu + language, then the gallery
 let namesTyped = Promise.resolve();
 function typeNames() {
   const a = $('labelFirst'), b = $('labelLast');
   fitLabels();
-  // where each name stands during the splash: on the vertical middle, Vlado at the left edge and
-  // Martek at the right; from there they glide up into the top-left corner
-  const pad = parseFloat(getComputedStyle(a).paddingTop);
-  for (const el of [a, b]) {
-    const r = el.getBoundingClientRect();
-    el.style.setProperty('--lx', `${el === a ? 0 : innerWidth - pad - r.right}px`);
-    el.style.setProperty('--ly', `${innerHeight / 2 - (r.top + r.bottom) / 2}px`);
-  }
+  // during the splash the names stand in their own corner, top left, a size larger; once the page
+  // is in they shrink into place (the scale is kept small enough to stay on the screen)
+  const w = Math.max(a.offsetWidth, b.offsetWidth);
+  document.documentElement.style.setProperty('--splash-k', Math.min(1.6, (innerWidth * 0.9) / w).toFixed(3));
   body.classList.add('intro-names', 'names-up'); // written at once, no typing
   namesTyped = new Promise((done) => setTimeout(done, 600));
 }
 async function playIntro() {
   await namesTyped;
-  body.classList.remove('names-up'); // the names glide up into the top-left corner
+  body.classList.remove('names-up'); // the names shrink to their own size in the corner
   setTimeout(() => body.classList.add('intro-ui'), 700);
   setTimeout(() => { body.classList.add('intro-gallery'); app.gallery.enter(); }, 1300);
   setTimeout(() => body.classList.remove('intro', 'intro-names', 'intro-ui', 'intro-gallery'), 1900);
@@ -244,7 +259,7 @@ function setView(v) {
 
 // ---------- flights between the gallery and the overview: each work moves to its new place ----------
 // motion: pictures move smoothly over a second; everything else cuts or steps (never fades)
-const FLY_MS = 1000, FLY_EASE = 'cubic-bezier(.6, 0, .15, 1)', FLY_STAGGER = 35;
+const FLY_MS = 1000, FLY_EASE = steppedCss(.6, 0, .15, 1, FLY_MS), FLY_STAGGER = 35; // a little jerky, like the names
 // clones of the pictures move from where they were to where they will be; each pair may have a
 // delay and a callback for when it lands
 function fly(pairs) {
@@ -350,7 +365,7 @@ for (const b of document.querySelectorAll('#views .switch-opt')) b.addEventListe
 // Overview: every work in one grid, five in a row; same width, own height, top-aligned
 function buildIndex({ reveal = false } = {}) {
   $('indexGrid').innerHTML = visibleWorks.map((w, i) => `<li style="--i:${i}">
-      <button type="button" class="index-item" data-id="${escapeHtml(w.id)}" aria-label="${escapeHtml(`${w.title}, ${w.year || ''}`)}">
+      <button type="button" class="index-item" data-id="${escapeHtml(w.id)}" aria-label="${escapeHtml(`${w.title} ${w.year || ''}`)}">
         <img src="${escapeHtml(w.thumb || w.image)}" alt="" loading="lazy" decoding="async">
       </button></li>`).join('');
   if (reveal) revealIndex();
@@ -399,7 +414,7 @@ function buildList({ reveal = false } = {}) {
   const cats = new Map(data.categories.map((c) => [c.id, c.label]));
   $('listRows').innerHTML = visibleWorks.map((w, i) => `<li style="--i:${i}">
       <button type="button" class="list-row" data-id="${escapeHtml(w.id)}">
-        <span class="list-thumb"><img src="${escapeHtml(w.thumb || w.image)}" alt="" loading="lazy" decoding="async"></span><span class="list-title">${escapeHtml(w.title || '')}</span><span class="list-year">${escapeHtml(w.year || '')}</span><span class="list-cat">${escapeHtml(cats.get(w.category) || '')}</span>
+        <span class="list-thumb"><img src="${escapeHtml(w.thumb || w.image)}" alt="" loading="lazy" decoding="async"></span><span class="list-title">${escapeHtml(w.title || '')}</span><span class="list-year">${escapeHtml(w.year || '')}</span><span class="list-cat">${escapeHtml(catsOf(w).map((c) => cats.get(c)).filter(Boolean).join(', '))}</span>
       </button></li>`).join('');
   if (reveal) revealList();
 }
@@ -422,8 +437,12 @@ $('listRows').addEventListener('click', (e) => {
   setListHover(null);
 });
 
+// a work may belong to several categories; the first is its home (the folder its files live in)
+const catsOf = (w) => w.categories || (w.category ? [w.category] : []);
+// the category a work is shown under: the one being browsed if it belongs to it, else its home
+const catOf = (w) => (catsOf(w).includes(currentCat) ? currentCat : catsOf(w)[0]);
 function worksFor(cat) {
-  return cat === 'all' ? data.works : data.works.filter((w) => w.category === cat);
+  return cat === 'all' ? data.works : data.works.filter((w) => catsOf(w).includes(cat));
 }
 
 // ---------- titles: written at once (no letter animation) ----------
@@ -455,9 +474,54 @@ function updateTitle() {
 }
 
 // ---------- menu ----------
+// a category's name with how many works it holds, raised like an exponent: Knjige¹¹
+const catLabel = (id, label) => `${escapeHtml(label)}<sup class="cat-n">${worksFor(id).length}</sup>`;
 function buildMenu() {
-  const items = [{ id: 'all', label: L('all') }, ...data.categories];
-  $('menuList').innerHTML = items.map((c) => `<li><button type="button" data-cat="${c.id}">${escapeHtml(c.label)}</button></li>`).join('');
+  const items = [{ id: 'all', label: L('all') }, ...data.categories.filter((c) => worksFor(c.id).length)]; // a category with no works yet stays out
+  $('menuList').innerHTML = items.map((c) => `<li><button type="button" data-cat="${c.id}">${catLabel(c.id, c.label)}</button></li>`).join('');
+}
+// ---------- a phone: the hamburger menu ----------
+// the word Menu top right (the view icons left of it); it opens a page with the media
+// (large) and language and sound under them, down at his portrait in the bottom-left corner. Each item works through the same controls as on a computer.
+const mobileNav = () => !$('mnav').hidden;
+function buildMobileNav() {
+  const en = lang === 'en';
+  const items = [{ id: 'all', label: L('all') }, ...data.categories.filter((c) => worksFor(c.id).length)];
+  $('mnavCats').innerHTML = items.map((c) => `<li><button type="button" data-cat="${c.id}"${c.id === currentCat ? ' class="is-on" aria-current="page"' : ''}>${catLabel(c.id, c.label)}</button></li>`).join('');
+  // language and sound: the same two as on a computer, the language on show (a tap switches) and the speaker
+  const on = isEnabled();
+  $('mnavPrefs').innerHTML = `<button type="button" data-go="lang" aria-label="${en ? 'Language: English (switch to Hrvatski)' : 'Jezik: hrvatski (prebaci na English)'}"><span class="lang-code">${en ? 'EN' : 'HR'}</span></button>`
+    + `<button type="button" data-go="sound" aria-pressed="${on}" aria-label="${en ? 'Sound' : 'Zvuk'}"${on ? '' : ' class="is-off"'}><svg class="icon" viewBox="0 0 12 12" aria-hidden="true"><mask id="soundCutM"><rect width="12" height="12" fill="#fff"/><path d="M1.5 1.5l9 9" stroke="#000" stroke-width="4"/></mask><path class="spk" d="M1.5 4h3.25l4.5-3.25v10.5L4.75 8H1.5z"${on ? '' : ' mask="url(#soundCutM)"'}/>${on ? '' : '<path class="s" d="M1.5 1.5l9 9"/>'}</svg></button>`;
+  $('mnav').setAttribute('aria-label', en ? 'Menu' : 'Izbornik');
+}
+function setMobileNav(v) {
+  if (v === mobileNav()) return;
+  if (v) buildMobileNav();
+  $('mnav').hidden = !v;
+  body.classList.toggle('mnav-open', v);
+  $('burgerText').textContent = v ? (lang === 'en' ? 'Close' : 'Zatvori') : (lang === 'en' ? 'Menu' : 'Izbornik');
+  fitTopRight(); // Close is longer than Menu: the view icons move along
+  $('burger').setAttribute('aria-expanded', String(v));
+}
+function initMobileNav() {
+  $('burger').addEventListener('click', (e) => { e.stopPropagation(); sound.click(); setMobileNav(!mobileNav()); });
+  $('mnav').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const b = e.target.closest('button');
+    if (!b) return;
+    sound.click();
+    const closePages = () => { if (!$('info').hidden) closeInfo(); if (!$('events').hidden) closeEvents(); if (openWork) closeDetail(); };
+    if (b.dataset.cat) { setMobileNav(false); closePages(); setCategory(b.dataset.cat); return; }
+    const go = b.dataset.go;
+    if (go === 'lang') { toggleLang(); buildMobileNav(); }
+    else if (go === 'sound') { $('soundToggle').click(); buildMobileNav(); }
+  });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && mobileNav()) setMobileNav(false); });
+  // the view icons beside the button and his portrait in the corner stay on show over the menu: they close it
+  $('views').addEventListener('click', () => setMobileNav(false));
+  $('aboutLink').addEventListener('click', () => setMobileNav(false));
+  // back on a computer-sized screen: the menu goes
+  matchMedia('(max-width: 700px), (orientation: portrait) and (max-width: 900px)').addEventListener('change', (m) => { if (!m.matches) setMobileNav(false); });
 }
 function initMenu() {
   const list = $('menuList');
@@ -490,13 +554,13 @@ function updateMenu() {
   // a medium chosen: only that one shows, with a back arrow to all works
   const chosen = data.categories.find((c) => c.id === currentCat);
   body.classList.toggle('has-cat', !!chosen);
-  $('menuBackText').textContent = chosen ? chosen.label : '';
+  $('menuBackText').innerHTML = chosen ? catLabel(chosen.id, chosen.label) : '';
   // with a work open, the medium shown is that work's own
-  const cat = data.categories.find((c) => c.id === (openWork ? openWork.category : currentCat));
+  const cat = data.categories.find((c) => c.id === (openWork ? catOf(openWork) : currentCat));
   const text = cat ? cat.label : L('all');
   // the medium changes in place on opening a work: a short fade instead of a jump
-  $('menuText').textContent = text;
-  const active = openWork ? openWork.category : currentCat;
+  $('menuText').innerHTML = catLabel(cat ? cat.id : 'all', text);
+  const active = openWork ? catOf(openWork) : currentCat;
   for (const b of $('menuList').querySelectorAll('button')) b.classList.toggle('is-active', b.dataset.cat === active);
 }
 
@@ -509,6 +573,7 @@ function setCategory(cat, { push = true } = {}) {
   if (openWork) closeDetail({ fromPop: true }); // a new medium from inside a work: back to the gallery
   catToken++;
   currentCat = cat;
+  body.classList.toggle('cat-americas', cat === 'americas'); // Amerike: the whole page in black
   if (push) setHash(cat === 'all' ? '' : `#/${cat}`);
   visibleWorks = worksFor(cat);
   updateMenu();
@@ -555,26 +620,6 @@ function closeEvents({ fromPop = false } = {}) {
 $('eClose').addEventListener('click', () => closeEvents());
 
 // ---------- info overlay (MARTEK) ----------
-let photoIdx = 0, photoTimer = 0;
-const PHOTO_EVERY = 5000;
-function showPhoto(i) {
-  const layers = $('infoPhoto').querySelectorAll('.info-photo-layer');
-  if (!layers.length) return;
-  photoIdx = (i + layers.length) % layers.length;
-  layers.forEach((l, k) => l.classList.toggle('is-on', k === photoIdx));
-}
-function startPhotos() {
-  clearInterval(photoTimer);
-  if ($('infoPhoto').querySelectorAll('.info-photo-layer').length > 1) photoTimer = setInterval(() => showPhoto(photoIdx + 1), PHOTO_EVERY);
-}
-// clicking the portrait shows the next photo instead of closing the page
-$('infoPhoto').addEventListener('click', (e) => {
-  if ($('infoPhoto').querySelectorAll('.info-photo-layer').length < 2) return;
-  e.stopPropagation();
-  sound.click();
-  showPhoto(photoIdx + 1);
-  startPhotos(); // the next automatic change waits a full interval again
-});
 // the about text types itself out like the titles; the not-yet-typed rest stays invisible in
 // place, so the layout (and the photo below) does not jump while it types
 let infoRaf = 0;
@@ -586,23 +631,15 @@ function revealInfoText() {
 function buildInfo() {
   const a = data.artist;
   const para = (p, cls = '') => `<p${cls ? ` class="${cls}"` : ''} data-text="${escapeHtml(p)}"><span>${escapeHtml(p)}</span><span class="rest"></span></p>`;
+  // a line about him, small and white, above everything
+  $('infoLead').textContent = a.lead?.[lang] || a.lead?.hr || '';
+  $('infoLead').hidden = !$('infoLead').textContent;
   // the text, then the karmas (FAMILY KARMA / father butcher …), each in a frame of its own
   $('infoBody').innerHTML = (a.bio?.[lang] || a.bio?.hr || []).map((p) => para(p)).join('')
     + (a.karma || []).map(([k, v]) => `<div class="karma">${para(k, 'karma-k')}${para(v, 'karma-v')}</div>`).join('');
   // contact at the bottom
   $('infoMail').hidden = !a.email;
   if (a.email) { $('infoMail').href = `mailto:${a.email}`; $('infoMail').textContent = a.email; }
-  // portrait at the end of the about page; an empty `photo` keeps the grey placeholder
-  const photos = a.photos?.length ? a.photos : a.photo ? [a.photo] : [];
-  if (photos.length) {
-    const ph = $('infoPhoto');
-    // one stacked layer per photo; they crossfade every few seconds
-    ph.innerHTML = photos.map((u) => `<span class="info-photo-layer" style="background-image:url(&quot;${escapeHtml(u)}&quot;)"></span>`).join('');
-    showPhoto(photoIdx);
-    ph.classList.add('has-photo');
-    ph.setAttribute('role', 'img');
-    ph.setAttribute('aria-label', a.first + ' ' + a.last);
-  }
 }
 
 function showOverlay(el) {
@@ -627,7 +664,6 @@ function openInfo({ push = true } = {}) {
   showOverlay($('info'));
   body.classList.add('focus-info');
   revealInfoText();
-  startPhotos();
   if (push) setHash('#/info', true);
 }
 function closeInfo({ fromPop = false } = {}) {
@@ -635,17 +671,18 @@ function closeInfo({ fromPop = false } = {}) {
   sound.click();
   hideOverlay($('info'));
   body.classList.remove('focus-info');
-  clearInterval(photoTimer);
   if (!fromPop) restoreHash();
 }
 
 // ---------- detail: the work at the top, its details below (scroll, or Read more) ----------
-let detailTimer = 0, stripIdx = 0, stripPhotos = [];
+let detailTimer = 0, stripPhotos = [];
 function factsFor(work) {
   const en = lang === 'en';
   const size = work.size_label || (work.width && work.height ? `${work.width}×${work.height}` : '');
+  // every medium the work belongs to (one work may stand in several), comma-separated
+  const cats = catsOf(work).map((id) => data.categories.find((c) => c.id === id)?.label).filter(Boolean).join(', ');
   return [
-    [en ? 'Medium' : 'Tehnika', work.medium],
+    [en ? (catsOf(work).length > 1 ? 'Categories' : 'Category') : (catsOf(work).length > 1 ? 'Kategorije' : 'Kategorija'), cats],
     [en ? 'Size' : 'Dimenzije', size],
     [en ? 'Year' : 'Godina', work.year],
   ].filter(([, v]) => v);
@@ -662,10 +699,13 @@ function fillDetail(work) {
   const extra = work.photos?.length ? work.photos
     : [...new Set([...(work.pages || []).slice(1), ...Object.values(work.textures || {})])].filter((u) => u && u !== work.image);
   stripPhotos = [...extra, work.image, work.image].slice(0, 2);
-  stripIdx = 0;
-  $('detailStrip').innerHTML = stripPhotos.map((u, i) => `<button type="button" class="strip-item" data-i="${i}" aria-label="${i + 1} / ${stripPhotos.length}"><img src="${escapeHtml(u)}" alt="" loading="lazy" decoding="async"></button>`).join('');
+  // the photos side by side, each on a grey ground with the picture in its middle
+  $('detailStrip').innerHTML = stripPhotos.map((u) => `<figure class="strip-item"><img src="${escapeHtml(u)}" alt="" loading="lazy" decoding="async"></figure>`).join('');
   $('detailStrip').hidden = !stripPhotos.length;
-  layoutStrip();
+  // at the end, after a grey rule: the other works of its medium, in the overview's grid
+  const cat = catOf(work), more = cat ? worksFor(cat).filter((w) => w !== work) : [];
+  $('detailMore').hidden = !more.length;
+  $('detailMoreGrid').innerHTML = more.map((w) => `<li><button type="button" class="index-item" data-id="${escapeHtml(w.id)}" aria-label="${escapeHtml(`${w.title} ${w.year || ''}`)}"><img src="${escapeHtml(w.thumb || w.image)}" alt="" loading="lazy" decoding="async"></button></li>`).join('');
   const links = work.links || [];
   $('detailLinksBox').hidden = true; // Read more is off for now; the links stay in the data
   $('detailLinks').innerHTML = links.map((l) => {
@@ -676,25 +716,9 @@ function fillDetail(work) {
 }
 // the photo strip: the current photo large on the grid column, the one before it small on the
 // left, the next ones to the right (cut by the screen edge)
-function layoutStrip() {
-  const items = [...$('detailStrip').children];
-  items.forEach((el, i) => {
-    const r = i - stripIdx;
-    el.dataset.r = String(Math.max(-2, Math.min(2, r)));
-    el.style.setProperty('--r', String(r));
-  });
-}
-$('detailStrip').addEventListener('click', (e) => {
-  const b = e.target.closest('.strip-item');
-  if (!b || app.gallery.m.phone) return; // on a phone the photos simply stand one under the other
-  const i = Number(b.dataset.i);
-  stripIdx = i === stripIdx ? (i + 1) % stripPhotos.length : i; // the big one moves on to the next
-  sound.page();
-  layoutStrip();
-});
 // The work's own page: the same whichever view it is opened from. The picture flies from where it
 // was clicked (the carousel, the grid or the list) to its place on the page, and back on closing.
-const DETAIL_MS = 1000, DETAIL_EASE = 'cubic-bezier(.6, 0, .15, 1)'; // the picture's flight, smooth
+const DETAIL_MS = 1000, DETAIL_EASE = steppedCss(.6, 0, .15, 1, DETAIL_MS); // the picture's flight, in hard steps like the names
 const detailList = () => (openWork && visibleWorks.includes(openWork) ? visibleWorks : data.works);
 // a picture's own box inside a frame, contained (on the left, or centred on a phone)
 function containIn(r, a, centre = false) {
@@ -715,6 +739,10 @@ function sourceRect(work) {
 // the picture on the page: as large as the frame allows
 function layoutFigure(work) {
   const fig = $('detailFigure'), img = $('detailImg');
+  // the frame ends three margins above the title, however many lines the title takes
+  const head = fig.parentElement.querySelector('.detail-head');
+  const pad = app.gallery?.m.phone ? 10 : Math.min(22, Math.max(10, innerWidth * 0.011)); // --pad
+  fig.style.bottom = `${fig.parentElement.clientHeight - head.offsetTop + pad * 3}px`;
   const f = fig.getBoundingClientRect();
   const c = containIn(f, work.aspect ?? 1, app.gallery?.m.phone);
   Object.assign(img.style, { left: `${c.x - f.left}px`, top: `${c.y - f.top}px`, width: `${c.w}px`, height: `${c.h}px` });
@@ -736,7 +764,7 @@ function flyPicture(src, from, to) {
 // a work's top bar, like the menu's path: Home / its medium ×, and / its title once scrolled
 function fillBack() {
   if (!data || !openWork) return;
-  const c = data.categories.find((x) => x.id === openWork.category);
+  const c = data.categories.find((x) => x.id === catOf(openWork));
   $('dCat').textContent = c ? c.label : '';
 }
 function fillCount() {
@@ -745,6 +773,8 @@ function fillCount() {
   $('countNow').textContent = pad2(i + 1);
   $('countAll').textContent = `/ ${pad2(list.length)}`;
 }
+// the browser tab: the open work's title, otherwise his name
+function setDocTitle() { document.title = openWork ? `${openWork.title} — Vlado Martek` : 'Vlado Martek'; }
 function openDetail(work, { push = true, dir = 0 } = {}) {
   if (!data) return;
   const swap = !!openWork;
@@ -755,6 +785,7 @@ function openDetail(work, { push = true, dir = 0 } = {}) {
   fillDetail(work);
   fillCount();
   fillBack();
+  setDocTitle();
   const img = $('detailImg');
   img.src = work.image;
   if (push) setHash(`#/work/${work.id}`, !swap);
@@ -762,7 +793,7 @@ function openDetail(work, { push = true, dir = 0 } = {}) {
     // moving on to the next / previous work: the picture slides out and the next one slides in
     $('detailScroll').scrollTop = 0;
     layoutFigure(work);
-    if (!reduced) img.animate([{ transform: `translateX(${dir * 60}px)` }, { transform: 'none' }], { duration: 1000, easing: 'cubic-bezier(.6, 0, .15, 1)' });
+    if (!reduced) img.animate([{ transform: `translateX(${dir * 60}px)` }, { transform: 'none' }], { duration: 1000, easing: DETAIL_EASE });
     return;
   }
   app.gallery.setHover(null);
@@ -770,6 +801,7 @@ function openDetail(work, { push = true, dir = 0 } = {}) {
   showOverlay($('detail'));
   $('detailScroll').scrollTop = 0;
   $('detail').classList.remove('title-on');
+  body.classList.remove('detail-title-on');
   $('detailTitle').parentElement.style.visibility = '';
   openedAt = performance.now();
   updateMenu();
@@ -781,14 +813,16 @@ function openDetail(work, { push = true, dir = 0 } = {}) {
   if (from) {
     img.style.visibility = 'hidden';
     flyPicture(work.thumb || work.image, from, to).then((el) => { img.style.visibility = ''; requestAnimationFrame(() => el.remove()); });
-  } else img.animate([{ transform: 'translateY(40px)' }, { transform: 'none' }], { duration: 1000, easing: 'cubic-bezier(.6, 0, .15, 1)' });
+  } else img.animate([{ transform: 'translateY(40px)' }, { transform: 'none' }], { duration: 1000, easing: DETAIL_EASE });
 }
 
 function closeDetail({ fromPop = false } = {}) {
+  body.classList.remove('detail-title-on'); // the names come back
   if (!openWork) return;
   const work = openWork;
   sound.click();
   openWork = null;
+  setDocTitle();
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // the view behind takes up the work the page ended on
   if (view === 'surf' && app.gallery.featuredWork() !== work) app.gallery.show(work, { animate: false });
@@ -819,6 +853,12 @@ function stepWork(dir) {
   const i = list.indexOf(openWork);
   openDetail(list[(i + dir + list.length) % list.length], { push: true, dir });
 }
+// the grid at the end of a work: a work opens in its place
+$('detailMoreGrid').addEventListener('click', (e) => {
+  const el = e.target.closest('.index-item');
+  const w = el && data.works.find((x) => x.id === el.dataset.id);
+  if (w) openDetail(w, { dir: 1 });
+});
 $('detailPrev').addEventListener('click', () => stepWork(-1));
 $('detailNext').addEventListener('click', () => stepWork(1));
 
@@ -839,11 +879,14 @@ function setHash(h, overlayPush = false) {
     else history.replaceState(null, '', url);
   } catch { /* sandboxed frames may refuse history changes */ }
 }
+// our own step back (closing a page) must not route: a medium chosen in the same click (Home in a
+// work's path) would be undone by the old address coming back
+let ownBack = false;
 function restoreHash() {
-  const base = currentCat === 'all' ? location.pathname + location.search : `#/${currentCat}`;
+  const base = () => (currentCat === 'all' ? location.pathname + location.search : `#/${currentCat}`);
   try {
-    if (pushedOverlay) { pushedOverlay = false; history.back(); setTimeout(() => history.replaceState(null, '', base), 30); }
-    else history.replaceState(null, '', base);
+    if (pushedOverlay) { pushedOverlay = false; ownBack = true; history.back(); setTimeout(() => { ownBack = false; history.replaceState(null, '', base()); }, 120); }
+    else history.replaceState(null, '', base());
   } catch { /* ignore */ }
 }
 function route() {
@@ -860,8 +903,8 @@ function route() {
   if (h.info && $('info').hidden) openInfo({ push: false });
   if (h.cat && data.categories.some((c) => c.id === h.cat)) setCategory(h.cat, { push: false });
 }
-addEventListener('popstate', () => { pushedOverlay = false; route(); });
-addEventListener('hashchange', route);
+addEventListener('popstate', () => { pushedOverlay = false; if (!ownBack) route(); });
+addEventListener('hashchange', () => { if (!ownBack) route(); }); // (the step back fires both)
 
 // ---------- labels: fit both names on one line on any screen ----------
 // on the splash both names must fit across the screen; in the corner (in two lines) the longer
@@ -875,7 +918,8 @@ function fitLabels() {
   const pad = parseFloat(getComputedStyle(a).paddingTop);
   const k = Math.min(1,
     (innerWidth - pad * 2 - 24) / (a.offsetWidth + b.offsetWidth),
-    phone ? 1 : ($('menu').getBoundingClientRect().left - pad * 3) / Math.max(a.offsetWidth, b.offsetWidth));
+    // before the media (on a phone the hamburger replaces them: before column 3 of its 6)
+    ((phone ? pad + ((innerWidth - pad * 7) / 6 + pad) * 2 : $('menu').getBoundingClientRect().left) - pad * (phone ? 2 : 3)) / Math.max(a.offsetWidth, b.offsetWidth));
   if (k < 1) root.style.setProperty('--name', `${Math.floor(fs * k)}px`);
 }
 addEventListener('resize', () => fitLabels());
@@ -896,21 +940,13 @@ const goHome = () => {
 $('labelLast').addEventListener('click', goHome);
 $('labelFirst').addEventListener('click', goHome);
 $('eHome').addEventListener('click', goHome); // Vlado Martek: home, from any page
+// About: its own path, Home / About ×, like the events (a click anywhere else closes it too)
+$('iHome').addEventListener('click', (e) => { e.stopPropagation(); goHome(); });
+$('iClose').addEventListener('click', (e) => { e.stopPropagation(); closeInfo(); });
 // the about page closes with a click or tap anywhere (or Escape)
 $('info').addEventListener('click', () => closeInfo());
 $('infoMail').addEventListener('click', (e) => e.stopPropagation()); // the address opens mail, the page stays
-// the footer of a work: Vlado back to the gallery, Martek to the artist
-// The names stand fixed at the bottom of the screen, behind the page; the white sheet covers them
-// and the footer, at the very end, uncovers them. They come on only once the sheet is over them.
-const nameAt = (e) => [...$('detailNames').children].find((n) => { const r = n.getBoundingClientRect(); return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top - 10 && e.clientY <= r.bottom + 10; });
-$('detailEnd').addEventListener('click', (e) => {
-  const n = nameAt(e);
-  if (n?.classList.contains('foot-first')) closeDetail();
-  else if (n) { closeDetail(); openInfo(); }
-});
 $('detailScroll').addEventListener('scroll', () => {
-  const s = $('detailScroll'), hero = s.firstElementChild.offsetHeight;
-  $('detailNames').classList.toggle('is-on', s.scrollTop >= hero && $('detailEnd').getBoundingClientRect().top < innerHeight);
   // once the title has scrolled up under the top bar, the work's name takes the media's place there
   // (the big title fades out on its way up, so it never runs into the top bar)
   const headEl = $('detailTitle').parentElement, head = headEl.getBoundingClientRect();
@@ -918,31 +954,13 @@ $('detailScroll').addEventListener('scroll', () => {
   headEl.style.visibility = head.top < barBottom + 4 ? 'hidden' : ''; // cut away before it reaches the bar
   const titleOn = head.top < barBottom + head.height * 0.25; // as the big title fades out, its name joins the path
   $('detail').classList.toggle('title-on', titleOn);
+  body.classList.toggle('detail-title-on', titleOn); // the names in the corner go with it
 }, { passive: true });
 // the path: Home → all works, the medium → that medium, × closes the work
 $('detailClose').addEventListener('click', () => closeDetail());
 $('dHome').addEventListener('click', () => { closeDetail(); setCategory('all'); });
-$('dCat').addEventListener('click', () => { const c = openWork?.category; closeDetail(); if (c) setCategory(c); });
+$('dCat').addEventListener('click', () => { const c = openWork && catOf(openWork); closeDetail(); if (c) setCategory(c); });
 
-// pointer: over anything clickable it becomes a red dot
-const dot = document.createElement('div');
-dot.className = 'cursor-dot';
-dot.innerHTML = '<i></i>';
-body.append(dot);
-const CLICKABLE = 'button, a, .work, .index-item, .list-row, .strip-item';
-let pointingAt = null;
-addEventListener('pointermove', (e) => {
-  if (e.pointerType !== 'mouse') return;
-  dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-  const t = e.target;
-  let at = t.closest?.(CLICKABLE) || null;
-  if (!at && t === $('detailEnd')) at = nameAt(e) || null;
-  if (at === pointingAt) return;
-  pointingAt = at;
-  body.classList.toggle('is-pointing', !!at);
-  if (at) { const i = dot.firstChild; i.style.animation = 'none'; void i.offsetWidth; i.style.animation = ''; } // shrink again on each new target
-}, { passive: true });
-document.addEventListener('mouseleave', () => { pointingAt = null; body.classList.remove('is-pointing'); });
 
 // moving between works inside a work: the arrows, the arrow keys, a sideways swipe or a sideways
 // wheel (trackpad) move one work on

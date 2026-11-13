@@ -18,19 +18,16 @@ npm run preview    # serve the build
 
 Everything lives in **`public/data/works.json`**:
 
-- `artist` — names, bio (`hr` is shown when MARTEK is clicked) and `photo` (path to his portrait, e.g. `img/martek.jpg`; empty shows a grey placeholder).
+- `artist` — names, bio (`hr` is shown when MARTEK is clicked) and `photo` (path to his portrait, e.g. `img/martek.jpg`).
 - `cursors` — list of pointer images (e.g. `"img/cursors/1.png"` or `{ "src": "img/cursors/1.png", "hotspot": [4, 4] }`); one is picked at random on every page load and it changes on every click. Empty = normal pointer.
-- `categories` — `poetry`, `actions`, `pictograms`, `photos`, `books`, `sculpture`, `texts`; each has `label` (hr), `label_en` and picks a viewer (`book`, `sculpture`, `sheet`).
+- `categories` — `books`, `samizdat`, `painting`, `actions`, `texts`, `slogans`, `photography` (each has `label` (hr) and `label_en`; empty ones are hidden in the menu).
 - `works` — one entry per work:
-  - `id`, `title`, `year`, `category`, `medium`, `width`/`height` (cm), `description`
+  - `id`, `title`, `year`, `categories` (one or more; the first is its home folder, `public/works/<category>/`), `medium`, `width`/`height` (cm), `description`
   - `image` — picture shown in the gallery (put files in `public/works/`)
   - `aspect` — image width ÷ height, `size` — 0.4–1, how tall it hangs in the gallery
   - books: `pages` — list of page images in order (cover first, back cover last)
   - sculptures: `model` — `box`, `accordion` or `star`; `textures` for the box faces (`front`, `side`, `inner`)
   - optional `thumb` (different gallery image), `cutout: true` (transparent PNG, no background), `viewer` (override the category's viewer)
-
-The current works, years, media and descriptions are **placeholders** (descriptions start with
-"Placeholder text."). The SVGs in `public/works/` are flat colour placeholders and can simply be replaced (keep the file names or update the paths in `works.json`).
 
 ## Where things are
 
