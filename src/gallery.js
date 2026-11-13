@@ -51,6 +51,8 @@ export class Gallery {
     this.onFeature = onFeature;
     this.works = [];
     this.slots = new Map();   // absolute index k → { el, img, k }
+    this.pool = new Map();    // work → figures that left the screen, kept with their picture loaded and decoded for when it comes back
+    this.covered = false;     // a page (a work, About, the events) or the phone's menu lies over the gallery: nothing is drawn
     this.p = 0;               // current position (index of the featured work, fractional while moving)
     this.target = 0;
     this.mode = 0;            // 0 = gallery, 1 = a work is open
@@ -95,8 +97,15 @@ export class Gallery {
     };
   }
 
+  release(s) {
+    s.el.remove();
+    s.el.style.visibility = 'hidden';
+    const list = this.pool.get(s.work) || [];
+    list.push(s.el);
+    this.pool.set(s.work, list);
+  }
   setWorks(works) {
-    for (const s of this.slots.values()) s.el.remove();
+    for (const s of this.slots.values()) this.release(s);
     this.slots.clear();
     this.works = works;
     this.p = this.target = 0;
@@ -163,14 +172,19 @@ export class Gallery {
     let s = this.slots.get(k);
     if (s) return s;
     const work = this.works[mod(k, this.works.length)];
-    const el = document.createElement('figure');
-    el.className = 'work' + (work.cutout ? ' is-cutout' : '');
-    el.setAttribute('role', 'listitem');
+    // a figure of this work that left the screen before comes back as it was (its picture already
+    // decoded, so it never shows empty for a frame)
+    let el = this.pool.get(work)?.pop();
+    if (!el) {
+      el = document.createElement('figure');
+      el.className = 'work' + (work.cutout ? ' is-cutout' : '');
+      el.setAttribute('role', 'listitem');
+      const img = new Image();
+      img.alt = ''; img.decoding = 'async'; img.draggable = false;
+      img.src = work.thumb || work.image;
+      el.append(img);
+    }
     el.setAttribute('aria-label', `${work.title} ${work.year || ''}`);
-    const img = new Image();
-    img.alt = ''; img.decoding = 'async'; img.draggable = false;
-    img.src = work.thumb || work.image;
-    el.append(img);
     this.track.append(el);
     s = { el, k, work };
     this.slots.set(k, s);
@@ -206,7 +220,8 @@ export class Gallery {
   bindInput() {
     const r = this.root;
     this.mouse = null;
-    addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') this.mouse = { x: e.clientX, y: e.clientY }; }, { passive: true });
+    // (whether the pointer is over the gallery itself, not over a name, the menu or a page above it)
+    addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') this.mouse = { x: e.clientX, y: e.clientY, over: !!e.target.closest?.('.gallery') }; }, { passive: true });
     document.addEventListener('mouseleave', () => { this.mouse = null; });
     // the wheel works anywhere on the page, over the names and menus too
     addEventListener('wheel', (e) => {
@@ -293,12 +308,12 @@ export class Gallery {
       if (w !== this.featured) { this.featured = w; this.onFeature?.(w); }
     }
 
-    if (this.hidden) return;
+    if (this.hidden || this.covered) return; // nothing to draw: the gallery is not on show
     const m = this.m;
     if (this.enterAt !== null && now - this.enterAt > 1500) this.enterAt = null;
     const lo = Math.floor(this.p) - 2;
     const hi = m.phone ? Math.ceil(this.p) + 5 : Math.ceil(this.p) + Math.ceil((m.vw - m.cs) / m.step) + 1;
-    for (const [k, s] of this.slots) if (k < lo || k > hi) { s.el.remove(); this.slots.delete(k); }
+    for (const [k, s] of this.slots) if (k < lo || k > hi) { this.release(s); this.slots.delete(k); }
     for (let k = lo; k <= hi; k++) {
       const s = this.slot(k);
       const aspect = s.work.aspect ?? 1;
@@ -309,7 +324,7 @@ export class Gallery {
       // neighbour that comes out from behind the opened work never crosses them
       const mx = Math.abs(d) > 1.5 ? Math.min(1, Math.sqrt(this.mode) * 1.5) : this.mode;
       const x = lerp(g.x, q.x, mx), sc = lerp(g.s, q.s, mx), o = lerp(g.o, q.o, this.mode);
-      const w = Math.min(m.h0 * aspect, m.maxW) * sc;
+      const w0 = Math.min(m.h0 * aspect, m.maxW), w = w0 * sc;
       const h = w / aspect, y = lerp(m.yc, m.yc1, this.mode) - h / 2;
       s.r = { x, y, w, h, o };
       // sliding in: from beyond the right edge, the ones on the left first
@@ -319,10 +334,13 @@ export class Gallery {
         const t = Math.max(0, (now - this.enterAt - Math.max(0, x) / m.vw * 320) / 1000);
         if (t < 1) ex = lerp(m.vw + 60 + Math.max(0, x - m.cs) * 0.4, x, 1 - Math.pow(1 - t, 4));
       }
+      s.ex = ex; // where it stands this frame (sliding in included), for the hover
       const st = s.el.style;
-      st.width = `${w.toFixed(1)}px`;
-      st.height = `${h.toFixed(1)}px`;
-      st.transform = `translate3d(${ex.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+      // the figure keeps one size (the featured one's) and only moves and scales: a change of width or
+      // height would lay out the page and resample the picture on every frame
+      const bw = w0.toFixed(1);
+      if (s.bw !== bw) { s.bw = bw; st.width = `${bw}px`; st.height = `${(w0 / aspect).toFixed(1)}px`; }
+      st.transform = `translate3d(${ex.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${sc.toFixed(4)})`;
       st.opacity = (o * fade).toFixed(3);
       // the gallery itself is sharp; only with a work open does scrolling its page blur what is behind
       const bl = this.mode * this.scrollBlur;
@@ -334,10 +352,15 @@ export class Gallery {
     }
 
     // hover by hit-testing, so a work that slides under a still pointer counts too
+    // (worked out from where the works stand, without asking the page: that would lay it out every frame)
     if (this.mouse && !this.paused && !this.drag?.moved && !document.body.classList.contains('focus-menu')) {
-      const hit = document.elementFromPoint(this.mouse.x, this.mouse.y)?.closest?.('.work');
-      const s = hit ? [...this.slots.values()].find((x) => x.el === hit) : null;
-      this.setHover(s ? s.work : null);
+      const { x: px, y: py, over } = this.mouse;
+      let top = null, tz = -Infinity;
+      if (over) for (const s of this.slots.values()) {
+        const r = s.r, z = Number(s.el.style.zIndex) || 0;
+        if (r && s.el.style.visibility !== 'hidden' && z > tz && px >= s.ex && px <= s.ex + r.w && py >= r.y && py <= r.y + r.h) { top = s; tz = z; }
+      }
+      this.setHover(top ? top.work : null);
     } else if (this.hovered && (this.paused || !this.mouse)) this.setHover(null);
   }
 }

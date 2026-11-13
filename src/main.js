@@ -146,6 +146,41 @@ function initCursors() {
   addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse') setCursor(); }, true);
 }
 
+// ---------- pictures: loading ----------
+// one picture, resolved when it is in (or has failed)
+const load = (u) => new Promise((res) => { const img = new Image(); img.onload = img.onerror = () => res(); img.src = u; });
+// the thumbnails, a few at a time and in the order given (the works on show first), so they never
+// all crowd the line at once ahead of the picture someone has just opened
+function preloadThumbs(works) {
+  const urls = [...new Set(works.map((w) => w.thumb || w.image))];
+  let i = 0;
+  const next = () => { if (i < urls.length) load(urls[i++]).then(next); };
+  for (let n = 0; n < 3; n++) next();
+}
+// the pictures of the overview and the list load as they come near the screen (watched inside their
+// own scrolling box: iOS Safari's own loading="lazy" misses pictures inside such a box)
+const lazyWatch = new Map();
+function lazyImages(box, root) {
+  const imgs = box.querySelectorAll('img[data-src]');
+  const show = (i) => { i.src = i.dataset.src; i.removeAttribute('data-src'); };
+  if (!('IntersectionObserver' in window)) { imgs.forEach(show); return; }
+  let io = lazyWatch.get(root);
+  if (!io) {
+    io = new IntersectionObserver((es) => { for (const e of es) if (e.isIntersecting) { io.unobserve(e.target); show(e.target); } }, { root, rootMargin: '800px 0px' });
+    lazyWatch.set(root, io);
+  }
+  imgs.forEach((i) => io.observe(i));
+}
+function unwatchImages(box, root) { const io = lazyWatch.get(root); if (io) box.querySelectorAll('img[data-src]').forEach((i) => io.unobserve(i)); }
+// a picture that failed (a dropped connection on a phone) is tried once more
+addEventListener('error', (e) => {
+  const i = e.target;
+  if (!(i instanceof HTMLImageElement) || i.dataset.retried || !i.getAttribute('src')) return;
+  i.dataset.retried = '1';
+  const u = i.getAttribute('src');
+  setTimeout(() => { i.src = `${u}${u.includes('?') ? '&' : '?'}r=1`; }, 1000);
+}, true);
+
 const PORTRAIT_EVERY = 10000; // ms between Martek's photos at the bottom left
 async function boot() {
   body.classList.add('intro'); // hidden behind the splash until the intro plays
@@ -169,12 +204,11 @@ async function boot() {
   if (portraits.length > 1) setInterval(() => { pi++; showPortrait(); }, PORTRAIT_EVERY);
 
   // behind the splash only the first works of the gallery are waited for (at most 3 s on a slow
-  // line); the other thumbnails load afterwards, in the background
-  const load = (u) => new Promise((res) => { const img = new Image(); img.onload = img.onerror = () => res(); img.src = u; });
+  // line); the other thumbnails load afterwards, in the background, once the intro has played
   const h0 = parseHash(), first = worksFor(h0.cat && data.categories.some((c) => c.id === h0.cat) ? h0.cat : 'all');
   const urls = [...new Set(first.map((w) => w.thumb || w.image))];
   await Promise.all([minTime, Promise.race([Promise.all(urls.slice(0, 8).map(load)), new Promise((r) => setTimeout(r, 3000))])]);
-  setTimeout(() => { for (const w of data.works) load(w.thumb || w.image); }, 400);
+  setTimeout(() => preloadThumbs([...first, ...data.works]), /^#\/(work|info|events)/.test(location.hash) ? 400 : 2200);
 
   initMenu();
   initMobileNav();
@@ -299,7 +333,7 @@ function indexRects() {
     const work = visibleWorks.find((w) => w.id === b.dataset.id);
     const r = b.getBoundingClientRect(), a = work?.aspect ?? 1;
     const rect = a >= r.width / r.height
-      ? { x: r.left, y: r.top + (r.height - r.width / a) / 2, w: r.width, h: r.width / a }
+      ? { x: r.left, y: r.top, w: r.width, h: r.width / a } // (top-left in its cell)
       : { x: r.left, y: r.top, w: r.height * a, h: r.height };
     return { el: b, work, rect };
   }).filter((x) => x.work && x.rect.y < vh && x.rect.y + x.rect.h > 0);
@@ -373,10 +407,12 @@ for (const b of document.querySelectorAll('#views .switch-opt')) b.addEventListe
 
 // Overview: every work in one grid, five in a row; same width, own height, top-aligned
 function buildIndex({ reveal = false } = {}) {
+  unwatchImages($('indexGrid'), $('index'));
   $('indexGrid').innerHTML = visibleWorks.map((w, i) => `<li style="--i:${i}">
       <button type="button" class="index-item" data-id="${escapeHtml(w.id)}" aria-label="${escapeHtml(`${w.title} ${w.year || ''}`)}">
-        <img src="${escapeHtml(w.thumb || w.image)}" alt="" loading="lazy" decoding="async">
+        <img data-src="${escapeHtml(w.thumb || w.image)}" alt="" decoding="async">
       </button></li>`).join('');
+  lazyImages($('indexGrid'), $('index'));
   if (reveal) revealIndex();
 }
 // the works come in one after another, in reading order
@@ -421,10 +457,12 @@ $('indexGrid').addEventListener('click', (e) => {
 // List: one row per work: a small picture, title, year, medium
 function buildList({ reveal = false } = {}) {
   const cats = new Map(data.categories.map((c) => [c.id, c.label]));
+  unwatchImages($('listRows'), $('list'));
   $('listRows').innerHTML = visibleWorks.map((w, i) => `<li style="--i:${i}">
       <button type="button" class="list-row" data-id="${escapeHtml(w.id)}">
-        <span class="list-thumb"><img src="${escapeHtml(w.thumb || w.image)}" alt="" loading="lazy" decoding="async"></span><span class="list-title">${escapeHtml(w.title || '')}</span><span class="list-year">${escapeHtml(w.year || '')}</span><span class="list-cat">${escapeHtml(catsOf(w).map((c) => cats.get(c)).filter(Boolean).join(', '))}</span>
+        <span class="list-thumb"><img data-src="${escapeHtml(w.thumb || w.image)}" alt="" decoding="async"></span><span class="list-title">${escapeHtml(w.title || '')}</span><span class="list-year">${escapeHtml(w.year || '')}</span><span class="list-cat">${escapeHtml(catsOf(w).map((c) => cats.get(c)).filter(Boolean).join(', '))}</span>
       </button></li>`).join('');
+  lazyImages($('listRows'), $('list'));
   if (reveal) revealList();
 }
 function revealList() { revealSeq($('listRows'), 30); }
@@ -516,6 +554,7 @@ function setMobileNav(v) {
   if (v) buildMobileNav();
   $('mnav').hidden = !v;
   body.classList.toggle('mnav-open', v);
+  syncCover();
   updateBurger();
   fitTopRight(); // Close is longer than Menu: the view icons move along
   $('burger').setAttribute('aria-expanded', String(v));
@@ -667,12 +706,16 @@ function showOverlay(el) {
   app.gallery.setHover(null);
   body.classList.remove('focus-menu');
   lastFocus = document.activeElement;
+  syncCover();
   setTimeout(() => el.focus({ preventScroll: true, focusVisible: false }), 50);
 }
+// the gallery draws nothing while a page or the phone's menu lies over it
+function syncCover() { if (app.gallery) app.gallery.covered = !$('detail').hidden || !$('info').hidden || !$('events').hidden || mobileNav(); }
 function hideOverlay(el) {
   el.classList.remove('is-open');
   el.hidden = true;
   app.gallery.paused = false;
+  syncCover();
   lastFocus?.focus?.({ preventScroll: true, focusVisible: false });
 }
 let lastFocus = null;
@@ -704,12 +747,12 @@ function fillDetail(work) {
   const crops = !work.photos?.length && work.details?.length;
   stripPhotos = work.photos?.length ? work.photos : crops ? work.details : [work.image];
   $('detailStrip').classList.toggle('is-details', !!crops);
-  $('detailStrip').innerHTML = stripPhotos.map((u) => `<figure class="strip-item"><img src="${escapeHtml(u)}" alt="" loading="lazy" decoding="async"></figure>`).join('');
+  $('detailStrip').innerHTML = stripPhotos.map((u) => `<figure class="strip-item"><img src="${escapeHtml(u)}" alt="" decoding="async"></figure>`).join('');
   $('detailStrip').hidden = !stripPhotos.length;
   // at the end, after a grey rule: the other works of its medium, in the overview's grid
   const cat = catOf(work), more = cat ? worksFor(cat).filter((w) => w !== work) : [];
   $('detailMore').hidden = !more.length;
-  $('detailMoreGrid').innerHTML = more.map((w) => `<li><button type="button" class="index-item" data-id="${escapeHtml(w.id)}" aria-label="${escapeHtml(`${w.title} ${w.year || ''}`)}"><img src="${escapeHtml(w.thumb || w.image)}" alt="" loading="lazy" decoding="async"></button></li>`).join('');
+  $('detailMoreGrid').innerHTML = more.map((w) => `<li><button type="button" class="index-item" data-id="${escapeHtml(w.id)}" aria-label="${escapeHtml(`${w.title} ${w.year || ''}`)}"><img src="${escapeHtml(w.thumb || w.image)}" alt="" decoding="async"></button></li>`).join('');
   const links = work.links || [];
   $('detailLinksBox').hidden = true; // Read more is off for now; the links stay in the data
   $('detailLinks').innerHTML = links.map((l) => {
@@ -725,9 +768,9 @@ function fillDetail(work) {
 const DETAIL_MS = 1000, DETAIL_EASE = steppedCss(.6, 0, .15, 1, DETAIL_MS); // the picture's flight, in hard steps like the names
 const detailList = () => (openWork && visibleWorks.includes(openWork) ? visibleWorks : data.works);
 // a picture's own box inside a frame, contained (on the left, or centred on a phone)
-function containIn(r, a, centre = false) {
+function containIn(r, a, centre = false, top = false) {
   const w = a >= r.width / r.height ? r.width : r.height * a, h = w / a;
-  return { x: r.left + (centre ? (r.width - w) / 2 : 0), y: r.top + (r.height - h) / 2, w, h };
+  return { x: r.left + (centre ? (r.width - w) / 2 : 0), y: r.top + (top ? 0 : (r.height - h) / 2), w, h };
 }
 // where the work stands in the view it was opened from (scrolled into sight in the grid / list)
 function sourceRect(work) {
@@ -738,7 +781,7 @@ function sourceRect(work) {
   if (!el) return null;
   let r = el.getBoundingClientRect();
   if (r.bottom < 0 || r.top > innerHeight) { el.scrollIntoView({ block: 'center' }); r = el.getBoundingClientRect(); }
-  return containIn(r, a);
+  return containIn(r, a, false, view === 'index'); // the overview's pictures stand top-left in their cells
 }
 // the picture on the page: as large as the frame allows
 function layoutFigure(work) {
@@ -771,8 +814,9 @@ const tilt = (() => {
   function frame() {
     x += (tx - x) * 0.12; y += (ty - y) * 0.12;
     fig().style.transform = `perspective(1100px) rotateX(${(-y * MAX).toFixed(2)}deg) rotateY(${(x * MAX).toFixed(2)}deg)`;
-    raf = on || Math.abs(x) + Math.abs(y) > 0.002 ? requestAnimationFrame(frame) : 0;
-    if (!raf) fig().style.transform = '';
+    // the loop runs only while the picture is still turning (a new mouse or gyroscope reading starts it again)
+    raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.001 ? requestAnimationFrame(frame) : 0;
+    if (!raf && !on) fig().style.transform = '';
   }
   const run = () => { if (!raf) raf = requestAnimationFrame(frame); };
   addEventListener('pointermove', (e) => {
@@ -815,6 +859,26 @@ const tilt = (() => {
     stop() { on = false; tx = ty = x = y = 0; cancelAnimationFrame(raf); raf = 0; fig().style.transform = ''; },
   };
 })();
+// the work's picture: its thumbnail at once (already in: it was on show where the work was clicked),
+// then the large picture as soon as it is in and decoded, so the frame is never empty; then the
+// works either side load ahead, for the arrows
+let detailImgToken = 0;
+function setDetailImage(work) {
+  const img = $('detailImg'), token = ++detailImgToken;
+  const thumb = work.thumb || work.image;
+  img.src = thumb;
+  if (!work.image || work.image === thumb) return;
+  const full = new Image();
+  full.decoding = 'async';
+  full.src = work.image;
+  const ready = full.decode ? full.decode() : new Promise((ok, fail) => { full.onload = ok; full.onerror = fail; });
+  ready.then(() => { if (token === detailImgToken) img.src = work.image; }, () => {})
+    .then(() => {
+      if (token !== detailImgToken) return;
+      const list = detailList(), i = list.indexOf(work);
+      if (i >= 0) for (const d of [1, -1]) { const w = list[(i + d + list.length) % list.length]; if (w?.image) load(w.image); }
+    });
+}
 // one picture flying between two places, above everything
 function flyPicture(src, from, to) {
   const el = document.createElement('div');
@@ -854,12 +918,13 @@ function openDetail(work, { push = true, dir = 0 } = {}) {
   fillBack();
   setDocTitle();
   const img = $('detailImg');
-  img.src = work.image;
+  setDetailImage(work);
   if (push) setHash(`#/work/${work.id}`, !swap);
   if (swap) {
     // moving on to the next / previous work: the picture slides out and the next one slides in
     $('detailScroll').scrollTop = 0;
     layoutFigure(work);
+    sheetFades();
     if (!reduced) img.animate([{ transform: `translateX(${dir * 60}px)` }, { transform: 'none' }], { duration: 1000, easing: DETAIL_EASE });
     return;
   }
@@ -874,6 +939,7 @@ function openDetail(work, { push = true, dir = 0 } = {}) {
   updateMenu();
   updateTitle();
   const to = layoutFigure(work);
+  sheetFades();
   if (reduced) return;
   // the page comes up, the picture flies in from where it was clicked, the title rises
   $('detailTitle').parentElement.animate([{ transform: 'translateY(40px)' }, { transform: 'none' }], { duration: 300, delay: 120, easing: 'steps(5, end)', fill: 'backwards' });
@@ -899,7 +965,7 @@ function closeDetail({ fromPop = false } = {}) {
   const done = () => {
     hideOverlay($('detail'));
     for (const a of $('detail').getAnimations()) a.cancel();
-    body.classList.remove('detail-open');
+    body.classList.remove('detail-open', 'detail-sheet-bottom');
     updateMenu();
     updateTitle();
   };
@@ -1014,7 +1080,16 @@ $('iClose').addEventListener('click', (e) => { e.stopPropagation(); closeInfo();
 // the about page closes with a click or tap anywhere (or Escape)
 $('info').addEventListener('click', () => closeInfo());
 $('infoMail').addEventListener('click', (e) => e.stopPropagation()); // the address opens mail, the page stays
+// the fades at the top and the bottom take the light panel's colour once it lies under them
+function sheetFades() {
+  const p = $('detailPanel').getBoundingClientRect().top;
+  const topFade = parseFloat(getComputedStyle($('detail'), '::after').height) || 0;
+  const bottomFade = document.querySelector('.bottom-fade').offsetHeight;
+  $('detail').classList.toggle('sheet-top', p < topFade);
+  body.classList.toggle('detail-sheet-bottom', !!openWork && p < innerHeight - bottomFade);
+}
 $('detailScroll').addEventListener('scroll', () => {
+  sheetFades();
   // once the title has scrolled up under the top bar, the work's name takes the media's place there
   // (the big title fades out on its way up, so it never runs into the top bar)
   const headEl = $('detailTitle').parentElement, head = headEl.getBoundingClientRect();

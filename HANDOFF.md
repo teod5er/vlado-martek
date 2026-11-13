@@ -180,3 +180,15 @@ Nova knjiga: obrezati prozirne rubove, spremiti `ime.webp` (najviše 1600 px, kv
 2. Pokreni `npm run build`, a zatim `npm run build:offline`.
 3. Zapakiraj `dist/` u `vlado-martek-dist.zip`, a `dist-offline/vlado-martek.html` kopiraj u ovu mapu.
 4. Za živi pregled objavi `dist/` na istu poveznicu artefakta (gore, verzija 67), da adresa ostane ista.
+
+## 11. Pregled dizajna i brzine (14. 11. 2026.)
+
+- **Slike na stranici rada:** odmah se prikaže sličica (već učitana), a velika slika je zamijeni tek kad se učita i dekodira (`setDetailImage` u `main.js`). Zatim se unaprijed učitaju susjedni radovi.
+- **Pregled i Popis** učitavaju sličice kad se približe ekranu (`lazyImages`, `IntersectionObserver` unutar vlastitog okvira koji se skrola; `loading="lazy"` iOS Safari zna propustiti). Detalji i „ostali radovi” na dnu rada učitavaju se odmah. Slika koja ne uspije pokuša se još jednom.
+- **Predučitavanje:** nakon uvoda sličice idu po tri odjednom, prvo one iz prikazane kategorije (`preloadThumbs`).
+- **Galerija:** kartice imaju stalnu veličinu i miču se samo preko `transform` (bez promjene `width`/`height` u svakoj sličici). Kartice koje izađu s ekrana čuvaju se sa svojom slikom (`pool` u `gallery.js`). Rad pod mišem računa se iz položaja kartica, bez `elementFromPoint`. Dok je preko galerije rad, O autoru, Događanja ili izbornik na mobitelu, galerija se ne iscrtava (`covered`, `syncCover`).
+- **Bez `mask-image`** na Pregledu, Popisu i O autoru: prijelaz uz gornji (na mobitelu na O autoru i donji) rub je fiksni gradijent. `.veil` postoji samo dok je otvoren izbornik kategorija, a prekrivači nemaju `backdrop-filter`.
+- **Prijelazi na stranici rada** (gore i dolje) poprime boju svijetlog panela kad je panel ispod njih (`sheetFades`, `--sheet-fade`), pa nema sivih traka.
+- **Mreže:** radovi stoje gore lijevo u svom kvadratu (isti vrh u redu).
+- **Veliki tekst** (naslov dolje, naslov rada, „Događanja”) ima optičku korekciju lijevog ruba (−0,05 em), kao imena.
+- **Mobitel:** sav mobilni CSS je u jednom bloku na kraju `style.css`. Sav sadržaj počinje na `--top`, a dijelovi stranice rada razmaknuti su za `--sec` (8vh; na računalu 12vh). Detalji ispod rada stoje jedan ispod drugoga. Na mobitelu nema putanja (ni na radu, ni na Događanjima, ni na O autoru); gore desno je uvijek riječ izbornika. Naslov stranice Događanja je `--t2`, kao naslov rada. U Popisu naslov počinje na 3. stupcu. Ikone prikaza stoje donjim rubom na osnovnoj liniji riječi izbornika (`--cap`: 0,72).
