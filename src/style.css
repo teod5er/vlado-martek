@@ -545,9 +545,9 @@ body.detail-open .prefs::before { display: none; } /* over a work the view icons
   .detail-head { max-width: calc(100vw - var(--pad) * 2); }
   /* on a phone the title is a size smaller, and the arrows sit under the top bar, clear of it */
   .detail-title, .detail-year { font-size: var(--t2); }
-  .detail-figure { left: var(--pad); right: var(--pad); top: var(--top); bottom: calc(var(--t2) * 4.6 + var(--pad) * 3); }
+  .detail-figure { left: calc(var(--pad) + var(--colg)); right: calc(var(--pad) + var(--colg)); top: calc(var(--top) + var(--pad) * 2); bottom: calc(var(--t2) * 4.6 + var(--pad) * 3); } /* a phone: the work on columns 2–5, centred, never edge to edge */
   .detail-desc { max-width: none; margin-bottom: 8vh; }
-  .detail-strip { grid-template-columns: 1fr; } /* a phone: one under the other */
+  .detail-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } /* a phone: two side by side, as on a computer */
   .detail-links-title { margin-bottom: 10vh; }
   /* on a phone the three sit on one line, without their Category: / View: labels to save room */
   /* little room between the names on a phone: the title may wrap there */
@@ -555,10 +555,17 @@ body.detail-open .prefs::before { display: none; } /* over a work the view icons
   body.focus-menu .views, body.focus-menu .about-link { visibility: hidden; } /* the open category list runs over them */
   .index { padding-left: var(--pad); padding-right: var(--pad); } /* a phone: the grid from edge to edge, no indent on the left */
   .index-grid { gap: 5vh calc(var(--gut) * 2); grid-template-columns: repeat(3, minmax(0, 1fr)); } /* three in a row on a phone */
-  .info-col { width: calc(100vw - var(--cs) - var(--pad)); font-size: var(--t1); } /* a phone: from column 3, his portrait on 1–2 */
+  .info-inner { padding-left: var(--pad); } /* a phone: the text from the left edge, no indent */
+  .info-col { width: calc(100vw - var(--pad) * 2); font-size: var(--t1); padding-bottom: calc(var(--pad) * 3 + 2.4 * var(--tm)); } /* clear of his portrait at the bottom */
+  body.focus-info .about-thumb { width: 2.4em; height: 2.4em; } /* a phone: his portrait stays small in its corner, the text runs the full width */
   .info-body { font-size: var(--t1); }
   .info-lead { font-size: var(--tm); }
   .info-inner { padding-top: calc(var(--top) + var(--pad) * 2); } /* below the names */
+  /* the text fades out above his portrait at the bottom, as it does under the path at the top */
+  .info-inner {
+    --info-fade: linear-gradient(to bottom, transparent calc(var(--pad) + var(--tm)), #000 calc(var(--bar) + var(--pad)), #000 calc(100% - var(--pad) * 4 - var(--tm) * 2.4), transparent calc(100% - var(--pad) * 1.5 - var(--tm) * 2.4));
+    -webkit-mask-image: var(--info-fade); mask-image: var(--info-fade);
+  }
 }
 @media (orientation: landscape) and (max-height: 500px) {
   :root { --label: 13vh; }
