@@ -321,7 +321,7 @@ async function boot() {
     const w = data.works.find((x) => x.id === fromHash.work);
     if (w) { gallery.show(w, { animate: false }); openDetail(w, { push: false }); }
   } else if (fromHash.info) openInfo({ push: false });
-  else if (currentCat === 'americas') setTimeout(openAmer, deepLink ? 0 : 1200); // (after the intro's names)
+  else if (currentCat === 'americas') setTimeout(() => openAmer({ auto: true }), deepLink ? 0 : 1200); // (after the intro's names)
   else if (fromHash.events) openEvents({ push: false });
 }
 
@@ -743,7 +743,7 @@ function updateMenu() {
 // right, the overview and the list show them one after another); no fading
 let catToken = 0;
 function setCategory(cat, { push = true } = {}) {
-  if (cat === currentCat) { if (cat === 'americas') openAmer(); return; } // Amerike again: its text again
+  if (cat === currentCat) { if (cat === 'americas') openAmer(); return; } // a click on Amerike while on it: its text, always
   if (cat !== 'americas') closeAmer();
   if (openWork) closeDetail({ fromPop: true }); // a new medium from inside a work: back to the gallery
   catToken++;
@@ -758,7 +758,7 @@ function setCategory(cat, { push = true } = {}) {
   buildIndex({ reveal: view === 'index' });
   buildList({ reveal: view === 'list' });
   updateTitle();
-  if (cat === 'americas') openAmer();
+  if (cat === 'americas') openAmer({ auto: true });
 }
 
 // ---------- Amerike: the exhibition's text, an overlay over everything ----------
@@ -781,8 +781,14 @@ function buildAmer() {
   $('amerClose').setAttribute('aria-label', lang === 'en' ? 'Close' : 'Zatvori');
   $('amerLogos').querySelector('svg').setAttribute('aria-label', lang === 'en' ? 'Exhibition logos' : 'Logotipi izložbe');
 }
-function openAmer() {
+// it opens by itself only the first time Amerike is chosen (remembered in this browser); after that
+// a click on Amerike while it is chosen opens it
+const AMER_SEEN = 'vm-amer-seen';
+const amerSeen = () => { try { return localStorage.getItem(AMER_SEEN) === '1'; } catch { return false; } };
+function openAmer({ auto = false } = {}) {
   if (!amerData() || !shut('amer')) return;
+  if (auto && amerSeen()) return;
+  try { localStorage.setItem(AMER_SEEN, '1'); } catch { /* storage unavailable: it shows each time */ }
   buildAmer();
   showOverlay($('amer'));
   body.classList.add('amer-open');
