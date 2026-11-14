@@ -455,11 +455,12 @@ function flyToIndex(slots) {
   // the whole cell (the picture and its caption) waits until its picture has landed
   const li = (c) => c.el.parentElement;
   for (const c of cells) li(c).style.visibility = 'hidden';
-  for (const { cell, slot } of pairs) flights.push({ src: src(cell.work), from: slot.rect, to: cell.rect, z: slot.z, land: () => { li(cell).style.visibility = ''; } });
+  const landed = (c) => () => { li(c).style.visibility = ''; riseCap(li(c), 60); }; // the picture lands, then its caption rises
+  for (const { cell, slot } of pairs) flights.push({ src: src(cell.work), from: slot.rect, to: cell.rect, z: slot.z, land: landed(cell) });
   let i = 0;
   for (const c of cells) if (!paired.has(c.el)) {
     const n = i++;
-    flights.push({ src: src(c.work), from: offRight(c.rect, n), to: c.rect, delay: 80 + n * FLY_STAGGER, land: () => { li(c).style.visibility = ''; } });
+    flights.push({ src: src(c.work), from: offRight(c.rect, n), to: c.rect, delay: 80 + n * FLY_STAGGER, land: landed(c) });
   }
   for (const s of slots) if (!usedK.has(s.k)) flights.push({ src: src(s.work), from: s.rect, to: offLeft(s.rect), z: s.z });
   fly(flights);
@@ -517,6 +518,8 @@ function buildIndex({ reveal = false } = {}) {
 // (each item is hidden, then shown on its own timer; a CSS visibility animation did the same, but
 // Chrome sometimes left an item hidden after it had finished)
 let revealToken = 0;
+// the caption under a work in a grid comes in softly, a moment after its picture
+function riseCap(li, delay = 0) { const c = li.querySelector?.('.index-cap'); if (c) rise(c, { delay, dist: 8, dur: 650 }); }
 function revealSeq(box, step) {
   const token = ++revealToken, items = [...box.children];
   if (reducedMotion()) return token;
@@ -526,7 +529,11 @@ function revealSeq(box, step) {
   for (const li of items) {
     for (const a of li.getAnimations()) a.cancel();
     li.style.visibility = '';
-    if (top + li.offsetTop < innerHeight * 1.5) rise(li, { delay: n++ * step, dist: 18, dur: 700 });
+    if (top + li.offsetTop < innerHeight * 1.5) {
+      const d = n++ * step;
+      rise(li, { delay: d, dist: 18, dur: 700 });
+      riseCap(li, d + 220); // its title and year follow the picture a moment later
+    }
   }
   return token;
 }
@@ -758,7 +765,7 @@ function setCategory(cat, { push = true } = {}) {
 // the title, how long the exhibition runs, and the curator's text with what matters most in white;
 // the × top right (or Escape) closes it. It opens each time Amerike is chosen (and again on a click
 // on Amerike when it is already chosen).
-const hl = (t) => escapeHtml(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+const hl = (t) => escapeHtml(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/_(.+?)_/g, '<em>$1</em>'); // **highlight**, _italics_
 const amerData = () => { const c = data.categories.find((x) => x.id === 'americas')?.intro; return c && (c[lang] || c.hr); };
 function buildAmer() {
   const t = amerData();
@@ -770,6 +777,7 @@ function buildAmer() {
   $('amerLead').innerHTML = hl(t.lead || '');
   $('amerBody').innerHTML = (t.body || []).map((p) => `<p>${hl(p)}</p>`).join('');
   $('amerSign').textContent = t.sign ? `— ${t.sign}` : '';
+  $('amerGo').innerHTML = `${escapeHtml(t.go || (lang === 'en' ? 'See exhibition' : 'Otvori izložbu'))}${EX_ARROW}`;
   $('amerClose').setAttribute('aria-label', lang === 'en' ? 'Close' : 'Zatvori');
   $('amerLogos').querySelector('svg').setAttribute('aria-label', lang === 'en' ? 'Exhibition logos' : 'Logotipi izložbe');
 }
@@ -780,7 +788,7 @@ function openAmer() {
   body.classList.add('amer-open');
   $('amerScroll').scrollTop = 0;
   // it comes in part by part
-  [$('amerTitle'), $('amerSub'), $('amerDates'), $('amerLead'), ...$('amerBody').children, $('amerSign'), $('amerLogos')]
+  [$('amerTitle'), $('amerSub'), $('amerDates'), $('amerLead'), ...$('amerBody').children, $('amerSign'), $('amerGo'), $('amerLogos')]
     .forEach((el, i) => rise(el, { delay: 150 + Math.min(i, 6) * 90, dist: 18, dur: 800 }));
   rise($('amerClose'), { delay: 300, dist: 10, dur: 500 });
   amerMap.start();
@@ -795,7 +803,7 @@ const amerMap = (() => {
   $('amer').addEventListener('pointermove', (e) => {
     if (e.pointerType !== 'mouse') return;
     mx = e.clientX; my = e.clientY;
-    el().classList.toggle('on', !e.target.closest('.amer-x'));
+    el().classList.toggle('on', !e.target.closest('.amer-x, .amer-go'));
     if (!raf) raf = requestAnimationFrame(place);
   }, { passive: true });
   $('amer').addEventListener('pointerleave', () => el().classList.remove('on'));
@@ -811,6 +819,7 @@ function closeAmer({ toWorks = false } = {}) {
   if (toWorks && view === 'surf') app.gallery.enter(); // the works slide in as the text goes
 }
 $('amerClose').addEventListener('click', (e) => { e.stopPropagation(); closeAmer({ toWorks: true }); });
+$('amerGo').addEventListener('click', (e) => { e.stopPropagation(); closeAmer({ toWorks: true }); }); // on to the works
 
 // ---------- events: a page of their own (dates, title, place), like the list ----------
 function buildEvents() {
@@ -918,7 +927,7 @@ function revealOnScroll(els) {
   rvWatch ||= new IntersectionObserver((es) => {
     // those coming in together follow one another a little
     let n = 0;
-    for (const e of es) if (e.isIntersecting) { rvWatch.unobserve(e.target); e.target.style.transitionDelay = `${n++ * 70}ms`; e.target.classList.add('in'); }
+    for (const e of es) if (e.isIntersecting) { rvWatch.unobserve(e.target); const d = `${n++ * 70}ms`; e.target.style.transitionDelay = d; e.target.style.setProperty('--rvd', d); e.target.classList.add('in'); }
   }, { root: $('detailScroll'), threshold: 0.12 });
   for (const el of els) { el.classList.add('rv'); rvWatch.observe(el); }
 }
@@ -974,7 +983,7 @@ function layoutFigure(work) {
   const fig = $('detailFigure'), img = $('detailImg');
   // the frame ends three margins above the title, however many lines the title takes
   const head = fig.parentElement.querySelector('.detail-head');
-  const pad = app.gallery?.m.phone ? 10 : Math.min(22, Math.max(10, innerWidth * 0.011)); // --pad
+  const pad = app.gallery?.m.pad ?? 16; // --pad
   fig.style.bottom = `${fig.parentElement.clientHeight - head.offsetTop + pad * 3}px`;
   const tilted = fig.style.transform;
   fig.style.transform = ''; // measure the frame flat, not tilted
@@ -1203,7 +1212,7 @@ function openZoom(e) {
   let w = 0, h = 0, x = 0, y = 0, tx = 0, ty = 0, px = e.clientX / innerWidth, py = e.clientY / innerHeight, raf = 0, live = true, touch = null;
   // as large as the screen allows, the whole work on show (a margin all round, clear of the ×)
   const size = () => {
-    const m = (phone() ? 10 : Math.min(22, Math.max(10, innerWidth * 0.011))) * 2 + (phone() ? 0 : 24);
+    const m = (app.gallery?.m.pad ?? 16) * 2 + (phone() ? 0 : 24);
     const W = innerWidth - m * 2, H = innerHeight - m * 2;
     w = aspect >= W / H ? W : H * aspect; h = w / aspect;
     img.style.width = `${w}px`; img.style.height = `${h}px`;

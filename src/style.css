@@ -19,8 +19,8 @@ html:not(.fonts) body > :not(.loader) { visibility: hidden; }
   --sec: 12vh;                          /* the gap between the parts of a work's page (description, details, more works) */
   /* the grid: 12 columns between two margins, the gutters as wide as the margins (one unit of space
      for the whole page). Columns are counted from 1; a line "at column n" is where column n starts. */
-  --pad: clamp(10px, 1.1vw, 22px);      /* the margin, on every edge */
-  --gut: var(--pad);                    /* the gutter between two columns */
+  --pad: clamp(16px, 1.6vw, 30px);      /* the margin, on every edge (a little more room than the gutter) */
+  --gut: clamp(10px, 1.1vw, 22px);      /* the gutter between two columns */
   --col: calc((100vw - var(--pad) * 2 - var(--gut) * 11) / 12); /* one column */
   --colg: calc(var(--col) + var(--gut)); /* a column and its gutter: the step from one column to the next */
   --cs: calc(var(--pad) + var(--colg) * 3);          /* column 4: the content column (media, titles, works, details) */
@@ -519,7 +519,10 @@ body.detail-sheet-bottom .bottom-fade { background: var(--sheet-fade); }
 /* a work's page: what lies under the work rises softly into view as it is scrolled to (main.js) */
 .rv { opacity: 0; transform: translateY(28px); transition: opacity .9s var(--soft), transform .9s var(--soft); }
 .rv.in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+/* a work's caption in the grid under a work follows its picture a moment later */
+.rv .index-cap { opacity: 0; transform: translateY(8px); transition: opacity .7s var(--soft) calc(var(--rvd, 0ms) + 220ms), transform .7s var(--soft) calc(var(--rvd, 0ms) + 220ms), color .25s ease-out; }
+.rv.in .index-cap { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .rv, .rv .index-cap { opacity: 1; transform: none; transition: none; } }
 
 /* ---------- the tag at the pointer: what an icon without words does (main.js) ---------- */
 .ctag {
@@ -560,10 +563,10 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
    content of every page (--top, under the names), one gap between the parts of a page (--sec). */
 @media (max-width: 700px), (orientation: portrait) and (max-width: 900px) {
   :root {
-    --pad: 10px; --u: 14px; /* the running text a size up, for reading in the hand */
+    --pad: 16px; --gut: 10px; --u: 14px; /* a margin with room to breathe; the running text a size up, for reading in the hand */
     --col: calc((100vw - var(--pad) * 2 - var(--gut) * 5) / 6);
     --cs: calc(var(--pad) + var(--colg) * 2); --ce: calc(100vw - var(--pad)); --c2: 45vw;
-    --top: calc(var(--pad) * 5.5 + var(--name) * 1.7); /* below the names, with room to breathe: where every page's content starts */
+    --top: calc(var(--pad) * 3.5 + var(--name) * 1.7); /* below the names, with room to breathe: where every page's content starts */
     --sec: 8vh;
     --cap: .72; /* Malamocco's cap height, in em */
   }
@@ -717,16 +720,17 @@ body.amer-open .ctag { z-index: 61; background: #111111; color: #E63323; } /* on
 .amer-cursor.on { visibility: visible; }
 .amer-cursor path { fill: #111111; stroke: #111111; stroke-width: 11; stroke-linejoin: round; }
 body .overlay.amer.own-cursor, body .overlay.amer.own-cursor * { cursor: none !important; }
-body .overlay.amer.own-cursor .amer-x, body .overlay.amer.own-cursor .amer-x * { cursor: pointer !important; }
+body .overlay.amer.own-cursor :is(.amer-x, .amer-go), body .overlay.amer.own-cursor :is(.amer-x, .amer-go) * { cursor: pointer !important; }
 .amer-scroll { z-index: 1; }
 .amer-x { position: absolute; top: var(--pad); right: var(--pad); z-index: 3; font-size: calc(var(--tm) * 1.6); line-height: 1; color: #111111; padding: .25em; margin: -.25em; }
 .amer-x .icon { width: .72em; height: .72em; }
 .amer-x .icon .s { stroke-width: 2.3; }
 @media (hover: hover) { .amer-x:hover { color: #fff; } }
+.amer :is(.amer-sub, .amer-dates, .amer-sign) { text-wrap: pretty; } /* the text: no lone word on a last line */
 .amer strong { font-weight: inherit; color: #E63323; background: #111111; padding: 0 .12em; -webkit-box-decoration-break: clone; box-decoration-break: clone; } /* what matters most: on a black band, in the page's red (each line its own band) */
 .amer ::selection { background: #111111; color: #E63323; }
 .amer-title {
-  margin: 0 0 0 -.05em; max-width: calc(100vw - var(--cs) - var(--pad));
+  margin: 0 0 0 -.05em; max-width: min(11em, calc(100vw - var(--cs) - var(--pad))); /* two lines, balanced */
   font-size: var(--label); line-height: .92; letter-spacing: -.03em; text-wrap: balance;
 }
 /* one rhythm: the title with its subtitle and dates as one block; then the lead; then the text,
@@ -738,6 +742,17 @@ body .overlay.amer.own-cursor .amer-x, body .overlay.amer.own-cursor .amer-x * {
 .amer-body p { margin: 0; text-wrap: pretty; }
 .amer-body p + p { margin-top: .75em; }
 .amer-sign { margin: 1.4em 0 0; font-size: var(--tm); }
+/* the way on to the works: black, the page's red on it */
+.amer-go {
+  display: inline-flex; align-items: center; gap: .5em; margin: calc(var(--tm) * 2.2) 0 0;
+  padding: .75em 1.05em .8em; background: #111111; color: #E63323;
+  font-size: calc(var(--tm) * 1.15); line-height: 1; text-box: trim-both cap alphabetic;
+}
+.amer-go .ex-arrow { width: .62em; height: .62em; }
+@media (hover: hover) { .amer-go:hover { color: #fff; } }
+.amer-go:active { transform: translateY(1px); }
+/* a work's name in italics (the one typeface has no italic of its own: slanted for this alone) */
+.amer em { font-style: italic; font-synthesis: style; }
 /* the exhibition's logos at the end of the text, black on the red */
 .amer-logos { margin: calc(var(--tm) * 3) 0 0; color: #111111; line-height: 0; }
 .amer-logos-svg { display: block; height: calc(var(--tm) * 2.2); width: auto; overflow: visible; }
@@ -746,6 +761,7 @@ body.cat-americas .menu-list button.is-active[data-cat="americas"] { cursor: poi
   .amer-scroll { padding: calc(var(--pad) * 5 + var(--tm)) var(--pad) 12vh; }
   .amer-title { font-size: var(--t2); max-width: calc(100vw - var(--pad) * 2 - var(--tm) * 2); }
   .amer-sub, .amer-dates { font-size: var(--tm); }
+  .amer-dates > span { display: block; } .amer-dates .amer-dot { display: none; } /* dates and place on two lines, no dot left hanging */
   .amer-lead, .amer-body { max-width: none; }
   .amer-lead { font-size: var(--t1); line-height: 1.12; }
   .amer-body { margin-top: calc(var(--tm) * 1.8); }

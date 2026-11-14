@@ -132,7 +132,7 @@
       "viewer": "sheet",
       "id": "samizdat",
       "label": "Samizdati",
-      "label_en": "Samizdat"
+      "label_en": "Self-publishing"
     },
     {
       "id": "painting",
@@ -176,9 +176,10 @@
             "Način na koji Martek doživljava Ameriku obuhvaća čitanja koja idu u rasponu **od fascinacije do kritike**. Posljednji rad koji je napravio kolaž je sa zemljopisnim konturama **potpuno crne Amerike**. Podvojenost Sjedinjenih Američkih Država očituje se s jedne strane u globalnoj hegemoniji, a s druge u bogatoj kulturnoj produkciji koja pripada svijetu, čini ga većim, i koja je inspiracija. Martek uzima i nudi reakciju na oboje, a **njegove su borbe poetske i nose pobjedu poezije**. Vode nas iz često nakaradne stvarnosti u kulturu.",
             "Prostor knjižnice u Preradovićevoj ima ograničene mogućnosti izlaganja pa se izložba predstavlja u dva medija. Veća i manja platna izložena su u izlogu i prostoru knjižnice, dok je **ostatak radova, u različitim tehnikama i formatima, predstavljen ovdje, na novom, prvom Martekovom webu**. Dizajnirao ga je Teo Peter.",
             "Paralelno s ovom izložbom, na 58. godišnjem kongresu ASEEES-a (Association for Slavic, East European, and Eurasian Studies) u Chicagu, o Sjedinjenim Američkim Državama u opusu Vlade Marteka izlagat će povjesničarka umjetnosti Adair Rounthwaite, dok je ove godine **u New Yorku, u prestižnoj biblioteci World Poetry, objavljena knjiga Martekove predpoezije**.",
-            "Izložba Every Artist is Deluded by America mali je i doprinos dugim i bogatim hrvatsko-američkim kulturnim i drugim vezama: **od Nikole Tesle do Orsona Wellesa, od Highwaya Ede Murtića do Amerika Vlade Marteka.**"
+            "Izložba Every Artist is Deluded by America mali je i doprinos dugim i bogatim hrvatsko-američkim kulturnim i drugim vezama: **od Nikole Tesle do Orsona Wellesa, od _Highwaya_ Ede Murtića do Amerika Vlade Marteka.**"
           ],
-          "sign": "Saša Šimpraga, kustos"
+          "sign": "Saša Šimpraga, kustos",
+        "go": "Otvori izložbu"
         },
         "en": {
           "title": "Every Artist is Deluded by America",
@@ -192,9 +193,10 @@
             "Martek's way of experiencing America spans readings **from fascination to critique**. The last work he made is a collage with the outline of **a completely black America**. The duality of the United States shows on one side in its global hegemony and on the other in a rich cultural production that belongs to the world, makes it larger, and inspires. Martek takes and offers a response to both, and **his struggles are poetic and carry the victory of poetry**. They lead us from an often grotesque reality into culture.",
             "The library in Preradovićeva has limited room for exhibiting, so the exhibition is presented in two media. Larger and smaller canvases are shown in the window and inside the library, while **the rest of the works, in various techniques and formats, are presented here, on Martek's new, first website**. It was designed by Teo Peter.",
             "Alongside the exhibition, at the 58th annual ASEEES convention (Association for Slavic, East European, and Eurasian Studies) in Chicago, art historian Adair Rounthwaite will speak about the United States in Vlado Martek's work, and this year **a book of Martek's prepoetry was published in New York, in the World Poetry series**.",
-            "Every Artist is Deluded by America is a small contribution to the long and rich Croatian-American cultural and other ties: **from Nikola Tesla to Orson Welles, from Edo Murtić's Highway to Vlado Martek's Americas.**"
+            "Every Artist is Deluded by America is a small contribution to the long and rich Croatian-American cultural and other ties: **from Nikola Tesla to Orson Welles, from Edo Murtić's _Highway_ to Vlado Martek's Americas.**"
           ],
-          "sign": "Saša Šimpraga, curator"
+          "sign": "Saša Šimpraga, curator",
+        "go": "See exhibition"
         }
       }
     }

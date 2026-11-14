@@ -38,7 +38,7 @@ npm run build:offline  # dist-offline/vlado-martek.html, sve u jednoj datoteci (
 ## 4. Raspored (računalo)
 
 **Grid (računalo): 12 stupaca.** Sve je definirano na vrhu `src/style.css`.
-- **Rubovi i razmaci:** vanjski rub je `--pad` (`clamp(10px, 1.1vw, 22px)`), a razmak između stupaca `--gut` jednak je rubu. Cijela stranica tako ima jednu jedinicu razmaka.
+- **Rubovi i razmaci:** vanjski rub je `--pad` (`clamp(16px, 1.6vw, 30px)`, na mobitelu 16 px), a razmak između stupaca je `--gut` (`clamp(10px, 1.1vw, 22px)`, na mobitelu 10 px). Rub je namjerno malo veći od razmaka, da ništa ne bude nabijeno uz rub ekrana. `metrics()` u `gallery.js` računa iste vrijednosti.
 - **Varijable:** `--col` je širina stupca, `--colg` stupac s razmakom, a `--span1` do `--span4` širine preko 1–4 stupca.
 - **Linije:**
   - `--cs` je početak 4. stupca: glavni stupac (kategorije, putanja, naslov, istaknuti rad, stranica rada, popis, O autoru).
@@ -207,3 +207,8 @@ Na zahtjev su trzavi pokreti u koracima (16 u sekundi) zamijenjeni glatkima. Tek
 - **Nagib sa žiroskopom** je izraženiji: do 24° (mišem i dalje 14°), perspektiva 650 px, a puni nagib postiže se već sa 16° nagiba mobitela (`tilt` u `main.js`).
 - **Tražilice:** naslov stranice je „Vlado Martek. 10% Artist.” (`<title>`, `og:title`, `twitter:title` i naslov kartice kad nijedan rad nije otvoren). Opis je ažuriran na sadašnje kategorije. `public/robots.txt` sve dopušta i upućuje na `public/sitemap.xml` (samo naslovnica). Oba pretpostavljaju domenu `vladomartek.com`; ako stranica ostane na drugoj adresi, treba je ondje promijeniti.
 - **Mobitel, donji red:** Martekova sličica je u donjem desnom kutu, a naslov i godina istaknutog rada dolje lijevo, na istoj liniji (`.about-btn`, `.hover-title` u mobilnom bloku `style.css`). Sivi prijelaz uz donji rub je zato niži.
+- **Overlay Amerika:** na kraju teksta, iznad logotipa, je gumb „Otvori izložbu” / „See exhibition” (`#amerGo`, `go` u `works.json`): crna pozadina, crveni tekst; zatvara overlay i pokazuje radove. U tekstu `_riječ_` daje kurziv (npr. _Highway_); jedino pismo nema kurziv, pa je nagnut samo za to (`font-synthesis: style`).
+- **Potpisi u mrežama** (Pregled i ostali radovi na dnu rada) izranjaju mekano, oko 0,2 s nakon svoje slike: pri otkrivanju mreže (`riseCap` u `revealSeq`), kad slika sleti iz galerije (`flyToIndex`) i pri skrolu ispod rada (`.rv .index-cap`).
+- **Galerija na mobitelu je špil:** istaknuti rad je po sredini, a sljedeći stoje iza njega, svaki 7 % manji, s desnim rubovima koji vire 13 px (četiri u dubinu; `key()` u `gallery.js`). Swipe baci prednju kartu ulijevo (ostaje iznad špila dok odlazi), a sljedeća dođe naprijed.
+- **Overlay Amerika, tekst:** tekst je `text-wrap: pretty` (bez osamljene riječi u zadnjem retku), a naslov je u dva uravnotežena retka (`max-width: 11em`, `text-wrap: balance`). Na mobitelu su datum i mjesto u dva retka.
+- **Samizdati** na engleskom su „Self-publishing” (`label_en` u `works.json`).

@@ -84,13 +84,13 @@ export class Gallery {
     const vw = innerWidth, vh = innerHeight;
     const phone = matchMedia('(max-width: 700px), (orientation: portrait) and (max-width: 900px)').matches; // same as the CSS
     // the page's 12-column grid (as in style.css): margins and gutters of --pad
-    const pad = Math.min(22, Math.max(10, vw * 0.011)), gut = pad;
+    const pad = phone ? 16 : Math.min(30, Math.max(16, vw * 0.016)), gut = phone ? 10 : Math.min(22, Math.max(10, vw * 0.011)); // as --pad / --gut
     const colg = (vw - pad * 2 - gut * 11) / 12 + gut; // a column and its gutter
     // a phone has its own 6-column grid (as in style.css): the featured work stands on column 3
-    const pcolg = (vw - 20 - 50) / 6 + 10;
-    const cs = phone ? 10 + pcolg * 2 : pad + colg * 3; // the featured work stands on column 4
+    const pcolg = (vw - pad * 2 - gut * 5) / 6 + gut;
+    const cs = pad + (phone ? pcolg * 2 : colg * 3); // the featured work stands on column 4 (column 3 on a phone)
     return {
-      vw, vh, phone, cs,
+      vw, vh, phone, cs, pad,
       h0: phone ? vh * 0.46 : vh * 0.47,               // featured height
       maxW: phone ? pcolg * 4 - 10 : colg * 6 - gut,   // featured width cap: four columns (phone), 4–9
       step: phone ? pcolg * 0.5 : colg,                // deck: each work a step further right
@@ -208,9 +208,19 @@ export class Gallery {
       if (d === 0) return { x: m.phone ? (m.vw - w0 * GROW) / 2 : m.cs, s: GROW, o: 1 };
       return { x: d < 0 ? -w0 * s - 40 - (-d) * 40 : m.vw + 40 + d * 40, s, o: 1 };
     }
-    const x0 = m.phone ? (m.vw - w0) / 2 : m.cs; // the featured work: on column 4, or in the middle of a phone
-    // a phone: the deck on the right runs out to the screen's edge (its fourth card cut by it)
-    const step = m.phone ? (m.vw - x0 - w0) / 3.5 + m.shrink * w0 : m.step;
+    if (m.phone) {
+      // a phone: a deck. The featured work in the middle; the next ones stand behind it, each a
+      // little smaller, their right edges stepping out (four on show); the one before has gone off
+      // to the left (a swipe throws the front card away and the next comes forward)
+      const x0 = (m.vw - w0) / 2, DEPTH = 4, PEEK = 13;
+      if (d >= 0) {
+        const s = 1 - 0.07 * Math.min(d, DEPTH + 1);
+        return { x: x0 + w0 * (1 - s) + Math.min(d, DEPTH + 1) * PEEK, s, o: d > DEPTH ? 0 : 1 };
+      }
+      return { x: -w0 * (1.1 - d * 0.1) - 40, s: 1, o: 1 };
+    }
+    const x0 = m.cs; // the featured work: on column 4
+    const step = m.step;
     if (d >= 0) return { x: x0 + d * step, s: Math.max(0.3, 1 - m.shrink * d), o: 1 };
     const s = d === -1 ? m.left : m.left * 0.8;
     const right = d === -1 ? x0 - m.gap : x0 - m.gap * 2 - w0 * m.left * (-1 - d);
@@ -353,7 +363,8 @@ export class Gallery {
       if (s.f !== f) { st.filter = f; s.f = f; }
       // a work open: the neighbours at the edges go out of focus
       st.visibility = o * fade < 0.01 || ex > m.vw || ex + w < 0 || this.holdAll || this.flying.has(k) || this.hiddenK.has(k) ? 'hidden' : '';
-      st.zIndex = String(1000 - Math.round(Math.abs(d) * 10) - (d < 0 ? 5 : 0));
+      // (a phone's deck: the card thrown away stays on top of the deck as it leaves)
+      st.zIndex = String(m.phone && d < 0 ? 1010 + Math.round(d * 10) : 1000 - Math.round(Math.abs(d) * 10) - (d < 0 ? 5 : 0));
     }
 
     // hover by hit-testing, so a work that slides under a still pointer counts too
