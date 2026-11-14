@@ -317,7 +317,6 @@ async function boot() {
   body.classList.add('loaded');
   body.classList.remove('is-loading');
   if (!deepLink) playIntro();
-  else body.classList.remove('names-up');
   if (fromHash.work) {
     const w = data.works.find((x) => x.id === fromHash.work);
     if (w) { gallery.show(w, { animate: false }); openDetail(w, { push: false }); }
@@ -333,15 +332,10 @@ const app = {};
 let namesTyped = Promise.resolve();
 function typeNames() {
   fitLabels();
-  // over the splash the names stand large in their corner (up to twice their size, never wider than
-  // the screen): letter by letter they rise up from their baseline (Vlado first, then Martek)
-  const a = $('labelFirst'), b = $('labelLast');
-  const w = Math.max(a.offsetWidth, b.offsetWidth);
-  document.documentElement.style.setProperty('--splash-k', Math.min(2, (innerWidth * 0.86) / w).toFixed(3));
-  body.classList.add('intro-names', 'names-up');
+  // the splash shows only the 10% artist mark; the names wait, split into letters, and rise into
+  // their corner as the splash lifts (playIntro)
   for (const el of nameLines()) el.innerHTML = [...el.textContent].map((c) => `<span class="ch">${escapeHtml(c)}</span>`).join('');
-  riseNames(250, 1100, 55);
-  namesTyped = new Promise((done) => setTimeout(done, 600));
+  namesTyped = Promise.resolve();
 }
 // the top bar comes in item by item: the categories from the left, then the view icons, language
 // and sound (on a phone: the view icons and the word)
@@ -360,19 +354,12 @@ function riseNames(delay, dur, gap) {
 }
 async function playIntro() {
   await namesTyped;
-  // the large names sink letter by letter below their baseline; hidden there, they take their own
-  // size, and rise again in the corner (no shrinking on show); Martek turns from black to red
-  const letters = nameLetters();
-  if (!reducedMotion() && letters.length) {
-    const sink = letters.map((ch, i) => ch.animate([{ transform: 'none' }, { transform: 'translateY(105%)' }], { duration: 420, delay: i * 22, easing: roughCss(.55, 0, .75, .2, 420), fill: 'forwards' }));
-    await Promise.all(sink.map((x) => x.finished.catch(() => {})));
-    body.classList.remove('names-up');
-    for (const x of sink) x.cancel();
-    riseNames(0, 900, 40);
-  } else body.classList.remove('names-up');
-  setTimeout(() => { body.classList.add('intro-ui'); revealBar(); }, 350); // the categories and the tools, one after another
-  setTimeout(() => { body.classList.add('intro-gallery'); app.gallery.enter(); }, 800);
-  setTimeout(() => body.classList.remove('intro', 'intro-names', 'intro-ui', 'intro-gallery'), 2200);
+  // as the splash lifts, the names rise letter by letter into their corner (Vlado, then Martek)
+  body.classList.add('intro-names');
+  riseNames(150, 900, 40);
+  setTimeout(() => { body.classList.add('intro-ui'); revealBar(); }, 500); // the categories and the tools, one after another
+  setTimeout(() => { body.classList.add('intro-gallery'); app.gallery.enter(); }, 950);
+  setTimeout(() => body.classList.remove('intro', 'intro-names', 'intro-ui', 'intro-gallery'), 2400);
 }
 
 // ---------- views: Surf (the moving line), Index (every work in a grid) and List (one row each) ----------
@@ -1003,7 +990,9 @@ addEventListener('resize', () => { if (openWork) layoutFigure(openWork); });
 // ---------- the open work tilts: after the mouse on a computer, after the gyroscope on a phone ----------
 // smooth, not stepped: like the gallery under the hand, it follows the body
 const tilt = (() => {
-  const MAX = 14; // degrees, either way
+  const MAX = 14; // degrees, either way (with the mouse)
+  const MAX_GYRO = 24; // with the gyroscope: more pronounced
+  const persp = () => (fine.matches ? 1100 : 650); // a closer eye on a phone: the turn shows more
   const fine = matchMedia('(pointer: fine)');
   let x = 0, y = 0, tx = 0, ty = 0, raf = 0, on = false;
   let b0 = null, g0 = null; // the phone's resting angle when the work opened
@@ -1012,7 +1001,8 @@ const tilt = (() => {
   const fig = () => $('detailFigure');
   function frame() {
     x += (tx - x) * 0.12; y += (ty - y) * 0.12;
-    fig().style.transform = `perspective(1100px) rotateX(${(-y * MAX).toFixed(2)}deg) rotateY(${(x * MAX).toFixed(2)}deg)`;
+    const m = fine.matches ? MAX : MAX_GYRO;
+    fig().style.transform = `perspective(${persp()}px) rotateX(${(-y * m).toFixed(2)}deg) rotateY(${(x * m).toFixed(2)}deg)`;
     // the loop runs only while the picture is still turning (a new mouse or gyroscope reading starts it again)
     raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.001 ? requestAnimationFrame(frame) : 0;
     if (!raf && !on) fig().style.transform = '';
@@ -1038,8 +1028,8 @@ const tilt = (() => {
     if (g0 == null) { g0 = lr; b0 = fb; }
     // the resting angle slowly follows the hand, so however the phone is held, it returns to flat
     g0 += (lr - g0) * 0.01; b0 += (fb - b0) * 0.01;
-    tx = clamp((lr - g0) / 25);
-    ty = clamp((fb - b0) / 25);
+    tx = clamp((lr - g0) / 16); // 16° of the phone turns the picture all the way
+    ty = clamp((fb - b0) / 16);
     run();
   });
   return {
@@ -1103,7 +1093,7 @@ function fillCount() {
   $('countAll').textContent = `/ ${pad2(list.length)}`;
 }
 // the browser tab: the open work's title, otherwise his name
-function setDocTitle() { document.title = openWork ? `Vlado Martek. ${openWork.title}` : 'Vlado Martek'; } // the title already ends in its full stop (or ? !)
+function setDocTitle() { document.title = openWork ? `Vlado Martek. ${openWork.title}` : 'Vlado Martek. 10% Artist.'; } // the title already ends in its full stop (or ? !)
 function openDetail(work, { push = true, dir = 0 } = {}) {
   if (!data) return;
   const swap = !!openWork;
@@ -1346,7 +1336,7 @@ function fitLabels() {
   const k = Math.min(1,
     (innerWidth - pad * 2 - 24) / (a.offsetWidth + b.offsetWidth),
     // before the media (on a phone the hamburger replaces them: before column 3 of its 6)
-    ((phone ? pad + ((innerWidth - pad * 7) / 6 + pad) * 2 : $('menu').getBoundingClientRect().left) - pad * (phone ? 2 : 3)) / Math.max(a.offsetWidth, b.offsetWidth));
+    ((phone ? innerWidth * 0.42 : $('menu').getBoundingClientRect().left) - pad * (phone ? 2 : 3)) / Math.max(a.offsetWidth, b.offsetWidth));
   if (k < 1) root.style.setProperty('--name', `${Math.floor(fs * k)}px`);
 }
 addEventListener('resize', () => fitLabels());

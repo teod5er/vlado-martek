@@ -1,0 +1,6 @@
+# Vlado Martek. 10% Artist.
+# Sve je javno: tražilice smiju indeksirati cijelu stranicu.
+User-agent: *
+Allow: /
+
+Sitemap: https://vladomartek.com/sitemap.xml

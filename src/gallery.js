@@ -91,8 +91,8 @@ export class Gallery {
     const cs = phone ? 10 + pcolg * 2 : pad + colg * 3; // the featured work stands on column 4
     return {
       vw, vh, phone, cs,
-      h0: phone ? vh * 0.42 : vh * 0.47,               // featured height
-      maxW: phone ? pcolg * 3 - 10 : colg * 6 - gut,   // featured width cap: columns 3–5 (phone), 4–9
+      h0: phone ? vh * 0.46 : vh * 0.47,               // featured height
+      maxW: phone ? pcolg * 4 - 10 : colg * 6 - gut,   // featured width cap: four columns (phone), 4–9
       step: phone ? pcolg * 0.5 : colg,                // deck: each work a step further right
       shrink: 0.06,                                    // ... and this much smaller
       gap: phone ? 20 : colg + gut,                    // the work on the left ends before the featured one

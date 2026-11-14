@@ -44,7 +44,7 @@ html:not(.fonts) body > :not(.loader) { visibility: hidden; }
   --t3: calc(var(--t2) * var(--phi));   /* VLADO / MARTEK */
   --t4: calc(var(--t3) * var(--phi));
   --label: var(--t3);
-  --name: calc(var(--tm) * 2.6);       /* VLADO MARTEK in the corner */
+  --name: calc(var(--tm) * 3);         /* VLADO MARTEK in the corner */
   --sans: 'Malamocco', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --ease: cubic-bezier(.22, .8, .2, 1);
   --soft: cubic-bezier(.22, 1, .36, 1); /* things arriving: quick, then a long gentle landing */
@@ -135,7 +135,7 @@ body.intro-gallery .gallery, body.intro-gallery .hover-title { opacity: 1; }
 /* the splash lifts away: a fade, then gone */
 body.loaded .loader { opacity: 0; visibility: hidden; transition: opacity .7s ease-out, visibility 0s .7s; }
 .loader { display: grid; place-items: center; }
-.loader-mark { width: min(22vw, 420px); min-width: 180px; height: auto; display: block; }
+.loader-mark { width: min(28vw, 540px); min-width: 230px; height: auto; display: block; }
 
 
 /* ---------- labels ---------- */
@@ -172,8 +172,6 @@ body.detail-open .about-btn { display: none; } /* a work's page: no portrait in 
    right (Martek in black there, so it shows on the red); once the page is in, they glide up together
    into the top-left corner */
 .label { transition: color 1.2s var(--soft), opacity .8s var(--soft); } /* Martek turns from the splash's black to red, slowly */
-body.names-up .label { z-index: 31; font-size: calc(var(--name) * var(--splash-k, 1.6)); } /* over the splash, large */
-body.names-up .label-last { padding-top: calc(var(--pad) + var(--name) * var(--splash-k, 1.6) * .92); }
 /* the names' letters rise from their baseline (main.js): each line hides what is still below it */
 .label .ch { display: inline-block; }
 body.intro-names .label-first, body.intro-names .label-text { display: inline-block; clip-path: inset(-1em -.5em 0 -.5em); }
@@ -181,7 +179,6 @@ body.intro-names .label-first, body.intro-names .label-text { display: inline-bl
 body.detail-open .label, body.events-open .label { z-index: 26; }
 /* a work scrolled down, its name in the path: the names in the corner go (a cut, like the path's change) */
 body.detail-open.detail-title-on .label { visibility: hidden; }
-body.names-up .label-last { color: var(--ink); } /* the splash: Martek in black on the red */
 
 /* ---------- icons ----------
    one family: a 12 × 12 grid drawn cap-height tall; filled shapes sit in a 10 × 10 box with
@@ -566,7 +563,7 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
     --pad: 10px; --u: 14px; /* the running text a size up, for reading in the hand */
     --col: calc((100vw - var(--pad) * 2 - var(--gut) * 5) / 6);
     --cs: calc(var(--pad) + var(--colg) * 2); --ce: calc(100vw - var(--pad)); --c2: 45vw;
-    --top: calc(var(--pad) * 2.5 + var(--name) * 1.7); /* below the names: where every page's content starts */
+    --top: calc(var(--pad) * 5.5 + var(--name) * 1.7); /* below the names, with room to breathe: where every page's content starts */
     --sec: 8vh;
     --cap: .72; /* Malamocco's cap height, in em */
   }
@@ -633,7 +630,7 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
 
   /* ----- overview and list: from --top, the full width ----- */
   .index { padding: var(--top) var(--pad) calc(var(--pad) * 2); bottom: calc(var(--pad) * 2 + var(--t1) * 2.4); } /* it ends above the bottom row */
-  .index-grid { gap: 4vh calc(var(--gut) * 2); grid-template-columns: repeat(3, minmax(0, 1fr)); } /* three in a row */
+  .index-grid { gap: 4vh calc(var(--gut) * 2); grid-template-columns: repeat(2, minmax(0, 1fr)); } /* two in a row */
   .index-cap { font-size: 12px; }
   .list { padding-top: var(--top); padding-left: var(--pad); }
   /* the picture on columns 1–2, title and year from column 3, the medium under the title (the two
@@ -648,7 +645,7 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   .list-thumb { grid-area: th; align-self: center; } .list-title { grid-area: t; } .list-year { grid-area: y; } .list-cat { grid-area: c; }
 
   /* ----- a work ----- */
-  .detail-figure { left: calc(var(--pad) + var(--colg)); right: calc(var(--pad) + var(--colg)); top: var(--top); bottom: calc(var(--t2) * 4.6 + var(--pad) * 3); } /* columns 2–5, centred, never edge to edge */
+  .detail-figure { left: calc(var(--pad) + var(--colg) * .5); right: calc(var(--pad) + var(--colg) * .5); top: var(--top); bottom: calc(var(--t2) * 4.6 + var(--pad) * 3); } /* from the middle of column 1 to the middle of column 6, centred, never edge to edge */
   .detail-head { max-width: calc(100vw - var(--pad) * 2); }
   .detail-title, .detail-year { font-size: var(--t2); }
   /* under the work: the details (or photos) one under the other, the full width */

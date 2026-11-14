@@ -45,7 +45,7 @@ npm run build:offline  # dist-offline/vlado-martek.html, sve u jednoj datoteci (
   - `--c2` je početak 7. stupca: drugi stupac (vrijednosti u tablici, godina u popisu, naziv na Događanjima).
   - `--ce` je kraj 9. stupca: ovdje završavaju slika, opis i tablica na stranici rada te tekst O autoru.
 - **Galerija** (`src/gallery.js`, `metrics()`) računa isti grid: istaknuti rad počinje na 4. stupcu, špil se pomiče po jedan stupac, prethodni rad završava na kraju 2. stupca, a najveća širina rada je stupci 4–9.
-- **Mreža:** od linije „Početna” (4. stupac), 3 rada u redu, svaki preko 2 stupca, s praznim stupcem između (4–5, 7–8, 10–11). Razmak između redova je 10 vh. Na mobitelu su 3 u redu, od ruba do ruba (samo rub stranice s obje strane).
+- **Mreža:** od linije „Početna” (4. stupac), 3 rada u redu, svaki preko 2 stupca, s praznim stupcem između (4–5, 7–8, 10–11). Razmak između redova je 10 vh. Na mobitelu su 2 u redu (i u mreži ostalih radova na dnu rada), od ruba do ruba (samo rub stranice s obje strane).
 - **Popis:** cijeli red, od linije „Početna” do desnog ruba: sličica (4,6 em) i naslov na 4–8, godina na 9–10, kategorija na 11–12.
 - **Mobitel:** vlastiti grid od 6 stupaca (rub i razmak 10 px). Imena su na stupcima 1–2, a mreža (3 u redu) ide od ruba do ruba. Popis, stranica rada, Događanja i O autoru idu cijelom širinom, ispod imena.
 
@@ -131,12 +131,12 @@ Na zahtjev su trzavi pokreti u koracima (16 u sekundi) zamijenjeni glatkima. Tek
   - radovi u Pregledu i Popisu, jedan za drugim (`revealSeq`).
 - **Stranice** (rad, O autoru, Događanja) pojave se i nestanu kratkim blijeđenjem (`fadeIn`, `fadeOut`, klasa `is-closing`). Dok stranica nestaje, ispod se već vidi prikaz.
 - **Ispod rada** detalji i ostali radovi mekano izrone kad se do njih skrola (`revealOnScroll`, `.rv`).
-- **Uvod:** splash nestaje blijeđenjem. Imena stoje u kutu u svojoj veličini; slova izranjaju odozdo, jedno za drugim (prvo „Vlado”, pa „Martek”), a „Martek” zatim polako prijeđe iz crne u crvenu. Kategorije, ikone prikaza, jezik i zvuk izranjaju jedni za drugima (`revealBar`), i ponovno nakon povratka s rada ili Događanja.
+- **Uvod:** splash nestaje blijeđenjem, a imena izranjaju u kutu slovo po slovo. Za njima izranjaju kategorije, ikone prikaza, jezik i zvuk jedni za drugima (`revealBar`), i ponovno nakon povratka s rada ili Događanja.
 - **Boje** poveznica i stanja mijenjaju se u 0,25 s.
 - **Ostali pokreti:** Martekova sličica raste glatko, red u Popisu se širi glatko, a oznaka uz kursor ga prati glatko i pojavi se blijeđenjem.
 - **Kursor:** nasumični nacrtani kursor iz `cursors` (pri svakom učitavanju i kliku). Na Amerikama je bijel (`inv` / `inv2x`), a iznad svega što se može kliknuti je sistemska ruka.
 - **Zvuk** kreće tek nakon prve radnje korisnika.
-- **Splash:** pozadina je `--red`, „Vlado / Martek” stoji gore lijevo, 1,6 × veće (`--splash-k`), pa se smanji na svoju veličinu.
+- **Splash:** pozadina je `--red`, na njoj samo znak „10% artist”.
 - **Smanjeno kretanje:** uz `prefers-reduced-motion` nema ni klizanja ni blijeđenja.
 
 ## 8. Otvorene stavke
@@ -196,10 +196,13 @@ Na zahtjev su trzavi pokreti u koracima (16 u sekundi) zamijenjeni glatkima. Tek
 
 ## 12. Studeni 2026.: splash, povećanje rada, Amerike
 
-- **Splash:** imena stoje u kutu, do 2 × veća (`--splash-k`, najviše 86 % širine ekrana); slova izranjaju jedno za drugim. Na kraju splasha velika slova potonu ispod svoje linije, imena dok su skrivena prijeđu u svoju veličinu, pa ponovno izrone u kutu (`riseNames`, `playIntro`). Nigdje se ne vidi smanjivanje.
+- **Splash:** na crvenom je samo znak „10% artist” (`loader.svg`, `min(28vw, 540px)`, najmanje 230 px), bez imena. Kad se splash podigne, imena izranjaju u kutu slovo po slovo, prvo „Vlado”, pa „Martek” (`riseNames`, `playIntro`).
 - **Povećanje rada:** klik ili dodir na sliku otvorenog rada otvara je preko svega, cijelu i što veću ekran dopušta (uz rub sa svih strana; `openZoom` u `main.js`, `.zoom`). Slika izraste iz svog mjesta, a zatvara se na × gore desno ili Escapeom. Dok je otvorena, strelice ne mijenjaju rad.
 - **Amerike:** kad se kategorija odabere, otvara se overlay preko cijele stranice (`#amer`, `openAmer`). Na njemu su naslov izložbe, podnaslov, trajanje i mjesto (16. 11. – 14. 12. 2026. · Knjižnica Bogdana Ogrizovića; `dates` i `place`), uvodna rečenica i cijeli tekst Saše Šimprage; najbitnije je bijelo (`**…**` u tekstu). Zatvara se na × gore desno ili Escapeom; ponovni klik na Amerike ga opet otvara. Sadržaj je u `works.json`, `categories[americas].intro` (`hr` / `en`; engleski je preveden na brzinu). Tekst je preuzet s najave KGZ-a uz male izmjene: „predstavljen ovdje” umjesto adrese weba, skraćeno objašnjenje kratice ASEEES, ispravljeni „Posljednji” i „2000.”.
 - **Amerika kao kursor na overlayu:** `amerika.svg` s radne površine ugrađen je u `index.html` (`#amerMap`, `.amer-cursor`, 76 px), s crnom ispunom i bez titranja. Na overlayu zamjenjuje kursor miša (sredina oblika je na vrhu kursora), a iznad × je obična ruka. Samo za miš (`amerMap` u `main.js`).
 - **Tipografija overlaya:** naslov, podnaslov i trajanje čine jedan blok; uvodna rečenica stoji 1,1 em ispod, tekst oko dva retka ispod nje, odlomci su 0,75 em razmaknuti, a potpis je redak ispod teksta.
 - **Logotipi izložbe** (KGZ, Američki prostor, America 250; `logotipi izlozbe.svg` s radne površine) stoje na dnu teksta overlaya, ispod potpisa (`#amerLogos`). Ugrađeni su u `index.html`, a crvena iz datoteke zamijenjena je s `currentColor`, pa su crni na crvenom.
 - **Box „Exhibition: …” dolje desno** je skriven (`#langBox`). Datumi u `events` ispravljeni su na 16. 11. – 14. 12. 2026.
+- **Veličine (studeni 2026.):** imena „Vlado / Martek” su `--name: tm × 3` (bila 2,6). Na mobitelu smiju sezati do 42 % širine ekrana (`fitLabels`), a sadržaj počinje niže (`--top`: rub × 5,5 + ime × 1,7), da ne bude zbijen uz imena. Na mobitelu je istaknuti rad u galeriji veći (46 % visine, do četiri stupca; `metrics()` u `gallery.js`), a slika na stranici rada ide od sredine 1. do sredine 6. stupca.
+- **Nagib sa žiroskopom** je izraženiji: do 24° (mišem i dalje 14°), perspektiva 650 px, a puni nagib postiže se već sa 16° nagiba mobitela (`tilt` u `main.js`).
+- **Tražilice:** naslov stranice je „Vlado Martek. 10% Artist.” (`<title>`, `og:title`, `twitter:title` i naslov kartice kad nijedan rad nije otvoren). Opis je ažuriran na sadašnje kategorije. `public/robots.txt` sve dopušta i upućuje na `public/sitemap.xml` (samo naslovnica). Oba pretpostavljaju domenu `vladomartek.com`; ako stranica ostane na drugoj adresi, treba je ondje promijeniti.
