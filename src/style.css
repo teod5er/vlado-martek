@@ -30,8 +30,6 @@ html:not(.fonts) body > :not(.loader) { visibility: hidden; }
   --span2: calc(var(--col) * 2 + var(--gut));
   --span3: calc(var(--col) * 3 + var(--gut) * 2);
   --span4: calc(var(--col) * 4 + var(--gut) * 3);
-  --grey-fade: linear-gradient(to top, var(--bg) 0%, rgba(228, 228, 228, .92) 35%, rgba(228, 228, 228, 0) 100%); /* the page grey, fading out: under the titles at the bottom and the bar at the top */
-  --sheet-fade: linear-gradient(to top, var(--sheet) 0%, rgba(247, 247, 247, .92) 35%, rgba(247, 247, 247, 0) 100%); /* the same over a work's light panel */
   --group-gap: var(--pad);              /* top right: between the view icons and language + sound, either side of the rule: the page margin */
   --blur: 48px;
   --phi: 1.618;
@@ -61,8 +59,6 @@ body.cat-americas {
   --line: rgba(230, 51, 35, .3);
   --sheet: #111111;
   --crumb: rgba(230, 51, 35, .6);
-  --grey-fade: linear-gradient(to top, #111111 0%, rgba(17, 17, 17, .92) 35%, rgba(17, 17, 17, 0) 100%);
-  --sheet-fade: var(--grey-fade);
   color-scheme: dark;
 }
 /* About keeps its red page with black text, and so do the names and the bar above it */
@@ -76,6 +72,13 @@ body.cat-americas .strip-item { background: #E63323; } /* the photo under a work
 body {
   --row: var(--pad);
   --bar: calc(var(--row) + var(--tm) + var(--pad) * 1.5); /* height of the top bar (no colour of its own) */
+  /* the fades along the top and the bottom of every page: one height, one soft curve (no visible
+     edge), in the colour of what lies under them: the page, a work's light panel, About's red.
+     Turned over (scaleY) at the top. Set here on body, so they follow Amerike's colours. */
+  --fade-h: calc(var(--bar) + var(--pad) * 3);
+  --grey-fade: linear-gradient(to top, color-mix(in srgb, var(--bg) 100%, transparent) 0%, color-mix(in srgb, var(--bg) 90%, transparent) 15%, color-mix(in srgb, var(--bg) 68%, transparent) 35%, color-mix(in srgb, var(--bg) 40%, transparent) 55%, color-mix(in srgb, var(--bg) 16%, transparent) 75%, color-mix(in srgb, var(--bg) 4%, transparent) 90%, transparent 100%);
+  --sheet-fade: linear-gradient(to top, color-mix(in srgb, var(--sheet) 100%, transparent) 0%, color-mix(in srgb, var(--sheet) 90%, transparent) 15%, color-mix(in srgb, var(--sheet) 68%, transparent) 35%, color-mix(in srgb, var(--sheet) 40%, transparent) 55%, color-mix(in srgb, var(--sheet) 16%, transparent) 75%, color-mix(in srgb, var(--sheet) 4%, transparent) 90%, transparent 100%);
+  --about-fade: linear-gradient(to top, color-mix(in srgb, var(--about-bg) 100%, transparent) 0%, color-mix(in srgb, var(--about-bg) 90%, transparent) 15%, color-mix(in srgb, var(--about-bg) 68%, transparent) 35%, color-mix(in srgb, var(--about-bg) 40%, transparent) 55%, color-mix(in srgb, var(--about-bg) 16%, transparent) 75%, color-mix(in srgb, var(--about-bg) 4%, transparent) 90%, transparent 100%);
 }
 html, body { margin: 0; height: 100%; }
 body {
@@ -119,7 +122,7 @@ button, a, .index-cap, .index-cap .y, .list-title, .crumb-cat { transition: colo
 /* ---------- intro: names, then menu + language, then the gallery ---------- */
 body.intro .label, body.intro .menu, body.intro .about-link, body.intro .views, body.intro .gallery, body.intro .hover-title { opacity: 0; pointer-events: none; }
 /* coming in after the splash: a soft fade (the gallery slides in) */
-.about-link, .hover-title, .gallery, .about-btn { transition: opacity .8s var(--soft); } /* (the menu, views, tools and the word: item by item, main.js) */
+.about-link, .hover-title, .gallery { transition: opacity .8s var(--soft); } /* (the menu, views, tools and the word: item by item, main.js) */
 body.intro-names .label { opacity: 1; }
 body.intro-ui .menu, body.intro-ui .about-link, body.intro-ui .views { opacity: 1; }
 body.intro-gallery .gallery, body.intro-gallery .hover-title { opacity: 1; }
@@ -143,12 +146,10 @@ body.loaded .loader { opacity: 0; visibility: hidden; transition: opacity .7s ea
    too): a touch darker than the page, so it shows on the plain grey as well, not only over pictures */
 .bottom-fade {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 4; pointer-events: none; /* under the names and the title */
-  height: calc(var(--t1h) * 2.3 + var(--pad) * 5); /* the title and its year, with room to fade */
+  height: var(--fade-h);
   background: var(--grey-fade);
 }
 body.detail-open .bottom-fade, body.events-open .bottom-fade { z-index: 22; } /* over a work and the events page too */
-/* over a work the big title stands low (the hero is 90 % tall): the fade only covers the bottom row there */
-body.detail-open .bottom-fade, body.events-open .bottom-fade { height: calc(var(--tm) * 2.4 + var(--pad) * 3) !important; }
 /* VLADO / MARTEK in two lines in the top-left corner, Vlado's cap tops in line with the top bar */
 .label {
   position: fixed; top: 0; z-index: 13;
@@ -171,14 +172,24 @@ body.detail-open .about-btn { display: none; } /* a work's page: no portrait in 
 /* during the splash the names sit on the vertical middle, Vlado at the left edge and Martek at the
    right (Martek in black there, so it shows on the red); once the page is in, they glide up together
    into the top-left corner */
-.label { transition: color 1.2s var(--soft), opacity .8s var(--soft); } /* Martek turns from the splash's black to red, slowly */
 /* the names' letters rise from their baseline (main.js): each line hides what is still below it */
 .label .ch { display: inline-block; }
 body.intro-names .label-first, body.intro-names .label-text { display: inline-block; clip-path: inset(-1em -.5em 0 -.5em); }
 /* the names stay on every page: over a work and the events too */
 body.detail-open .label, body.events-open .label { z-index: 26; }
-/* a work scrolled down, its name in the path: the names in the corner go (a cut, like the path's change) */
-body.detail-open.detail-title-on .label { visibility: hidden; }
+/* a page scrolled down (body.bar-compact, main.js): the names in one line, the size of the top row
+   and on it, and his portrait slides out under the screen, so the page has as much room as possible */
+.label { transition: color 1.2s var(--soft), opacity .8s var(--soft), font-size .45s var(--soft), padding-top .45s var(--soft), left .45s var(--soft); }
+body.bar-compact .label { font-size: var(--tm); letter-spacing: 0; } /* set exactly as the categories' names are */
+body.bar-compact .label-first, body.bar-compact .label-last { margin-left: 0; }
+body.bar-compact .label-last { padding-top: var(--pad); left: calc(var(--pad) + var(--first-em, 2.7) * 1em + .45em); } /* (--first-em is measured with the big names' tight spacing: .175em less than here) */
+/* the navigation shrinks with them: the view icons, language and sound go, and the categories give
+   way to the path (below, a computer) */
+/* (item by item, the way they came in after the splash, turned round: main.js, setCompact) */
+body.bar-compact :is(.views, .prefs) > *, body.bar-compact .menu-list > li { opacity: 0; }
+body.bar-compact .views, body.bar-compact .prefs, body.bar-compact .views *, body.bar-compact .prefs * { pointer-events: none; }
+.about-btn { transition: opacity .8s var(--soft), translate .5s var(--soft); }
+body.bar-compact .about-btn { translate: 0 calc(100% + var(--pad) * 2); pointer-events: none; }
 
 /* ---------- icons ----------
    one family: a 12 × 12 grid drawn cap-height tall; filled shapes sit in a 10 × 10 box with
@@ -234,8 +245,6 @@ body.focus-menu .menu-label { color: var(--ink); }
 body.focus-menu .menu-list button { visibility: visible; pointer-events: auto; }
 .menu-list button:hover { color: var(--ink); }
 .menu-list li:has(.is-active) { display: none; }
-/* how many works a category holds, raised like an exponent beside its name */
-.cat-n { font-size: .58em; line-height: 0; vertical-align: 0; position: relative; top: -.62em; margin-left: .12em; font-variant-numeric: tabular-nums; }
 
 /* ---------- gallery: the carousel ---------- */
 .gallery { position: fixed; inset: 0; z-index: 2; touch-action: none; overflow: hidden; }
@@ -326,8 +335,8 @@ body.detail-open .about-link, body.events-open .about-link { z-index: 25; }
 /* the overview and the list fade out just before the top bar, so nothing runs into it (no band, no colour) */
 body.view-index::before, body.view-list::before {
   content: ''; position: fixed; left: 0; right: 0; top: 0; z-index: 4; pointer-events: none;
-  height: calc(var(--bar) + var(--pad));
-  background: linear-gradient(to bottom, var(--bg) calc(var(--pad) + var(--tm)), transparent 100%);
+  height: var(--fade-h);
+  background: var(--grey-fade); transform: scaleY(-1);
 }
 .index-grid {
   list-style: none; margin: 0; padding: 0;
@@ -342,7 +351,7 @@ body.view-index::before, body.view-list::before {
 .fly { position: absolute; background: center / 100% 100% no-repeat; transform-origin: 0 0; will-change: transform; }
 .index-item img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: left bottom; pointer-events: none; } /* bottom-left: the caption right under the picture, however low the work */
 /* under each work: its title and year, at most two lines */
-.index-cap { margin: .8em 0 0; font-size: var(--t0); line-height: 1.2; color: var(--ink); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+.index-cap { margin: .8em 0 0; font-size: calc(var(--t0) * 1.15); line-height: 1.2; color: var(--ink); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
 .index-cap .y { color: var(--red); }
 li:has(> .index-item.is-hover) .index-cap, li:has(> .index-item:hover) .index-cap { color: var(--red); } /* the work under the pointer: its caption red, at once */
 body.cat-americas li:has(> .index-item.is-hover) .index-cap, body.cat-americas li:has(> .index-item:hover) .index-cap,
@@ -389,8 +398,13 @@ body.cat-americas li:has(> .index-item.is-hover) .index-cap .y, body.cat-america
 .lang .top-link:hover, body.events-open .lang #eventsLink { color: var(--ink); border-color: var(--ink); }
 /* the language on show, as letters: HR / EN */
 .lang-code { display: block; font-size: var(--tm); line-height: 1.15; text-box: trim-both cap alphabetic; }
-#soundToggle .sound-off { display: none; }
-#soundToggle.is-off .sound-off { display: inline; }
+/* sound: the usual speaker, two waves while it is on, a small × in their place while it is off */
+.sound-icon .sound-off, .is-off .sound-icon .sound-on { display: none; }
+.is-off .sound-icon .sound-off { display: inline; }
+/* a little larger than the other icons (its shapes are finer than their solid squares), centred on
+   their line; its lines drawn thinner by as much, so on screen they are as heavy as the others' */
+.icon.sound-icon, #mnavPrefs .icon.sound-icon { width: .84em; height: .84em; margin: -.06em 0; }
+.sound-icon .s { stroke-width: 1.3; }
 
 /* ---------- overlays ---------- */
 .overlay {
@@ -431,8 +445,8 @@ body.focus-info .prefs::before { background: var(--ink); }
 /* scrolled, the text fades out just before the path (as the overview and the list do) */
 .overlay.info::before {
   content: ''; position: absolute; left: 0; right: 0; top: 0; z-index: 2; pointer-events: none;
-  height: calc(var(--bar) + var(--pad));
-  background: linear-gradient(to bottom, var(--about-bg) calc(var(--pad) + var(--tm)), rgba(230, 51, 35, 0) 100%);
+  height: var(--fade-h);
+  background: var(--about-fade); transform: scaleY(-1);
 }
 .info-inner { justify-content: flex-start; padding-left: var(--cs); } /* on the content column */
 .info-col { width: calc(100vw - var(--cs) - var(--pad)); align-self: flex-start; font-size: var(--t2); display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--pad) * 1.5); } /* as tall as its content: the page scrolls */
@@ -487,7 +501,7 @@ body.detail-open .prefs::before { display: none; } /* over a work the view icons
    so the text scrolling under it fades away (no band) */
 .overlay.detail::after, .overlay.events::after {
   content: ''; position: absolute; left: 0; right: 0; top: 0; z-index: 2; pointer-events: none;
-  height: calc(var(--bar) + var(--pad) * 3);
+  height: var(--fade-h);
   background: var(--grey-fade); transform: scaleY(-1);
 }
 .overlay.detail.sheet-top::after { background: var(--sheet-fade); } /* the panel under the top bar: the fade in its colour, not the page grey */
@@ -553,6 +567,19 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   body.has-cat .menu-back { display: none; }
   body.has-cat .menu-pick { display: flex !important; }
   body.cat-americas .menu-list button.is-active { color: #fff; } /* on Amerike all the text is red: the chosen medium in white */
+  /* scrolled: the row of media gives way to the path (Svi radovi / Medium ×, as over a work), which
+     comes in softly in its place; with no medium chosen the path is only Svi radovi, in black */
+  .menu-back, body.has-cat .menu-back {
+    display: flex; position: absolute; left: 0; top: var(--row);
+    opacity: 0; visibility: hidden; pointer-events: none; translate: 0 .6em;
+    transition: opacity .2s ease-out, translate .2s ease-out, visibility 0s .2s; /* going: quickly, before the media come back */
+  }
+  /* coming: once the media have left, the same soft rise */
+  body.bar-compact .menu-back { opacity: 1; visibility: visible; pointer-events: auto; translate: none; transition: opacity .7s var(--soft) .35s, translate .7s var(--soft) .35s, visibility 0s .35s; }
+  body.bar-compact .menu-pick .menu-list button { pointer-events: none; }
+  .menu-back .crumb-x { display: none; } /* no × in this path: Svi radovi leads back */
+  body:not(.has-cat) .menu-back :is(.crumb-sep, .crumb-here) { display: none; }
+  body:not(.has-cat) .menu-back .crumb-home { color: var(--ink); cursor: default; }
 }
 @media (orientation: landscape) and (max-height: 500px) {
   :root { --label: 13vh; }
@@ -593,14 +620,19 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   /* the view icons, larger for a finger; their drawn bottoms (11/12 of the icon) on the word's baseline */
   .views {
     top: calc(var(--pad) + var(--tm) * var(--cap) - var(--tm) * 1.3 * .72 * 11 / 12);
-    right: calc(var(--pad) + var(--burger-w, 4em) + var(--group-gap) * 1.5); z-index: 32; gap: .75em; font-size: calc(var(--tm) * 1.3);
+    right: calc(var(--pad) + var(--burger-w, 4em) + var(--group-gap) * 1.5); z-index: 32; gap: .375em; font-size: calc(var(--tm) * 1.3);
   }
   .views button { font-size: inherit; }
   .views .view-btn { position: relative; }
   .views .view-btn::after { content: ''; position: absolute; inset: -12px -6px; } /* finger-sized targets */
   body.focus-info .views { display: none; } /* a page of its own (a work, the events, About): only the word, no views */
-  /* no paths on a phone (a work, the events, About): the names lead home, the word top right as on every page */
+  /* no paths on a phone (a work, the events, About): the names lead home; a work and About show no word top right */
   .detail-bar { display: none !important; }
+  body.detail-open .burger, body.focus-info .burger { visibility: hidden; pointer-events: none; }
+
+  /* ----- scrolled down (body.bar-compact, main.js): as much room as possible for the page -----
+     (the names in one line, his portrait and the view icons gone: as on a computer, above); the
+     word top right, the chosen medium's name, stays */
 
   /* ----- the menu: a drop-down under the word, right-aligned, over the page blurred ----- */
   .mnav:not([hidden]) {
@@ -608,7 +640,7 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
     position: fixed; inset: 0; z-index: 29; overflow-y: auto; overscroll-behavior: contain;
     background: var(--veil);
     -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur));
-    padding: calc(var(--pad) * 2.5 + var(--tm)) var(--pad) calc(var(--pad) * 3); /* right under the word */
+    padding: calc(var(--pad) * 2.5 + var(--tm)) var(--pad) calc(var(--pad) + env(safe-area-inset-bottom, 0px)); /* right under the word */
   }
   .mnav-cats { list-style: none; margin: 0; padding: 0; font-size: var(--t2); line-height: 1.1; letter-spacing: -.02em; text-align: right; }
   .mnav-cats button { display: block; margin-left: auto; padding: .1em 0; color: var(--red); text-align: right; }
@@ -617,7 +649,7 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   .mnav-group button { color: var(--red); padding: .35em 0; display: inline-flex; align-items: center; gap: .3em; }
   .mnav-group button.is-on { color: var(--ink); }
   /* language and sound in the menu: the same two icons as on a computer, a size up */
-  #mnavPrefs { font-size: calc(var(--tm) * 1.3); gap: 1em; align-items: center; }
+  #mnavPrefs { font-size: calc(var(--tm) * 1.3); gap: 1em; align-items: center; margin-top: auto; } /* at the bottom of the menu */
   #mnavPrefs .lang-code { font-size: inherit; }
   #mnavPrefs .icon { width: .72em; height: .72em; }
   body.mnav-open .hover-title, body.mnav-open .bottom-fade, body.mnav-open .views,
@@ -631,13 +663,14 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
     left: var(--pad); bottom: var(--pad); max-width: calc(100vw - var(--pad) * 3 - var(--tm) * 2.4);
     white-space: normal; text-wrap: balance;
   }
-  .bottom-fade { height: calc(var(--t1h) * 2.6 + var(--pad) * 5); }
+  body { --fade-h: calc(var(--t1h) * 2.6 + var(--pad) * 5); } /* taller: the featured work's title runs to several lines */
+  body.detail-open, body.events-open { --fade-h: calc(var(--bar) + var(--pad) * 3); } /* a work: its big title stands low, the fades stay off it */
   .top-link { white-space: normal; max-width: 42vw; line-height: 1.15; }
 
   /* ----- overview and list: from --top, the full width ----- */
-  .index { padding: var(--top) var(--pad) calc(var(--pad) * 2); bottom: calc(var(--pad) * 2 + var(--t1) * 2.4); } /* it ends above the bottom row */
+  .index { padding: var(--top) var(--pad) calc(var(--pad) * 3 + var(--t1) * 2.4); } /* down to the bottom edge, fading out under the bottom shade (its last row scrolls clear of the portrait) */
   .index-grid { gap: 4vh calc(var(--gut) * 2); grid-template-columns: repeat(2, minmax(0, 1fr)); } /* two in a row */
-  .index-cap { font-size: 12px; }
+  .index-cap { font-size: 14px; }
   .list { padding-top: var(--top); padding-left: var(--pad); }
   /* the picture on columns 1–2, title and year from column 3, the medium under the title (the two
      lines together in the middle of the row) */
@@ -674,8 +707,8 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   /* the text fades out above his portrait at the bottom, as it does under the names at the top */
   .overlay.info::after {
     content: ''; position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; pointer-events: none;
-    height: calc(var(--pad) * 4 + var(--tm) * 2.4);
-    background: linear-gradient(to top, var(--about-bg) calc(var(--pad) * 1.5 + var(--tm) * 2.4), rgba(230, 51, 35, 0) 100%);
+    height: var(--fade-h);
+    background: var(--about-fade);
   }
 }
 
@@ -709,8 +742,8 @@ body.amer-open .ctag { z-index: 61; background: #111111; color: #E63323; } /* on
 }
 /* the text fades out under the × and above the bottom edge */
 .overlay.amer::before, .overlay.amer::after { content: ''; position: absolute; left: 0; right: 0; z-index: 2; pointer-events: none; }
-.overlay.amer::before { top: 0; height: calc(var(--bar) + var(--pad) * 2); background: linear-gradient(to bottom, var(--about-bg) calc(var(--pad) + var(--tm)), rgba(230, 51, 35, 0) 100%); }
-.overlay.amer::after { bottom: 0; height: calc(var(--pad) * 5); background: linear-gradient(to top, var(--about-bg), rgba(230, 51, 35, 0)); }
+.overlay.amer::before { top: 0; height: var(--fade-h); background: var(--about-fade); transform: scaleY(-1); }
+.overlay.amer::after { bottom: 0; height: var(--fade-h); background: var(--about-fade); }
 /* the pointer over this page: America, filled black (main.js, amerMap); the system pointer hides */
 .amer-cursor {
   position: fixed; left: 0; top: 0; z-index: 4; pointer-events: none;

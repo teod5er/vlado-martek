@@ -49,7 +49,7 @@ let visibleWorks = [];
 // ---------- language: HR (Croatian, default) / EN (English) ----------
 let lang = 'hr';
 try { if (localStorage.getItem('vm-lang') === 'en') lang = 'en'; } catch { /* storage unavailable */ }
-const L = (key) => (lang === 'en' ? data.labels?.en?.[key] : data.labels?.[key]) || { all: lang === 'en' ? 'Home' : 'Početna', close: lang === 'en' ? 'Close' : 'Zatvori', photo: lang === 'en' ? 'Photo' : 'Fotografija' }[key];
+const L = (key) => (lang === 'en' ? data.labels?.en?.[key] : data.labels?.[key]) || { all: lang === 'en' ? 'All works' : 'Svi radovi', close: lang === 'en' ? 'Close' : 'Zatvori', photo: lang === 'en' ? 'Photo' : 'Fotografija' }[key];
 function applyLang() {
   document.documentElement.lang = lang;
   for (const w of data.works) {
@@ -113,8 +113,6 @@ function buildLangMenu() {
   t.dataset.tip = isEnabled() ? (en ? 'Sound off' : 'Isključi zvuk') : (en ? 'Sound on' : 'Uključi zvuk'); // what a click does
   t.classList.toggle('is-off', !isEnabled());
   t.setAttribute('aria-pressed', String(isEnabled()));
-  // (the stroke cuts a gap in the speaker, so the two stay apart)
-  if (isEnabled()) t.querySelector('.spk').removeAttribute('mask'); else t.querySelector('.spk').setAttribute('mask', 'url(#soundCut)');
 }
 // the media row stops short of the exhibition and the icons at the top right (and wraps if it must)
 // the media row stops short of the toolbar at the top right (and wraps if it must); the title at the
@@ -370,6 +368,7 @@ function setView(v) {
   // between the gallery and the overview the works on screen fly to their new places
   const from = prev === 'surf' && v === 'index' ? g.rects() : prev === 'index' && v === 'surf' ? indexRects() : null;
   view = v;
+  barFull();
   body.classList.toggle('view-index', v === 'index');
   body.classList.toggle('view-list', v === 'list');
   $('index').hidden = v !== 'index';
@@ -636,7 +635,7 @@ function updateTitle() {
 
 // ---------- menu ----------
 // a category's name with how many works it holds, raised like an exponent: Knjige¹¹
-const catLabel = (id, label) => `${escapeHtml(label)}<sup class="cat-n">${worksFor(id).length}</sup>`;
+const catLabel = (id, label) => escapeHtml(label); // (no count beside the name)
 function buildMenu() {
   const items = [{ id: 'all', label: L('all') }, ...data.categories.filter((c) => worksFor(c.id).length)]; // a category with no works yet stays out
   $('menuList').innerHTML = items.map((c) => `<li><button type="button" data-cat="${c.id}">${catLabel(c.id, c.label)}</button></li>`).join('');
@@ -653,6 +652,8 @@ function updateBurger() {
   $('burgerText').textContent = mobileNav() ? (en ? 'Close' : 'Zatvori') : c ? c.label : (en ? 'Show all' : 'Prikaži sve');
   if (data) fitTopRight(); // the view icons stand left of the word, whatever its length
 }
+// sound: the usual speaker, with two waves while it is on and a small × while it is off (style.css)
+const SOUND_ICON = '<svg class="icon sound-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 3.75h2.25L6 1v10L3.25 8.25H1z"/><path class="s sound-on" d="M7.7 4.3a2.4 2.4 0 0 1 0 3.4M9.18 2.82a4.5 4.5 0 0 1 0 6.36"/><path class="s sound-off" d="M7.75 4.375l3.25 3.25M11 4.375l-3.25 3.25"/></svg>';
 function buildMobileNav() {
   const en = lang === 'en';
   const items = [{ id: 'all', label: en ? 'Show all' : 'Prikaži sve' }, ...data.categories.filter((c) => worksFor(c.id).length)];
@@ -660,12 +661,12 @@ function buildMobileNav() {
   // language and sound: the same two as on a computer, the language on show (a tap switches) and the speaker
   const on = isEnabled();
   $('mnavPrefs').innerHTML = `<button type="button" data-go="lang" aria-label="${en ? 'Language: English (switch to Hrvatski)' : 'Jezik: hrvatski (prebaci na English)'}"><span class="lang-code">${en ? 'EN' : 'HR'}</span></button>`
-    + `<button type="button" data-go="sound" aria-pressed="${on}" aria-label="${en ? 'Sound' : 'Zvuk'}"${on ? '' : ' class="is-off"'}><svg class="icon" viewBox="0 0 12 12" aria-hidden="true"><mask id="soundCutM"><rect width="12" height="12" fill="#fff"/><path d="M1.5 1.5l9 9" stroke="#000" stroke-width="4"/></mask><path class="spk" d="M1.5 4h3.25l4.5-3.25v10.5L4.75 8H1.5z"${on ? '' : ' mask="url(#soundCutM)"'}/>${on ? '' : '<path class="s" d="M1.5 1.5l9 9"/>'}</svg></button>`;
+    + `<button type="button" data-go="sound" aria-pressed="${on}" aria-label="${en ? 'Sound' : 'Zvuk'}"${on ? '' : ' class="is-off"'}>${SOUND_ICON}</button>`;
   $('mnav').setAttribute('aria-label', en ? 'Menu' : 'Izbornik');
 }
 function setMobileNav(v) {
   if (v === mobileNav()) return;
-  if (v) buildMobileNav();
+  if (v) { buildMobileNav(); barFull(); }
   $('mnav').hidden = !v;
   if (v) {
     fadeIn($('mnav'), 220);
@@ -747,6 +748,7 @@ function setCategory(cat, { push = true } = {}) {
   if (cat !== 'americas') closeAmer();
   if (openWork) closeDetail({ fromPop: true }); // a new medium from inside a work: back to the gallery
   catToken++;
+  barFull();
   currentCat = cat;
   body.classList.toggle('cat-americas', cat === 'americas'); // Amerike: the whole page black, the text red
   updateBurger();
@@ -884,6 +886,7 @@ function buildInfo() {
 }
 
 function showOverlay(el) {
+  barFull();
   el._fade = (el._fade || 0) + 1; // a fade-out still running is called off
   el.classList.remove('is-closing');
   for (const a of el.getAnimations()) a.cancel();
@@ -900,6 +903,7 @@ function showOverlay(el) {
 // the gallery draws nothing while a page or the phone's menu lies over it
 function syncCover() { if (app.gallery) app.gallery.covered = !shut('detail') || !shut('info') || !shut('events') || !shut('amer') || mobileNav(); }
 function hideOverlay(el) {
+  barFull();
   el.classList.remove('is-open');
   el.hidden = true;
   app.gallery.paused = false;
@@ -1344,6 +1348,10 @@ addEventListener('hashchange', () => { if (!ownBack) route(); }); // (the step b
 function fitLabels() {
   const a = $('labelFirst'), b = $('labelLast');
   const root = document.documentElement;
+  // measured at full size and at once: not mid-way through the names' own change of size (a phone, scrolled)
+  const compact = body.classList.contains('bar-compact');
+  body.classList.remove('bar-compact');
+  a.style.transition = b.style.transition = 'none';
   root.style.removeProperty('--name');
   const fs = parseFloat(getComputedStyle(a).fontSize);
   const phone = matchMedia('(max-width: 700px), (orientation: portrait) and (max-width: 900px)').matches;
@@ -1353,6 +1361,45 @@ function fitLabels() {
     // before the media (on a phone the hamburger replaces them: before column 3 of its 6)
     ((phone ? innerWidth * 0.42 : $('menu').getBoundingClientRect().left) - pad * (phone ? 2 : 3)) / Math.max(a.offsetWidth, b.offsetWidth));
   if (k < 1) root.style.setProperty('--name', `${Math.floor(fs * k)}px`);
+  root.style.setProperty('--first-em', (a.offsetWidth / fs).toFixed(3)); // Vlado's width in em: Martek stands after it when the names are on one line
+  body.classList.toggle('bar-compact', compact);
+  void a.offsetWidth; // (the new size is in before the transitions come back)
+  a.style.transition = b.style.transition = '';
+}
+
+// ---------- a phone: scrolling down frees the screen ----------
+// the names shrink into one line on the top row, the word top right and his portrait leave; scrolling
+// back up (or the top of the page) brings them back. A work and About stay compact while scrolled.
+// the navigation leaves the way it came in after the splash (revealBar), turned round: item by item,
+// each fading as it sinks a little; and comes back in the same way
+function setCompact(v) {
+  if (v === body.classList.contains('bar-compact')) return;
+  body.classList.toggle('bar-compact', v);
+  const items = [...$('menuList').children, ...$('views').children, ...$('prefBox').children].filter((el) => el.getClientRects().length);
+  for (const el of items) for (const a of el.getAnimations()) a.cancel();
+  if (reducedMotion()) return;
+  items.forEach((el, i) => {
+    if (v) el.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(12px)' }], { duration: 450, delay: i * 30, easing: EASE_OUT_FOR(450), fill: 'backwards' });
+    else rise(el, { delay: i * 55, dist: 12, dur: 700 });
+  });
+}
+const barFull = () => setCompact(false);
+{
+  const last = new WeakMap();
+  const watch = (el, byDirection) => el.addEventListener('scroll', () => {
+    const y = Math.max(0, Math.min(el.scrollTop, el.scrollHeight - el.clientHeight)); // (not the bounce past either end)
+    if (y <= 8) { last.set(el, y); barFull(); return; }
+    if (!byDirection) { setCompact(true); return; }
+    const d = y - (last.get(el) ?? 0);
+    if (Math.abs(d) < 10) return; // a few pixels either way change nothing
+    last.set(el, y);
+    setCompact(d > 0);
+  }, { passive: true });
+  watch($('index'), true);
+  watch($('list'), true);
+  watch($('events').querySelector('.events-scroll'), true);
+  watch($('detailScroll'), false);
+  watch($('info').querySelector('.info-inner'), false);
 }
 addEventListener('resize', () => fitLabels());
 

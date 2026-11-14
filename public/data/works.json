@@ -1990,11 +1990,11 @@
     }
   ],
   "labels": {
-    "all": "Početna",
+    "all": "Svi radovi",
     "close": "Zatvori",
     "photo": "Fotografija",
     "en": {
-      "all": "Home",
+      "all": "All works",
       "close": "Close",
       "photo": "Photo"
     }
