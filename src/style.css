@@ -182,7 +182,7 @@ body.detail-open .label, body.events-open .label { z-index: 26; }
 .label { transition: color 1.2s var(--soft), opacity .8s var(--soft), font-size .45s var(--soft), padding-top .45s var(--soft), left .45s var(--soft); }
 body.bar-compact .label { font-size: var(--tm); letter-spacing: 0; } /* set exactly as the categories' names are */
 body.bar-compact .label-first, body.bar-compact .label-last { margin-left: 0; }
-body.bar-compact .label-last { padding-top: var(--pad); left: calc(var(--pad) + var(--first-em, 2.7) * 1em + .45em); } /* (--first-em is measured with the big names' tight spacing: .175em less than here) */
+body.bar-compact .label-last { padding-top: var(--pad); left: calc(var(--pad) + var(--first-em, 2.4) * 1em + .32em); } /* a word space after Vlado (--first-em: its width here, main.js) */
 /* the navigation shrinks with them: the view icons, language and sound go, and the categories give
    way to the path (below, a computer) */
 /* (item by item, the way they came in after the splash, turned round: main.js, setCompact) */
@@ -478,6 +478,8 @@ body.focus-info .prefs::before { background: var(--ink); }
 /* previous / next, with where this work stands in the medium, bottom right */
 .detail-steps { position: absolute; bottom: var(--pad); right: var(--pad); z-index: 3; display: flex; align-items: flex-end; gap: .5em; font-size: var(--tm); line-height: 1.15; text-box: trim-end text alphabetic; } /* previous / next and the count: bottom right of the work, on the year's baseline (they scroll away with it) */
 .detail-steps button { color: var(--red); }
+.prefs::before { transition: opacity .45s var(--soft); }
+body.bar-compact .prefs::before { opacity: 0; } /* scrolled: the rule goes with the icons either side of it */
 body.detail-open .prefs::before { display: none; } /* over a work the view icons are gone: no rule before the language */
 .detail-steps button:hover { color: var(--ink); }
 .detail-count { font-size: var(--tm); line-height: 1.15; text-box: trim-both cap alphabetic; font-variant-numeric: tabular-nums; color: var(--ink); }

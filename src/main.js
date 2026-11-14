@@ -1361,7 +1361,9 @@ function fitLabels() {
     // before the media (on a phone the hamburger replaces them: before column 3 of its 6)
     ((phone ? innerWidth * 0.42 : $('menu').getBoundingClientRect().left) - pad * (phone ? 2 : 3)) / Math.max(a.offsetWidth, b.offsetWidth));
   if (k < 1) root.style.setProperty('--name', `${Math.floor(fs * k)}px`);
-  root.style.setProperty('--first-em', (a.offsetWidth / fs).toFixed(3)); // Vlado's width in em: Martek stands after it when the names are on one line
+  // Vlado's width in em as it is set in the one line (scrolled): Martek stands a word space after it
+  body.classList.add('bar-compact');
+  root.style.setProperty('--first-em', (a.getBoundingClientRect().width / parseFloat(getComputedStyle(a).fontSize)).toFixed(3));
   body.classList.toggle('bar-compact', compact);
   void a.offsetWidth; // (the new size is in before the transitions come back)
   a.style.transition = b.style.transition = '';
