@@ -209,15 +209,16 @@ export class Gallery {
       return { x: d < 0 ? -w0 * s - 40 - (-d) * 40 : m.vw + 40 + d * 40, s, o: 1 };
     }
     if (m.phone) {
-      // a phone: a deck. The featured work in the middle; the next ones stand behind it, each a
-      // little smaller, their right edges stepping out (four on show); the one before has gone off
-      // to the left (a swipe throws the front card away and the next comes forward)
-      const x0 = (m.vw - w0) / 2, DEPTH = 4, PEEK = 13;
+      // a phone: a deck, wholly centred. The featured work in the middle of the screen; the next
+      // ones stand behind it, each a little smaller and centred too, their top edges stepping up
+      // out of the deck (four on show), so the next work is drawn from the top; the one before has
+      // gone off to the left (a swipe throws the front card away and the next comes forward)
+      const DEPTH = 4, PEEK = 14, h0 = w0 / aspect;
       if (d >= 0) {
-        const s = 1 - 0.07 * Math.min(d, DEPTH + 1);
-        return { x: x0 + w0 * (1 - s) + Math.min(d, DEPTH + 1) * PEEK, s, o: d > DEPTH ? 0 : 1 };
+        const k = Math.min(d, DEPTH + 1), s = 1 - 0.06 * k;
+        return { x: (m.vw - w0 * s) / 2, s, o: d > DEPTH ? 0 : 1, dy: h0 * (1 - s) / 2 - k * PEEK - h0 * (1 - s) };
       }
-      return { x: -w0 * (1.1 - d * 0.1) - 40, s: 1, o: 1 };
+      return { x: -w0 * (1.1 - d * 0.1) - 40, s: 1, o: 1, dy: 0 };
     }
     const x0 = m.cs; // the featured work: on column 4
     const step = m.step;
@@ -229,7 +230,7 @@ export class Gallery {
   place(d, aspect, mode) {
     const a = Math.floor(d), t = d - a;
     const k0 = this.key(a, aspect, mode), k1 = t ? this.key(a + 1, aspect, mode) : k0;
-    return { x: lerp(k0.x, k1.x, t), s: lerp(k0.s, k1.s, t), o: lerp(k0.o, k1.o, t) };
+    return { x: lerp(k0.x, k1.x, t), s: lerp(k0.s, k1.s, t), o: lerp(k0.o, k1.o, t), dy: lerp(k0.dy || 0, k1.dy || 0, t) };
   }
 
   bindInput() {
@@ -340,7 +341,7 @@ export class Gallery {
       const mx = Math.abs(d) > 1.5 ? Math.min(1, Math.sqrt(this.mode) * 1.5) : this.mode;
       const x = lerp(g.x, q.x, mx), sc = lerp(g.s, q.s, mx), o = lerp(g.o, q.o, this.mode);
       const w0 = Math.min(m.h0 * aspect, m.maxW), w = w0 * sc;
-      const h = w / aspect, y = lerp(m.yc, m.yc1, this.mode) - h / 2;
+      const h = w / aspect, y = lerp(m.yc, m.yc1, this.mode) - h / 2 + lerp(g.dy, q.dy || 0, mx); // (a phone's deck steps up)
       s.r = { x, y, w, h, o };
       // sliding in: from beyond the right edge, the ones on the left first
       let ex = x, fade = 1;
