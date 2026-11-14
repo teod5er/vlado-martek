@@ -778,7 +778,8 @@ function buildAmer() {
   if (!t) return;
   $('amerTitle').textContent = t.title || '';
   $('amerSub').textContent = t.subtitle || '';
-  $('amerDates').textContent = t.dates || '';
+  // how long it runs, and where: one line (on a phone the place may wrap under the dates)
+  $('amerDates').innerHTML = [t.dates, t.place].filter(Boolean).map((x) => `<span>${escapeHtml(x)}</span>`).join('<span class="amer-dot" aria-hidden="true"> · </span>');
   $('amerLead').innerHTML = hl(t.lead || '');
   $('amerBody').innerHTML = (t.body || []).map((p) => `<p>${hl(p)}</p>`).join('');
   $('amerSign').textContent = t.sign ? `— ${t.sign}` : '';
@@ -797,11 +798,10 @@ function openAmer() {
   rise($('amerClose'), { delay: 300, dist: 10, dur: 500 });
   amerMap.start();
 }
-// the pointer over Amerike's text: the outline of America, its line trembling as if drawn again and
-// again by hand (a new noise a few times a second, the tremor slowly breathing in and out). Mouse
-// only; over the × the ordinary hand takes over.
+// the pointer over Amerike's text: America, filled black. Mouse only; over the × the ordinary
+// hand takes over.
 const amerMap = (() => {
-  let timer = 0, t0 = 0, seed = 1, raf = 0, mx = -1, my = -1;
+  let raf = 0, mx = -1, my = -1;
   const el = () => $('amerMap');
   const fine = matchMedia('(hover: hover) and (pointer: fine)');
   const place = () => { raf = 0; el().style.translate = `${mx}px ${my}px`; };
@@ -813,20 +813,8 @@ const amerMap = (() => {
   }, { passive: true });
   $('amer').addEventListener('pointerleave', () => el().classList.remove('on'));
   return {
-    start() {
-      clearInterval(timer);
-      $('amer').classList.toggle('own-cursor', fine.matches);
-      if (reducedMotion()) return;
-      t0 = performance.now();
-      timer = setInterval(() => {
-        seed = (seed % 997) + 1;
-        $('amerNoise').setAttribute('seed', seed);
-        const k = (performance.now() - t0) / 1000;
-        $('amerDisp').setAttribute('scale', (26 + Math.sin(k * 0.7) * 10 + Math.sin(k * 1.9) * 4).toFixed(1));
-        $('amerNoise').setAttribute('baseFrequency', (0.02 + Math.sin(k * 0.23) * 0.005).toFixed(4));
-      }, 160);
-    },
-    stop() { clearInterval(timer); timer = 0; el().classList.remove('on'); },
+    start() { $('amer').classList.toggle('own-cursor', fine.matches); },
+    stop() { el().classList.remove('on'); },
   };
 })();
 function closeAmer({ toWorks = false } = {}) {
@@ -1202,8 +1190,8 @@ function stepWork(dir) {
   openDetail(list[(i + dir + list.length) % list.length], { push: true, dir });
 }
 // ---------- a work's picture, enlarged ----------
-// a click (or tap) on the picture opens it large over everything: it grows out of its place on the
-// page, follows the pointer (a finger drags it about), and the × top right (or Escape) closes it
+// a click (or tap) on the picture opens it over everything, as large as the screen allows: it grows
+// out of its place on the page, and the × top right (or Escape) closes it
 let zoomOff = null;
 const zoomOpen = () => !!zoomOff;
 function openZoom(e) {
@@ -1223,9 +1211,11 @@ function openZoom(e) {
   const phone = () => app.gallery?.m.phone;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   let w = 0, h = 0, x = 0, y = 0, tx = 0, ty = 0, px = e.clientX / innerWidth, py = e.clientY / innerHeight, raf = 0, live = true, touch = null;
+  // as large as the screen allows, the whole work on show (a margin all round, clear of the ×)
   const size = () => {
-    const fit = aspect >= innerWidth / innerHeight ? innerWidth : innerHeight * aspect; // whole on the screen
-    w = Math.min(fit * (phone() ? 2.6 : 2.2), 3200); h = w / aspect;
+    const m = (phone() ? 10 : Math.min(22, Math.max(10, innerWidth * 0.011))) * 2 + (phone() ? 0 : 24);
+    const W = innerWidth - m * 2, H = innerHeight - m * 2;
+    w = aspect >= W / H ? W : H * aspect; h = w / aspect;
     img.style.width = `${w}px`; img.style.height = `${h}px`;
   };
   // where the pointer is on the screen is where it looks on the picture (with a margin, so the

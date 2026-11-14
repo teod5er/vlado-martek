@@ -708,14 +708,14 @@ body.amer-open .ctag { z-index: 61; background: #111111; color: #E63323; } /* on
 .overlay.amer::before, .overlay.amer::after { content: ''; position: absolute; left: 0; right: 0; z-index: 2; pointer-events: none; }
 .overlay.amer::before { top: 0; height: calc(var(--bar) + var(--pad) * 2); background: linear-gradient(to bottom, var(--about-bg) calc(var(--pad) + var(--tm)), rgba(230, 51, 35, 0) 100%); }
 .overlay.amer::after { bottom: 0; height: calc(var(--pad) * 5); background: linear-gradient(to top, var(--about-bg), rgba(230, 51, 35, 0)); }
-/* the pointer over this page: the outline of America (main.js, amerMap); the system pointer hides */
+/* the pointer over this page: America, filled black (main.js, amerMap); the system pointer hides */
 .amer-cursor {
   position: fixed; left: 0; top: 0; z-index: 4; pointer-events: none;
   width: 76px; height: auto; margin: -26.5px 0 0 -38px; /* its middle on the pointer */
   overflow: visible; visibility: hidden;
 }
 .amer-cursor.on { visibility: visible; }
-.amer-cursor path { fill: none; stroke: #111111; stroke-width: 34; stroke-linejoin: round; stroke-linecap: round; }
+.amer-cursor path { fill: #111111; stroke: #111111; stroke-width: 11; stroke-linejoin: round; }
 body .overlay.amer.own-cursor, body .overlay.amer.own-cursor * { cursor: none !important; }
 body .overlay.amer.own-cursor .amer-x, body .overlay.amer.own-cursor .amer-x * { cursor: pointer !important; }
 .amer-scroll { z-index: 1; }
