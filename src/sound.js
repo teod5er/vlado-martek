@@ -85,6 +85,37 @@ function tone(t, dur, { freq = 200, to = null, gain = 0.2, type = 'sine' }) {
   o.stop(t + dur + 0.02);
 }
 
+// ---------- a light tick in the hand, as each work comes to the front (phones only) ----------
+// Android: the Vibration API. iPhone has none; from iOS 18 a switch (<input switch>) gives a system
+// haptic when it is toggled inside a touch, so a hidden one is toggled (only felt while a finger is
+// on the screen; elsewhere it simply does nothing). Off with the sound, under the same switch.
+const coarse = matchMedia('(pointer: coarse)');
+let iosSwitch = null, lastTick = 0;
+function iosTick() {
+  if (!iosSwitch) {
+    iosSwitch = document.createElement('label');
+    iosSwitch.setAttribute('aria-hidden', 'true');
+    iosSwitch.style.display = 'none';
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.setAttribute('switch', '');
+    input.tabIndex = -1;
+    iosSwitch.append(input);
+    document.head.append(iosSwitch);
+  }
+  iosSwitch.click();
+}
+export function haptic() {
+  if (!enabled || !coarse.matches) return;
+  const now = performance.now();
+  if (now - lastTick < 45) return; // a fast flick: not a buzz, still separate ticks
+  lastTick = now;
+  try {
+    if (typeof navigator.vibrate === 'function') navigator.vibrate(10);
+    else iosTick();
+  } catch { /* not allowed yet (before the first tap) */ }
+}
+
 // A click for every press (opening, closing, menu), a page turn for books and the notch of a
 // mechanical scroll wheel.
 export const sound = {
@@ -97,6 +128,7 @@ export const sound = {
   },
   // one detent of a mouse wheel: a dry plastic tick with a hint of the ratchet spring behind it
   notch() {
+    haptic(); // felt as well as heard
     const c = ready(); if (!c) return;
     const t = c.currentTime;
     const v = 0.85 + Math.random() * 0.3; // no two notches sound quite the same

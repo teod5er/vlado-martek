@@ -117,26 +117,27 @@ Nova knjiga: obrezati prozirne rubove, spremiti `ime.webp` (najviše 1600 px, kv
 
 **Boja:** na cijeloj stranici je samo jedna crvena, `--red` (`#E63323`): tekst, splash, O autoru, favicon, ikona za iOS, OG slika i `theme-color`.
 
-## 7. Animacije (dogovoreni jezik)
+## 7. Animacije (dogovoreni jezik, od 14. 11. 2026.)
 
-- **Sve se kreće malo trzavo, kao imena nakon splasha:** 16 koraka u sekundi. U CSS-u je to `--jerk` (`.5s steps(8, end)`), a u JS-u `stepped()` / `steppedCss()` iz `gallery.js` (zadržava krivulju, ali vrijeme ide u skokovima). Pod to spadaju i portret dolje lijevo i širenje retka na popisu. Jedino klizanje galerije kotačićem i prstom ostaje glatko, jer prati ruku.
-- **Leteće slike (`.fly-layer`, z-index 3) idu ispod sivog prijelaza uz donji rub** (`.bottom-fade`, z-index 4), kao i radovi na koje slijeću. Prije su letjele iznad njega, pa bi se prijelaz pri slijetanju naglo pojavio.
-- **Slike lete 1 s** (`cubic-bezier(.6, 0, .15, 1)` u 16 koraka):
-  - let slike pri otvaranju i zatvaranju rada (s mjesta klika i natrag)
-  - prijelaz galerija ↔ mreža
-  - ulazak radova u galeriju
-  - klizanje slike pri prethodnom ili sljedećem radu
-  - izmjena fotografija na stranici rada
-- **Sučelje je grubo i tehničko:**
-  - stranice (rad, Događanja, O autoru) pojave se i nestanu odjednom
-  - imena nakon splasha skoče u kut u 8 koraka
-  - naslov rada ulazi u 5 koraka
-  - zamućenje pozadine u 3 koraka
-- **Nigdje nema blijeđenja ni ispisivanja slovo po slovo.**
-- **Promjena kategorije:** izbornik se promijeni odmah, a radovi uđu kao pri promjeni prikaza.
-- **Splash:** pozadina je ista crvena kao posvuda (`--red`, `#E63323`), animirani loader, a „Vlado / Martek” (oboje crno) stoji gore lijevo na svom mjestu, 1,6 × veće (`--splash-k`), pa se u 8 koraka smanji na svoju veličinu.
-- **Zvuk** kreće tek nakon prve radnje korisnika (pravilo preglednika).
-- **Kursor:** nasumični nacrtani kursor iz `cursors` (pri svakom učitavanju i kliku). Na Amerikama (crna stranica) isti je kursor bijel: `inv` / `inv2x` u `cursors` (datoteke `pointer-N-inv.png`); na O autoru ostaje crni. Iznad svega što se može kliknuti je obična sistemska ruka. Crvena točka je maknuta.
+Na zahtjev su trzavi pokreti u koracima (16 u sekundi) zamijenjeni glatkima. Tekst i stranice ulaze mekano.
+- **Blago zastajkivanje (fina nedovršenost):** krivulje su glatke, ali vrijeme teče u sitnim skokovima od 24 koraka u sekundi (`ROUGH_FPS`, `rough` i `roughCss` u `gallery.js`, `EASE_OUT_FOR` i `--soft` u `main.js`). To vrijedi za letove slika, otvaranje rada, ulazak radova u galeriju, tekst koji izranja i CSS prijelaze. Glatko ostaje samo ono što prati ruku (kotačić, swipe, oznaka uz kursor) i kratka blijeđenja stranica. Za jače zastajkivanje smanji `ROUGH_FPS` (16 je stari trzavi ritam), a za potpuno glatko ga povećaj na 60. Preglednici bez `linear()` (prije Safarija 17.2) dobivaju glatku krivulju.
+- **Krivulje:** `--soft` / `EASE_OUT` (`cubic-bezier(.22, 1, .36, 1)`) za ono što ulazi, a `--glide` / `easeCss(.65, 0, .15, 1)` za ono što putuje s mjesta na mjesto (`gallery.js`, `main.js`, `style.css`).
+- **Slike lete 0,95 s:** otvaranje i zatvaranje rada, prijelaz galerija ↔ mreža, ulazak radova u galeriju. Sljedeći ili prethodni rad klizne 40 px uz blijeđenje.
+- **Tekst ulazi mekano** (`rise` u `main.js`: iz prozirnog, malo odozdo):
+  - naslov istaknutog rada dolje i naslov rada (godina malo iza naslova);
+  - redovi Događanja;
+  - odlomci O autoru;
+  - stavke izbornika na mobitelu;
+  - radovi u Pregledu i Popisu, jedan za drugim (`revealSeq`).
+- **Stranice** (rad, O autoru, Događanja) pojave se i nestanu kratkim blijeđenjem (`fadeIn`, `fadeOut`, klasa `is-closing`). Dok stranica nestaje, ispod se već vidi prikaz.
+- **Ispod rada** detalji i ostali radovi mekano izrone kad se do njih skrola (`revealOnScroll`, `.rv`).
+- **Uvod:** splash nestaje blijeđenjem. Imena stoje u kutu u svojoj veličini; slova izranjaju odozdo, jedno za drugim (prvo „Vlado”, pa „Martek”), a „Martek” zatim polako prijeđe iz crne u crvenu. Kategorije, ikone prikaza, jezik i zvuk izranjaju jedni za drugima (`revealBar`), i ponovno nakon povratka s rada ili Događanja.
+- **Boje** poveznica i stanja mijenjaju se u 0,25 s.
+- **Ostali pokreti:** Martekova sličica raste glatko, red u Popisu se širi glatko, a oznaka uz kursor ga prati glatko i pojavi se blijeđenjem.
+- **Kursor:** nasumični nacrtani kursor iz `cursors` (pri svakom učitavanju i kliku). Na Amerikama je bijel (`inv` / `inv2x`), a iznad svega što se može kliknuti je sistemska ruka.
+- **Zvuk** kreće tek nakon prve radnje korisnika.
+- **Splash:** pozadina je `--red`, „Vlado / Martek” stoji gore lijevo, 1,6 × veće (`--splash-k`), pa se smanji na svoju veličinu.
+- **Smanjeno kretanje:** uz `prefers-reduced-motion` nema ni klizanja ni blijeđenja.
 
 ## 8. Otvorene stavke
 
@@ -192,3 +193,13 @@ Nova knjiga: obrezati prozirne rubove, spremiti `ime.webp` (najviše 1600 px, kv
 - **Mreže:** radovi stoje gore lijevo u svom kvadratu (isti vrh u redu).
 - **Veliki tekst** (naslov dolje, naslov rada, „Događanja”) ima optičku korekciju lijevog ruba (−0,05 em), kao imena.
 - **Mobitel:** sav mobilni CSS je u jednom bloku na kraju `style.css`. Sav sadržaj počinje na `--top`, a dijelovi stranice rada razmaknuti su za `--sec` (8vh; na računalu 12vh). Detalji ispod rada stoje jedan ispod drugoga. Na mobitelu nema putanja (ni na radu, ni na Događanjima, ni na O autoru); gore desno je uvijek riječ izbornika. Naslov stranice Događanja je `--t2`, kao naslov rada. U Popisu naslov počinje na 3. stupcu. Ikone prikaza stoje donjim rubom na osnovnoj liniji riječi izbornika (`--cap`: 0,72).
+
+## 12. Studeni 2026.: splash, povećanje rada, Amerike
+
+- **Splash:** imena stoje u kutu, do 2 × veća (`--splash-k`, najviše 86 % širine ekrana); slova izranjaju jedno za drugim. Na kraju splasha velika slova potonu ispod svoje linije, imena dok su skrivena prijeđu u svoju veličinu, pa ponovno izrone u kutu (`riseNames`, `playIntro`). Nigdje se ne vidi smanjivanje.
+- **Povećanje rada:** klik ili dodir na sliku otvorenog rada otvara je veliku preko svega (`openZoom` u `main.js`, `.zoom`). Slika izraste iz svog mjesta, prati miš (prstom se vuče), a zatvara se na × gore desno ili Escapeom. Dok je otvorena, strelice ne mijenjaju rad.
+- **Amerike:** kad se kategorija odabere, otvara se overlay preko cijele stranice (`#amer`, `openAmer`). Na njemu su naslov izložbe, podnaslov, samo trajanje (16. 11. – 14. 12. 2026.), uvodna rečenica i cijeli tekst Saše Šimprage; najbitnije je bijelo (`**…**` u tekstu). Zatvara se na × gore desno ili Escapeom; ponovni klik na Amerike ga opet otvara. Sadržaj je u `works.json`, `categories[americas].intro` (`hr` / `en`; engleski je preveden na brzinu). Tekst je preuzet s najave KGZ-a uz male izmjene: „predstavljen ovdje” umjesto adrese weba, skraćeno objašnjenje kratice ASEEES, ispravljeni „Posljednji” i „2000.”.
+- **Obris Amerike kao kursor na overlayu:** `amerika.svg` s radne površine ugrađen je u `index.html` (`#amerMap`, `.amer-cursor`, 76 px). Na overlayu zamjenjuje kursor miša (sredina obrisa je na vrhu kursora). Linija mu stalno lagano drhti, kao da je iznova crtana rukom: filtar `feTurbulence` + `feDisplacementMap` dobiva novi `seed` šest puta u sekundi, a jačina i frekvencija polako „dišu” (`amerMap` u `main.js`). Iznad × je obična ruka. Samo za miš; uz `prefers-reduced-motion` obris miruje.
+- **Tipografija overlaya:** naslov, podnaslov i trajanje čine jedan blok; uvodna rečenica stoji 1,1 em ispod, tekst oko dva retka ispod nje, odlomci su 0,75 em razmaknuti, a potpis je redak ispod teksta.
+- **Logotipi izložbe** (KGZ, Američki prostor, America 250; `logotipi izlozbe.svg` s radne površine) stoje na dnu teksta overlaya, ispod potpisa (`#amerLogos`). Ugrađeni su u `index.html`, a crvena iz datoteke zamijenjena je s `currentColor`, pa su crni na crvenom.
+- **Box „Exhibition: …” dolje desno** je skriven (`#langBox`). Datumi u `events` ispravljeni su na 16. 11. – 14. 12. 2026.

@@ -1,5 +1,5 @@
 import './style.css';
-import { Gallery, escapeHtml, steppedCss } from './gallery.js';
+import { Gallery, escapeHtml, roughCss } from './gallery.js';
 import { sound, unlock, isEnabled, setEnabled } from './sound.js';
 
 const $ = (id) => document.getElementById(id);
@@ -10,6 +10,36 @@ const fontsIn = new Promise((done) => {
   if (document.fonts?.load) document.fonts.load('500 1em Malamocco').then(on, on); else on();
 });
 const body = document.body;
+
+// ---------- motion: smooth, on soft curves; text and pages come in softly (a short fade, a small rise) ----------
+// things arriving: quick, then a long gentle landing, in fine steps (a slight hitch, gallery.js)
+const SOFT = [.22, 1, .36, 1];
+const softFor = new Map();
+const EASE_OUT_FOR = (ms) => { if (!softFor.has(ms)) softFor.set(ms, roughCss(...SOFT, ms)); return softFor.get(ms); };
+const EASE_OUT = EASE_OUT_FOR(700);
+// the CSS transitions (colours, the portrait, the list's rows, the reveals under a work) the same way
+document.documentElement.style.setProperty('--soft', EASE_OUT_FOR(900));
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+// an element comes in: from transparent and a little lower, to its place
+function rise(el, { delay = 0, dist = 14, dur = 650 } = {}) {
+  if (!el || reducedMotion()) return null;
+  return el.animate([{ opacity: 0, transform: `translateY(${dist}px)` }, { opacity: 1, transform: 'none' }], { duration: dur, delay, easing: EASE_OUT_FOR(dur), fill: 'backwards' });
+}
+// a page (a work, About, the events) fading in, or out before it is hidden
+function fadeIn(el, dur = 280) {
+  if (reducedMotion()) return;
+  el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: dur, easing: 'ease-out' });
+}
+// a page is closed (or on its way out)
+const shut = (id) => $(id).hidden || $(id).classList.contains('is-closing');
+function fadeOut(el, done, dur = 260) {
+  if (reducedMotion()) { done(); return; }
+  const token = el._fade = (el._fade || 0) + 1;
+  el.classList.add('is-closing');
+  syncCover(); // the view under it shows through as it goes
+  el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dur, easing: 'ease-in', fill: 'forwards' }).finished
+    .catch(() => {}).then(() => { if (el._fade !== token) return; el.classList.remove('is-closing'); done(); for (const a of el.getAnimations()) a.cancel(); });
+}
 
 let data;
 let currentCat = 'all';
@@ -53,9 +83,11 @@ function applyLang() {
   updateMenu();
   buildInfo();
   buildEvents();
+  if (data.categories.some((c) => c.intro)) buildAmer();
   if (app.gallery) { buildIndex(); buildList(); }
   if (openWork) fillDetail(openWork);
   setDocTitle();
+  tip.refresh();
 }
 // top-right: the current exhibition, the language and the sound
 const EX_ARROW = '<svg class="icon ex-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="s" d="M6 2.25L9.75 6 6 9.75M9.75 6H1"/></svg>';
@@ -74,11 +106,11 @@ function buildLangMenu() {
   // the globe switches to the other language, the speaker turns sound on / off (struck through when off)
   $('langToggle').setAttribute('aria-label', en ? 'Language: English (switch to Hrvatski)' : 'Jezik: hrvatski (prebaci na English)');
   $('langCode').textContent = en ? 'EN' : 'HR'; // the language on show
-  $('langToggle').title = en ? 'Hrvatski' : 'English'; // (what a click switches to)
+  $('langToggle').dataset.tip = en ? 'Hrvatski' : 'English'; // the tag at the pointer: what a click switches to
   $('aboutLink').setAttribute('aria-label', en ? 'About' : 'O autoru');
   const t = $('soundToggle');
   t.setAttribute('aria-label', en ? 'Sound' : 'Zvuk');
-  t.title = en ? 'Sound' : 'Zvuk';
+  t.dataset.tip = isEnabled() ? (en ? 'Sound off' : 'Isključi zvuk') : (en ? 'Sound on' : 'Uključi zvuk'); // what a click does
   t.classList.toggle('is-off', !isEnabled());
   t.setAttribute('aria-pressed', String(isEnabled()));
   // (the stroke cuts a gap in the speaker, so the two stay apart)
@@ -92,7 +124,8 @@ function fitTopRight() {
   root.style.setProperty('--prefs-w', `${$('prefBox').getBoundingClientRect().width.toFixed(1)}px`); // the view icons and the counter stand left of it
   root.style.setProperty('--right-w', `${Math.ceil(innerWidth - $('views').getBoundingClientRect().left + 16)}px`);
   root.style.setProperty('--burger-w', `${$('burger').getBoundingClientRect().width.toFixed(1)}px`); // a phone: the view icons stand left of Menu
-  root.style.setProperty('--ex-w', `${Math.ceil(innerWidth - $('langBox').getBoundingClientRect().left + 24)}px`);
+  const ex = $('langBox').getBoundingClientRect(); // (the exhibition box bottom right: gone for now)
+  root.style.setProperty('--ex-w', ex.width ? `${Math.ceil(innerWidth - ex.left + 24)}px` : 'var(--pad)');
 }
 addEventListener('resize', () => { if (data) fitTopRight(); });
 function toggleLang() {
@@ -113,14 +146,60 @@ function initLangMenu() {
   $('eventsLink').addEventListener('click', () => {
     const url = data.events?.[0]?.url;
     if (url) { window.open(url, '_blank', 'noopener'); return; }
-    if ($('events').hidden) openEvents(); else closeEvents();
+    if (shut('events')) openEvents(); else closeEvents();
   });
 }
+
+// ---------- the tag at the pointer: what an icon without words does ----------
+// one small red label for the whole page; over a button that is only an icon (the views, language,
+// sound, the arrows, the close crosses) it says what a click does: its data-tip, else its aria-label.
+// Mouse only; it follows the pointer smoothly and comes in with a short fade.
+const tip = (() => {
+  const el = document.createElement('div');
+  el.className = 'ctag'; el.hidden = true; el.setAttribute('aria-hidden', 'true');
+  document.body.append(el);
+  const mouse = matchMedia('(hover: hover) and (pointer: fine)');
+  let btn = null, text = '', mx = -1, my = -1, raf = 0;
+  const place = () => {
+    raf = 0;
+    if (!text || mx < 0) return;
+    const w = el.offsetWidth, h = el.offsetHeight;
+    let x = mx + 18, y = my + 22;
+    if (x + w > innerWidth - 8) x = mx - w - 12; // at the right or bottom edge: the other side of the pointer
+    if (y + h > innerHeight - 8) y = my - h - 12;
+    el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+  };
+  const show = () => {
+    const visible = btn?.isConnected && btn.getClientRects().length && getComputedStyle(btn).visibility !== 'hidden';
+    const t = visible ? btn.dataset.tip || btn.getAttribute('aria-label') || '' : '';
+    const was = !el.hidden;
+    if (t !== text) { text = t; el.textContent = t; }
+    el.hidden = !text || mx < 0;
+    if (text) place();
+    if (!el.hidden && !was && !reducedMotion()) el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: 'ease-out' });
+  };
+  addEventListener('pointerover', (e) => {
+    if (e.pointerType !== 'mouse' || !mouse.matches) return;
+    const b = e.target.closest?.('button');
+    btn = b && !b.matches('.index-item, .about-btn') && (b.dataset.tip || !b.textContent.trim()) ? b : null;
+    mx = e.clientX; my = e.clientY;
+    show();
+  }, { passive: true });
+  addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    mx = e.clientX; my = e.clientY;
+    if (text && !raf) raf = requestAnimationFrame(place); // follows the pointer smoothly, once a frame
+  }, { passive: true });
+  document.addEventListener('mouseleave', () => { mx = -1; el.hidden = true; });
+  // after a click the button may say something else (sound on / off) or be gone (a closed page)
+  addEventListener('click', () => setTimeout(show, 0), true);
+  return { refresh: show };
+})();
 
 // custom pointers from `cursors` in works.json: a random one on every page load,
 // and a different one after every click
 let cursorStyle = null, cursorIdx = -1;
-const CLICKABLE = 'button, a, .work, .index-item, .list-row';
+const CLICKABLE = 'button, a, .work, .index-item, .list-row, #detailImg';
 function setCursor() {
   const list = data.cursors || [];
   if (!list.length || !matchMedia('(pointer: fine)').matches) return;
@@ -243,6 +322,7 @@ async function boot() {
     const w = data.works.find((x) => x.id === fromHash.work);
     if (w) { gallery.show(w, { animate: false }); openDetail(w, { push: false }); }
   } else if (fromHash.info) openInfo({ push: false });
+  else if (currentCat === 'americas') setTimeout(openAmer, deepLink ? 0 : 1200); // (after the intro's names)
   else if (fromHash.events) openEvents({ push: false });
 }
 
@@ -252,21 +332,47 @@ const app = {};
 // once the page is loaded the names shrink into place, then menu + language, then the gallery
 let namesTyped = Promise.resolve();
 function typeNames() {
-  const a = $('labelFirst'), b = $('labelLast');
   fitLabels();
-  // during the splash the names stand in their own corner, top left, a size larger; once the page
-  // is in they shrink into place (the scale is kept small enough to stay on the screen)
+  // over the splash the names stand large in their corner (up to twice their size, never wider than
+  // the screen): letter by letter they rise up from their baseline (Vlado first, then Martek)
+  const a = $('labelFirst'), b = $('labelLast');
   const w = Math.max(a.offsetWidth, b.offsetWidth);
-  document.documentElement.style.setProperty('--splash-k', Math.min(1.6, (innerWidth * 0.9) / w).toFixed(3));
-  body.classList.add('intro-names', 'names-up'); // written at once, no typing
+  document.documentElement.style.setProperty('--splash-k', Math.min(2, (innerWidth * 0.86) / w).toFixed(3));
+  body.classList.add('intro-names', 'names-up');
+  for (const el of nameLines()) el.innerHTML = [...el.textContent].map((c) => `<span class="ch">${escapeHtml(c)}</span>`).join('');
+  riseNames(250, 1100, 55);
   namesTyped = new Promise((done) => setTimeout(done, 600));
+}
+// the top bar comes in item by item: the categories from the left, then the view icons, language
+// and sound (on a phone: the view icons and the word)
+function revealBar({ delay = 0 } = {}) {
+  if (reducedMotion()) return;
+  const items = [...$('menuList').children, ...$('views').children, ...$('prefBox').children, $('burger')]
+    .filter((el) => el.getClientRects().length);
+  items.forEach((el, i) => rise(el, { delay: delay + i * 55, dist: 12, dur: 700 }));
+}
+const nameLines = () => [$('labelFirst'), $('labelLastText')];
+const nameLetters = () => nameLines().flatMap((el) => [...el.querySelectorAll('.ch')]);
+// the names' letters rise from below their baseline (each line hides what is below it, style.css)
+function riseNames(delay, dur, gap) {
+  if (reducedMotion()) return;
+  nameLetters().forEach((ch, i) => ch.animate([{ transform: 'translateY(105%)' }, { transform: 'none' }], { duration: dur, delay: delay + i * gap, easing: EASE_OUT_FOR(dur), fill: 'backwards' }));
 }
 async function playIntro() {
   await namesTyped;
-  body.classList.remove('names-up'); // the names shrink to their own size in the corner
-  setTimeout(() => body.classList.add('intro-ui'), 700);
-  setTimeout(() => { body.classList.add('intro-gallery'); app.gallery.enter(); }, 1300);
-  setTimeout(() => body.classList.remove('intro', 'intro-names', 'intro-ui', 'intro-gallery'), 1900);
+  // the large names sink letter by letter below their baseline; hidden there, they take their own
+  // size, and rise again in the corner (no shrinking on show); Martek turns from black to red
+  const letters = nameLetters();
+  if (!reducedMotion() && letters.length) {
+    const sink = letters.map((ch, i) => ch.animate([{ transform: 'none' }, { transform: 'translateY(105%)' }], { duration: 420, delay: i * 22, easing: roughCss(.55, 0, .75, .2, 420), fill: 'forwards' }));
+    await Promise.all(sink.map((x) => x.finished.catch(() => {})));
+    body.classList.remove('names-up');
+    for (const x of sink) x.cancel();
+    riseNames(0, 900, 40);
+  } else body.classList.remove('names-up');
+  setTimeout(() => { body.classList.add('intro-ui'); revealBar(); }, 350); // the categories and the tools, one after another
+  setTimeout(() => { body.classList.add('intro-gallery'); app.gallery.enter(); }, 800);
+  setTimeout(() => body.classList.remove('intro', 'intro-names', 'intro-ui', 'intro-gallery'), 2200);
 }
 
 // ---------- views: Surf (the moving line), Index (every work in a grid) and List (one row each) ----------
@@ -302,7 +408,7 @@ function setView(v) {
 
 // ---------- flights between the gallery and the overview: each work moves to its new place ----------
 // motion: pictures move smoothly over a second; everything else cuts or steps (never fades)
-const FLY_MS = 1000, FLY_EASE = steppedCss(.6, 0, .15, 1, FLY_MS), FLY_STAGGER = 35; // a little jerky, like the names
+const FLY_MS = 950, FLY_EASE = roughCss(.65, 0, .15, 1, FLY_MS), FLY_STAGGER = 30; // a slow start, a long soft landing, in fine steps
 // clones of the pictures move from where they were to where they will be; each pair may have a
 // delay and a callback for when it lands
 function fly(pairs) {
@@ -333,7 +439,7 @@ function indexRects() {
     const work = visibleWorks.find((w) => w.id === b.dataset.id);
     const r = b.getBoundingClientRect(), a = work?.aspect ?? 1;
     const rect = a >= r.width / r.height
-      ? { x: r.left, y: r.top, w: r.width, h: r.width / a } // (top-left in its cell)
+      ? { x: r.left, y: r.bottom - r.width / a, w: r.width, h: r.width / a } // (bottom-left in its cell, over its caption)
       : { x: r.left, y: r.top, w: r.height * a, h: r.height };
     return { el: b, work, rect };
   }).filter((x) => x.work && x.rect.y < vh && x.rect.y + x.rect.h > 0);
@@ -359,12 +465,14 @@ function flyToIndex(slots) {
   const paired = new Set(pairs.map((p) => p.cell.el)), usedK = new Set(pairs.map((p) => p.slot.k));
   const src = (w) => w.thumb || w.image;
   const flights = [];
-  for (const c of cells) c.el.style.visibility = 'hidden';
-  for (const { cell, slot } of pairs) flights.push({ src: src(cell.work), from: slot.rect, to: cell.rect, z: slot.z, land: () => { cell.el.style.visibility = ''; } });
+  // the whole cell (the picture and its caption) waits until its picture has landed
+  const li = (c) => c.el.parentElement;
+  for (const c of cells) li(c).style.visibility = 'hidden';
+  for (const { cell, slot } of pairs) flights.push({ src: src(cell.work), from: slot.rect, to: cell.rect, z: slot.z, land: () => { li(cell).style.visibility = ''; } });
   let i = 0;
   for (const c of cells) if (!paired.has(c.el)) {
     const n = i++;
-    flights.push({ src: src(c.work), from: offRight(c.rect, n), to: c.rect, delay: 80 + n * FLY_STAGGER, land: () => { c.el.style.visibility = ''; } });
+    flights.push({ src: src(c.work), from: offRight(c.rect, n), to: c.rect, delay: 80 + n * FLY_STAGGER, land: () => { li(c).style.visibility = ''; } });
   }
   for (const s of slots) if (!usedK.has(s.k)) flights.push({ src: src(s.work), from: s.rect, to: offLeft(s.rect), z: s.z });
   fly(flights);
@@ -402,16 +510,19 @@ function updateViewLabel() {
 }
 for (const b of document.querySelectorAll('#views .switch-opt')) b.addEventListener('click', () => {
   if (openWork) closeDetail(); // from inside a work: the work closes on the way
+  closeAmer(); // over Amerike's text: on to its works
   if (b.dataset.view !== view) setView(b.dataset.view);
 });
 
 // Overview: every work in one grid, five in a row; same width, own height, top-aligned
+// under each work in a grid: its title and year (both already end in their full stop)
+const capOf = (w) => `<p class="index-cap">${escapeHtml(w.title || '')} <span class="y">${escapeHtml(w.year || '')}</span></p>`;
 function buildIndex({ reveal = false } = {}) {
   unwatchImages($('indexGrid'), $('index'));
   $('indexGrid').innerHTML = visibleWorks.map((w, i) => `<li style="--i:${i}">
       <button type="button" class="index-item" data-id="${escapeHtml(w.id)}" aria-label="${escapeHtml(`${w.title} ${w.year || ''}`)}">
         <img data-src="${escapeHtml(w.thumb || w.image)}" alt="" decoding="async">
-      </button></li>`).join('');
+      </button>${capOf(w)}</li>`).join('');
   lazyImages($('indexGrid'), $('index'));
   if (reveal) revealIndex();
 }
@@ -421,9 +532,15 @@ function buildIndex({ reveal = false } = {}) {
 let revealToken = 0;
 function revealSeq(box, step) {
   const token = ++revealToken, items = [...box.children];
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  for (const li of items) li.style.visibility = 'hidden';
-  items.forEach((li, i) => setTimeout(() => { li.style.visibility = ''; }, Math.min(i, 40) * step));
+  if (reducedMotion()) return token;
+  // only those near the screen take part; the rest are simply there when scrolled to
+  const top = box.getBoundingClientRect().top;
+  let n = 0;
+  for (const li of items) {
+    for (const a of li.getAnimations()) a.cancel();
+    li.style.visibility = '';
+    if (top + li.offsetTop < innerHeight * 1.5) rise(li, { delay: n++ * step, dist: 18, dur: 700 });
+  }
   return token;
 }
 function revealIndex() { revealSeq($('indexGrid'), 55); }
@@ -502,7 +619,10 @@ function typeInto(el, work, ms, yearEl = null) {
   const y = yearEl || document.createElement('span');
   if (yearEl) el.append(t); else { y.className = 'y'; el.append(t, ' ', y); }
   const title = work.title || '', year = work.year ? String(work.year) : '';
-  t.textContent = title; y.textContent = year; // all at once (no typing anywhere)
+  t.textContent = title; y.textContent = year;
+  // the title comes in softly, the year a moment after it
+  rise(t, { dist: 10, dur: 600 });
+  rise(y, { delay: 70, dist: 10, dur: 600 });
   return 0;
 }
 // the title at the bottom (column of the grid): the featured work in the gallery, the work under
@@ -511,9 +631,9 @@ let typeTimer = 0, titleWork;
 function updateTitle() {
   const g = app.gallery;
   let w = null;
-  // the gallery shows the featured work's title at once (hovering changes nothing); the overview
-  // types out the title of the work under the pointer
-  if (!openWork) w = view === 'index' ? indexWork : view === 'list' ? null : g?.featured || null;
+  // only the gallery shows a title at the bottom: the featured work's (the overview has its
+  // captions under the works, the list its rows)
+  if (!openWork && view === 'surf') w = g?.featured || null;
   if (w === titleWork) return;
   titleWork = w;
   clearInterval(typeTimer);
@@ -553,6 +673,10 @@ function setMobileNav(v) {
   if (v === mobileNav()) return;
   if (v) buildMobileNav();
   $('mnav').hidden = !v;
+  if (v) {
+    fadeIn($('mnav'), 220);
+    [...$('mnavCats').children, $('mnavPrefs')].forEach((li, i) => rise(li, { delay: 40 + i * 35, dist: 10, dur: 500 }));
+  }
   body.classList.toggle('mnav-open', v);
   syncCover();
   updateBurger();
@@ -566,7 +690,7 @@ function initMobileNav() {
     const b = e.target.closest('button');
     if (!b) { setMobileNav(false); return; } // a tap on the blurred page closes it
     sound.click();
-    const closePages = () => { if (!$('info').hidden) closeInfo(); if (!$('events').hidden) closeEvents(); if (openWork) closeDetail(); };
+    const closePages = () => { if (!shut('info')) closeInfo(); if (!shut('events')) closeEvents(); if (openWork) closeDetail(); };
     if (b.dataset.cat) { setMobileNav(false); closePages(); setCategory(b.dataset.cat); return; }
     const go = b.dataset.go;
     if (go === 'lang') { toggleLang(); buildMobileNav(); }
@@ -625,7 +749,8 @@ function updateMenu() {
 // right, the overview and the list show them one after another); no fading
 let catToken = 0;
 function setCategory(cat, { push = true } = {}) {
-  if (cat === currentCat) return;
+  if (cat === currentCat) { if (cat === 'americas') openAmer(); return; } // Amerike again: its text again
+  if (cat !== 'americas') closeAmer();
   if (openWork) closeDetail({ fromPop: true }); // a new medium from inside a work: back to the gallery
   catToken++;
   currentCat = cat;
@@ -639,7 +764,78 @@ function setCategory(cat, { push = true } = {}) {
   buildIndex({ reveal: view === 'index' });
   buildList({ reveal: view === 'list' });
   updateTitle();
+  if (cat === 'americas') openAmer();
 }
+
+// ---------- Amerike: the exhibition's text, an overlay over everything ----------
+// the title, how long the exhibition runs, and the curator's text with what matters most in white;
+// the × top right (or Escape) closes it. It opens each time Amerike is chosen (and again on a click
+// on Amerike when it is already chosen).
+const hl = (t) => escapeHtml(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+const amerData = () => { const c = data.categories.find((x) => x.id === 'americas')?.intro; return c && (c[lang] || c.hr); };
+function buildAmer() {
+  const t = amerData();
+  if (!t) return;
+  $('amerTitle').textContent = t.title || '';
+  $('amerSub').textContent = t.subtitle || '';
+  $('amerDates').textContent = t.dates || '';
+  $('amerLead').innerHTML = hl(t.lead || '');
+  $('amerBody').innerHTML = (t.body || []).map((p) => `<p>${hl(p)}</p>`).join('');
+  $('amerSign').textContent = t.sign ? `— ${t.sign}` : '';
+  $('amerClose').setAttribute('aria-label', lang === 'en' ? 'Close' : 'Zatvori');
+  $('amerLogos').querySelector('svg').setAttribute('aria-label', lang === 'en' ? 'Exhibition logos' : 'Logotipi izložbe');
+}
+function openAmer() {
+  if (!amerData() || !shut('amer')) return;
+  buildAmer();
+  showOverlay($('amer'));
+  body.classList.add('amer-open');
+  $('amerScroll').scrollTop = 0;
+  // it comes in part by part
+  [$('amerTitle'), $('amerSub'), $('amerDates'), $('amerLead'), ...$('amerBody').children, $('amerSign'), $('amerLogos')]
+    .forEach((el, i) => rise(el, { delay: 150 + Math.min(i, 6) * 90, dist: 18, dur: 800 }));
+  rise($('amerClose'), { delay: 300, dist: 10, dur: 500 });
+  amerMap.start();
+}
+// the pointer over Amerike's text: the outline of America, its line trembling as if drawn again and
+// again by hand (a new noise a few times a second, the tremor slowly breathing in and out). Mouse
+// only; over the × the ordinary hand takes over.
+const amerMap = (() => {
+  let timer = 0, t0 = 0, seed = 1, raf = 0, mx = -1, my = -1;
+  const el = () => $('amerMap');
+  const fine = matchMedia('(hover: hover) and (pointer: fine)');
+  const place = () => { raf = 0; el().style.translate = `${mx}px ${my}px`; };
+  $('amer').addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    mx = e.clientX; my = e.clientY;
+    el().classList.toggle('on', !e.target.closest('.amer-x'));
+    if (!raf) raf = requestAnimationFrame(place);
+  }, { passive: true });
+  $('amer').addEventListener('pointerleave', () => el().classList.remove('on'));
+  return {
+    start() {
+      clearInterval(timer);
+      $('amer').classList.toggle('own-cursor', fine.matches);
+      if (reducedMotion()) return;
+      t0 = performance.now();
+      timer = setInterval(() => {
+        seed = (seed % 997) + 1;
+        $('amerNoise').setAttribute('seed', seed);
+        const k = (performance.now() - t0) / 1000;
+        $('amerDisp').setAttribute('scale', (26 + Math.sin(k * 0.7) * 10 + Math.sin(k * 1.9) * 4).toFixed(1));
+        $('amerNoise').setAttribute('baseFrequency', (0.02 + Math.sin(k * 0.23) * 0.005).toFixed(4));
+      }, 160);
+    },
+    stop() { clearInterval(timer); timer = 0; el().classList.remove('on'); },
+  };
+})();
+function closeAmer({ toWorks = false } = {}) {
+  if (shut('amer')) return;
+  amerMap.stop();
+  fadeOut($('amer'), () => { hideOverlay($('amer')); body.classList.remove('amer-open'); });
+  if (toWorks && view === 'surf') app.gallery.enter(); // the works slide in as the text goes
+}
+$('amerClose').addEventListener('click', (e) => { e.stopPropagation(); closeAmer({ toWorks: true }); });
 
 // ---------- events: a page of their own (dates, title, place), like the list ----------
 function buildEvents() {
@@ -655,23 +851,21 @@ function buildEvents() {
 }
 function openEvents({ push = true } = {}) {
   if (openWork) closeDetail({ fromPop: true });
-  if (!$('info').hidden) closeInfo({ fromPop: true });
+  if (!shut('info')) closeInfo({ fromPop: true });
   sound.click();
   buildEvents();
   showOverlay($('events'));
   body.classList.add('events-open');
   $('events').querySelector('.events-scroll').scrollTop = 0;
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    $('eventsRows').animate([{ transform: 'translateY(24px)' }, { transform: 'none' }], { duration: 240, easing: 'steps(4, end)' });
-  }
+  rise($('eventsTitle'), { delay: 80, dist: 16 });
+  [...$('eventsRows').children].forEach((r, i) => rise(r, { delay: 180 + i * 70, dist: 16 }));
   if (push) setHash('#/events', true);
 }
 function closeEvents({ fromPop = false } = {}) {
-  if ($('events').hidden) return;
+  if (shut('events')) return;
   sound.click();
-  const done = () => { hideOverlay($('events')); body.classList.remove('events-open'); for (const a of $('events').getAnimations()) a.cancel(); };
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) done();
-  else done(); // a hard cut
+  const done = () => { hideOverlay($('events')); body.classList.remove('events-open'); revealBar(); };
+  fadeOut($('events'), done);
   if (!fromPop) restoreHash();
 }
 $('eClose').addEventListener('click', () => closeEvents());
@@ -700,7 +894,11 @@ function buildInfo() {
 }
 
 function showOverlay(el) {
+  el._fade = (el._fade || 0) + 1; // a fade-out still running is called off
+  el.classList.remove('is-closing');
+  for (const a of el.getAnimations()) a.cancel();
   el.hidden = false;
+  fadeIn(el);
   el.classList.add('is-open');
   app.gallery.paused = true;
   app.gallery.setHover(null);
@@ -710,7 +908,7 @@ function showOverlay(el) {
   setTimeout(() => el.focus({ preventScroll: true, focusVisible: false }), 50);
 }
 // the gallery draws nothing while a page or the phone's menu lies over it
-function syncCover() { if (app.gallery) app.gallery.covered = !$('detail').hidden || !$('info').hidden || !$('events').hidden || mobileNav(); }
+function syncCover() { if (app.gallery) app.gallery.covered = !shut('detail') || !shut('info') || !shut('events') || !shut('amer') || mobileNav(); }
 function hideOverlay(el) {
   el.classList.remove('is-open');
   el.hidden = true;
@@ -725,18 +923,30 @@ function openInfo({ push = true } = {}) {
   showOverlay($('info'));
   body.classList.add('focus-info');
   revealInfoText();
+  // the text comes in, part by part
+  [...$('infoBody').children, $('infoMail')].forEach((p, i) => rise(p, { delay: 120 + Math.min(i, 8) * 60, dist: 16, dur: 750 }));
   if (push) setHash('#/info', true);
 }
 function closeInfo({ fromPop = false } = {}) {
-  if ($('info').hidden) return;
+  if (shut('info')) return;
   sound.click();
-  hideOverlay($('info'));
-  body.classList.remove('focus-info');
+  fadeOut($('info'), () => { hideOverlay($('info')); body.classList.remove('focus-info'); });
   if (!fromPop) restoreHash();
 }
 
 // ---------- detail: the work at the top, its details below (scroll, or Read more) ----------
 let detailTimer = 0, stripPhotos = [];
+// a work's page: what lies under the work rises softly into view as it is scrolled to
+let rvWatch = null;
+function revealOnScroll(els) {
+  if (reducedMotion() || !('IntersectionObserver' in window)) return;
+  rvWatch ||= new IntersectionObserver((es) => {
+    // those coming in together follow one another a little
+    let n = 0;
+    for (const e of es) if (e.isIntersecting) { rvWatch.unobserve(e.target); e.target.style.transitionDelay = `${n++ * 70}ms`; e.target.classList.add('in'); }
+  }, { root: $('detailScroll'), threshold: 0.12 });
+  for (const el of els) { el.classList.add('rv'); rvWatch.observe(el); }
+}
 function fillDetail(work) {
   clearInterval(detailTimer);
   detailTimer = typeInto($('detailTitle'), work, 30, $('detailYear'));
@@ -752,7 +962,8 @@ function fillDetail(work) {
   // at the end, after a grey rule: the other works of its medium, in the overview's grid
   const cat = catOf(work), more = cat ? worksFor(cat).filter((w) => w !== work) : [];
   $('detailMore').hidden = !more.length;
-  $('detailMoreGrid').innerHTML = more.map((w) => `<li><button type="button" class="index-item" data-id="${escapeHtml(w.id)}" aria-label="${escapeHtml(`${w.title} ${w.year || ''}`)}"><img src="${escapeHtml(w.thumb || w.image)}" alt="" decoding="async"></button></li>`).join('');
+  $('detailMoreGrid').innerHTML = more.map((w) => `<li><button type="button" class="index-item" data-id="${escapeHtml(w.id)}" aria-label="${escapeHtml(`${w.title} ${w.year || ''}`)}"><img src="${escapeHtml(w.thumb || w.image)}" alt="" decoding="async"></button>${capOf(w)}</li>`).join('');
+  revealOnScroll([...$('detailStrip').children, ...$('detailMoreGrid').children]);
   const links = work.links || [];
   $('detailLinksBox').hidden = true; // Read more is off for now; the links stay in the data
   $('detailLinks').innerHTML = links.map((l) => {
@@ -765,12 +976,12 @@ function fillDetail(work) {
 // left, the next ones to the right (cut by the screen edge)
 // The work's own page: the same whichever view it is opened from. The picture flies from where it
 // was clicked (the carousel, the grid or the list) to its place on the page, and back on closing.
-const DETAIL_MS = 1000, DETAIL_EASE = steppedCss(.6, 0, .15, 1, DETAIL_MS); // the picture's flight, in hard steps like the names
+const DETAIL_MS = 950, DETAIL_EASE = roughCss(.65, 0, .15, 1, DETAIL_MS); // the picture's flight: a slow start, a long soft landing, in fine steps
 const detailList = () => (openWork && visibleWorks.includes(openWork) ? visibleWorks : data.works);
 // a picture's own box inside a frame, contained (on the left, or centred on a phone)
-function containIn(r, a, centre = false, top = false) {
+function containIn(r, a, centre = false, bottom = false) {
   const w = a >= r.width / r.height ? r.width : r.height * a, h = w / a;
-  return { x: r.left + (centre ? (r.width - w) / 2 : 0), y: r.top + (top ? 0 : (r.height - h) / 2), w, h };
+  return { x: r.left + (centre ? (r.width - w) / 2 : 0), y: bottom ? r.bottom - h : r.top + (r.height - h) / 2, w, h };
 }
 // where the work stands in the view it was opened from (scrolled into sight in the grid / list)
 function sourceRect(work) {
@@ -781,7 +992,7 @@ function sourceRect(work) {
   if (!el) return null;
   let r = el.getBoundingClientRect();
   if (r.bottom < 0 || r.top > innerHeight) { el.scrollIntoView({ block: 'center' }); r = el.getBoundingClientRect(); }
-  return containIn(r, a, false, view === 'index'); // the overview's pictures stand top-left in their cells
+  return containIn(r, a, false, view === 'index'); // the overview's pictures stand bottom-left in their cells
 }
 // the picture on the page: as large as the frame allows
 function layoutFigure(work) {
@@ -925,7 +1136,7 @@ function openDetail(work, { push = true, dir = 0 } = {}) {
     $('detailScroll').scrollTop = 0;
     layoutFigure(work);
     sheetFades();
-    if (!reduced) img.animate([{ transform: `translateX(${dir * 60}px)` }, { transform: 'none' }], { duration: 1000, easing: DETAIL_EASE });
+    if (!reduced) img.animate([{ opacity: 0, transform: `translateX(${dir * 40}px)` }, { opacity: 1, transform: 'none' }], { duration: 700, easing: EASE_OUT });
     return;
   }
   app.gallery.setHover(null);
@@ -942,14 +1153,16 @@ function openDetail(work, { push = true, dir = 0 } = {}) {
   sheetFades();
   if (reduced) return;
   // the page comes up, the picture flies in from where it was clicked, the title rises
-  $('detailTitle').parentElement.animate([{ transform: 'translateY(40px)' }, { transform: 'none' }], { duration: 300, delay: 120, easing: 'steps(5, end)', fill: 'backwards' });
+  rise($('detailTitle'), { delay: 280, dist: 24, dur: 800 });
+  rise($('detailYear'), { delay: 360, dist: 24, dur: 800 });
   if (from) {
     img.style.visibility = 'hidden';
     flyPicture(work.thumb || work.image, from, to).then((el) => { img.style.visibility = ''; requestAnimationFrame(() => el.remove()); });
-  } else img.animate([{ transform: 'translateY(40px)' }, { transform: 'none' }], { duration: 1000, easing: DETAIL_EASE });
+  } else rise(img, { dist: 30, dur: 900 });
 }
 
 function closeDetail({ fromPop = false } = {}) {
+  zoomOff?.();
   body.classList.remove('detail-title-on'); // the names come back
   if (!openWork) return;
   const work = openWork;
@@ -966,19 +1179,20 @@ function closeDetail({ fromPop = false } = {}) {
     hideOverlay($('detail'));
     for (const a of $('detail').getAnimations()) a.cancel();
     body.classList.remove('detail-open', 'detail-sheet-bottom');
+    revealBar();
     updateMenu();
     updateTitle();
   };
   if (!fromPop) restoreHash();
   if (reduced || !back || imgRect.bottom < 0) {
-    done(); // a hard cut
+    fadeOut($('detail'), done);
     return;
   }
   // the picture flies back to its place in the view, while the page fades away
   $('detailImg').style.visibility = 'hidden';
   flyPicture(work.thumb || work.image, { x: imgRect.left, y: imgRect.top, w: imgRect.width, h: imgRect.height }, back)
     .then((el) => { $('detailImg').style.visibility = ''; requestAnimationFrame(() => el.remove()); });
-  done(); // the page is cut away at once; the picture finishes its flight over the view
+  fadeOut($('detail'), done, 320); // the page fades away; the picture finishes its flight over the view
 }
 
 function stepWork(dir) {
@@ -987,6 +1201,95 @@ function stepWork(dir) {
   const i = list.indexOf(openWork);
   openDetail(list[(i + dir + list.length) % list.length], { push: true, dir });
 }
+// ---------- a work's picture, enlarged ----------
+// a click (or tap) on the picture opens it large over everything: it grows out of its place on the
+// page, follows the pointer (a finger drags it about), and the × top right (or Escape) closes it
+let zoomOff = null;
+const zoomOpen = () => !!zoomOff;
+function openZoom(e) {
+  if (!openWork || zoomOff) return;
+  const work = openWork, aspect = work.aspect ?? 1, page = $('detailImg');
+  const r = page.getBoundingClientRect();
+  const label = lang === 'en' ? 'Close enlargement' : 'Zatvori povećanje';
+  const el = document.createElement('div');
+  el.className = 'zoom';
+  el.innerHTML = `<img alt="" decoding="async" draggable="false"><button type="button" class="zoom-x" aria-label="${label}"><svg class="icon" viewBox="0 0 12 12" aria-hidden="true"><path class="s" d="M1.75 1.75l8.5 8.5M10.25 1.75l-8.5 8.5"/></svg></button>`;
+  const img = el.firstChild, x0 = el.lastChild;
+  img.src = page.currentSrc || work.thumb || work.image; // what is on the page now, at once
+  if (work.image && !img.src.endsWith(work.image)) { const f = new Image(); f.src = work.image; (f.decode ? f.decode() : Promise.resolve()).then(() => { img.src = work.image; }, () => {}); }
+  document.body.append(el);
+  body.classList.add('zoom-open');
+  sound.click();
+  const phone = () => app.gallery?.m.phone;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  let w = 0, h = 0, x = 0, y = 0, tx = 0, ty = 0, px = e.clientX / innerWidth, py = e.clientY / innerHeight, raf = 0, live = true, touch = null;
+  const size = () => {
+    const fit = aspect >= innerWidth / innerHeight ? innerWidth : innerHeight * aspect; // whole on the screen
+    w = Math.min(fit * (phone() ? 2.6 : 2.2), 3200); h = w / aspect;
+    img.style.width = `${w}px`; img.style.height = `${h}px`;
+  };
+  // where the pointer is on the screen is where it looks on the picture (with a margin, so the
+  // edges are easy to reach)
+  const aim = () => {
+    const vw = innerWidth, vh = innerHeight, m = Math.min(vw, vh) * 0.06;
+    tx = w > vw ? clamp(m - (w - vw + m * 2) * px, vw - w, 0) : (vw - w) / 2;
+    ty = h > vh ? clamp(m - (h - vh + m * 2) * py, vh - h, 0) : (vh - h) / 2;
+  };
+  const frame = () => {
+    raf = 0;
+    if (!live) return;
+    x += (tx - x) * 0.14; y += (ty - y) * 0.14; // smooth: it follows the hand
+    if (Math.abs(tx - x) + Math.abs(ty - y) < 0.3) { x = tx; y = ty; } else raf = requestAnimationFrame(frame);
+    img.style.translate = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
+  };
+  const run = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  size(); aim(); x = tx; y = ty;
+  img.style.translate = `${x}px ${y}px`;
+  if (!reducedMotion()) {
+    // it grows out of the picture on the page; the ground and the × come in with it
+    img.animate([{ transform: `translate(${r.left - x}px, ${r.top - y}px) scale(${r.width / w})` }, { transform: 'none' }], { duration: 650, easing: roughCss(.65, 0, .15, 1, 650) });
+    el.animate([{ backgroundColor: 'transparent' }, {}], { duration: 400, easing: 'ease-out' });
+    rise(x0, { delay: 350, dist: 10, dur: 500 });
+  }
+  el.addEventListener('pointermove', (ev) => {
+    if (ev.pointerType === 'mouse') { px = ev.clientX / innerWidth; py = ev.clientY / innerHeight; aim(); run(); return; }
+    if (!touch || touch.id !== ev.pointerId) return;
+    tx = w > innerWidth ? clamp(touch.tx + ev.clientX - touch.x, innerWidth - w, 0) : tx;
+    ty = h > innerHeight ? clamp(touch.ty + ev.clientY - touch.y, innerHeight - h, 0) : ty;
+    x = tx; y = ty; run();
+  });
+  el.addEventListener('pointerdown', (ev) => {
+    if (ev.pointerType === 'mouse' || ev.target.closest('.zoom-x')) return;
+    touch = { id: ev.pointerId, x: ev.clientX, y: ev.clientY, tx, ty };
+    el.setPointerCapture?.(ev.pointerId);
+  });
+  el.addEventListener('pointerup', () => { touch = null; });
+  x0.addEventListener('click', (ev) => { ev.stopPropagation(); off(); });
+  // Escape closes it; the arrows do not move on to another work meanwhile
+  const key = (ev) => { if (['Escape', 'ArrowLeft', 'ArrowRight'].includes(ev.key)) { ev.stopImmediatePropagation(); ev.preventDefault(); if (ev.key === 'Escape') off(); } };
+  const resize = () => { size(); aim(); x = tx; y = ty; run(); };
+  addEventListener('keydown', key, true);
+  addEventListener('resize', resize);
+  function off() {
+    if (!live) return;
+    live = false; zoomOff = null;
+    removeEventListener('keydown', key, true);
+    removeEventListener('resize', resize);
+    cancelAnimationFrame(raf);
+    body.classList.remove('zoom-open');
+    sound.click();
+    if (reducedMotion()) { el.remove(); return; }
+    // it settles back into the picture on the page as the ground fades away
+    const back = $('detailImg').getBoundingClientRect();
+    x0.remove();
+    el.animate([{}, { backgroundColor: 'transparent' }], { duration: 450, easing: 'ease-in', fill: 'forwards' });
+    img.animate([{ transform: 'none' }, { transform: `translate(${back.left - x}px, ${back.top - y}px) scale(${back.width / w})` }], { duration: 550, easing: roughCss(.65, 0, .15, 1, 550), fill: 'forwards' })
+      .finished.catch(() => {}).then(() => el.remove());
+  }
+  zoomOff = off;
+}
+$('detailImg').addEventListener('click', (e) => { e.stopPropagation(); openZoom(e); });
+
 // the grid at the end of a work: a work opens in its place
 $('detailMoreGrid').addEventListener('click', (e) => {
   const el = e.target.closest('.index-item');
@@ -1027,14 +1330,14 @@ function route() {
   if (!data || !app.gallery) return;
   const h = parseHash();
   if (!h.work && openWork) closeDetail({ fromPop: true });
-  if (!h.info && !$('info').hidden) closeInfo({ fromPop: true });
-  if (!h.events && !$('events').hidden) closeEvents({ fromPop: true });
-  if (h.events && $('events').hidden) openEvents({ push: false });
+  if (!h.info && !shut('info')) closeInfo({ fromPop: true });
+  if (!h.events && !shut('events')) closeEvents({ fromPop: true });
+  if (h.events && shut('events')) openEvents({ push: false });
   if (h.work && h.work !== openWork?.id) {
     const w = data.works.find((x) => x.id === h.work);
     if (w) openDetail(w, { push: false });
   }
-  if (h.info && $('info').hidden) openInfo({ push: false });
+  if (h.info && shut('info')) openInfo({ push: false });
   if (h.cat && data.categories.some((c) => c.id === h.cat)) setCategory(h.cat, { push: false });
 }
 addEventListener('popstate', () => { pushedOverlay = false; if (!ownBack) route(); });
@@ -1060,14 +1363,15 @@ addEventListener('resize', () => fitLabels());
 
 // ---------- wiring ----------
 // About (bottom left, with his portrait) opens the text about him; a second click closes it
-$('aboutLink').addEventListener('click', (e) => { e.stopPropagation(); if (!$('info').hidden) { closeInfo(); return; } if (openWork) closeDetail(); if (!$('events').hidden) closeEvents(); openInfo(); });
+$('aboutLink').addEventListener('click', (e) => { e.stopPropagation(); if (!shut('info')) { closeInfo(); return; } if (openWork) closeDetail(); if (!shut('events')) closeEvents(); openInfo(); });
 initLangMenu();
 // (pages are closed without stepping back in the history, which would land after the change and undo it)
 const goHome = () => {
   sound.click();
-  if (!$('info').hidden) closeInfo({ fromPop: true });
-  if (!$('events').hidden) closeEvents({ fromPop: true });
+  if (!shut('info')) closeInfo({ fromPop: true });
+  if (!shut('events')) closeEvents({ fromPop: true });
   if (openWork) closeDetail({ fromPop: true });
+  closeAmer();
   pushedOverlay = false;
   if (currentCat === 'all') setHash(''); else setCategory('all');
 };
@@ -1138,10 +1442,10 @@ $('detailScroll').addEventListener('touchend', (e) => {
 }, { passive: true });
 
 addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') { if (openWork) closeDetail(); else if (!$('events').hidden) closeEvents(); else if (!$('info').hidden) closeInfo(); else body.classList.remove('focus-menu'); }
+  if (e.key === 'Escape') { if (!shut('amer') && !openWork) closeAmer({ toWorks: true }); else if (openWork) closeDetail(); else if (!shut('events')) closeEvents(); else if (!shut('info')) closeInfo(); else body.classList.remove('focus-menu'); }
   if (openWork && e.key === 'ArrowRight') stepWork(1);
   if (openWork && e.key === 'ArrowLeft') stepWork(-1);
-  if (!openWork && $('info').hidden && view === 'surf' && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) app.gallery.step(e.key === 'ArrowRight' ? 1 : -1);
+  if (!openWork && shut('info') && view === 'surf' && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) app.gallery.step(e.key === 'ArrowRight' ? 1 : -1);
 });
 
 // sounds: unlock audio on the first gesture, tick on hovering buttons

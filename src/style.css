@@ -47,7 +47,8 @@ html:not(.fonts) body > :not(.loader) { visibility: hidden; }
   --name: calc(var(--tm) * 2.6);       /* VLADO MARTEK in the corner */
   --sans: 'Malamocco', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --ease: cubic-bezier(.22, .8, .2, 1);
-  --jerk: .5s steps(8, end);            /* the interface's movement: eight hard steps, like the names after the splash */
+  --soft: cubic-bezier(.22, 1, .36, 1); /* things arriving: quick, then a long gentle landing */
+  --glide: cubic-bezier(.65, 0, .2, 1); /* things moving from one place to another: slow start, soft landing */
   color-scheme: light;
 }
 /* Amerike: the whole page black while that medium is chosen (its works open on it too), and all the
@@ -107,22 +108,23 @@ img { -webkit-user-drag: none; user-drag: none; }
 .veil {
   position: fixed; inset: 0; z-index: 11; pointer-events: none;
   -webkit-backdrop-filter: blur(0px); backdrop-filter: blur(0px);
-  transition: backdrop-filter .2s steps(3, end), -webkit-backdrop-filter .2s steps(3, end);
+  transition: backdrop-filter .35s ease-out, -webkit-backdrop-filter .35s ease-out;
 }
 body:not(.focus-menu) .veil { display: none; } /* only while the medium menu is open: a backdrop layer over the whole screen costs every frame */
 body.focus-menu .veil { -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); }
 body.detail-open.focus-menu .veil { z-index: 24; }
-.blurrable, .index-item { transition: none; }
+/* colours change softly: links under the pointer, the current view, a medium chosen */
+button, a, .index-cap, .index-cap .y, .list-title, .crumb-cat { transition: color .25s ease-out, border-color .25s ease-out; }
 
 /* ---------- intro: names, then menu + language, then the gallery ---------- */
 body.intro .label, body.intro .menu, body.intro .about-link, body.intro .views, body.intro .gallery, body.intro .hover-title { opacity: 0; pointer-events: none; }
-body.intro .menu, body.intro .about-link, body.intro .views, body.intro .hover-title { transition: none; } /* cut in; the gallery slides in */
+/* coming in after the splash: a soft fade (the gallery slides in) */
+.about-link, .hover-title, .gallery, .about-btn { transition: opacity .8s var(--soft); } /* (the menu, views, tools and the word: item by item, main.js) */
 body.intro-names .label { opacity: 1; }
 body.intro-ui .menu, body.intro-ui .about-link, body.intro-ui .views { opacity: 1; }
 body.intro-gallery .gallery, body.intro-gallery .hover-title { opacity: 1; }
 
 
-.menu, .about-link, .views, .label { transition: none; }
 
 /* ---------- loader ---------- */
 .loader {
@@ -130,7 +132,8 @@ body.intro-gallery .gallery, body.intro-gallery .hover-title { opacity: 1; }
   background: var(--splash);
   pointer-events: none;
 }
-body.loaded .loader { display: none; }
+/* the splash lifts away: a fade, then gone */
+body.loaded .loader { opacity: 0; visibility: hidden; transition: opacity .7s ease-out, visibility 0s .7s; }
 .loader { display: grid; place-items: center; }
 .loader-mark { width: min(22vw, 420px); min-width: 180px; height: auto; display: block; }
 
@@ -161,15 +164,19 @@ body.detail-open .bottom-fade, body.events-open .bottom-fade { height: calc(var(
   position: fixed; left: var(--pad); bottom: var(--pad); z-index: 12;
   display: flex; align-items: flex-end; gap: .5em; font-size: var(--tm); color: var(--red);
 }
-.about-thumb { flex: none; width: 2.4em; height: 2.4em; background: #c6c6c6 center / cover no-repeat; transition: width var(--jerk), height var(--jerk); } /* grows and shrinks in eight steps, like the names */
+.about-thumb { flex: none; width: 2.4em; height: 2.4em; background: #c6c6c6 center / cover no-repeat; transition: width .6s var(--soft), height .6s var(--soft); } /* grows and shrinks softly */
 body.intro .about-btn { opacity: 0; pointer-events: none; }
 body.events-open .about-btn, body.focus-info .about-btn { z-index: 25; }
 body.detail-open .about-btn { display: none; } /* a work's page: no portrait in the corner */
 /* during the splash the names sit on the vertical middle, Vlado at the left edge and Martek at the
    right (Martek in black there, so it shows on the red); once the page is in, they glide up together
    into the top-left corner */
-.label { transform-origin: 0 0; transition: transform var(--jerk); } /* from the splash size down to their own: eight hard steps */
-body.names-up .label { transform: scale(var(--splash-k, 1.6)); z-index: 31; transition: none; }
+.label { transition: color 1.2s var(--soft), opacity .8s var(--soft); } /* Martek turns from the splash's black to red, slowly */
+body.names-up .label { z-index: 31; font-size: calc(var(--name) * var(--splash-k, 1.6)); } /* over the splash, large */
+body.names-up .label-last { padding-top: calc(var(--pad) + var(--name) * var(--splash-k, 1.6) * .92); }
+/* the names' letters rise from their baseline (main.js): each line hides what is still below it */
+.label .ch { display: inline-block; }
+body.intro-names .label-first, body.intro-names .label-text { display: inline-block; clip-path: inset(-1em -.5em 0 -.5em); }
 /* the names stay on every page: over a work and the events too */
 body.detail-open .label, body.events-open .label { z-index: 26; }
 /* a work scrolled down, its name in the path: the names in the corner go (a cut, like the path's change) */
@@ -256,7 +263,7 @@ body.focus-menu .menu-list button { visibility: visible; pointer-events: auto; }
 .hover-title .t { display: block; }
 .hover-title, .detail-head, .events-title { margin-left: -.05em; } /* big type: its side-bearing pulled in, so it lines up with the names and the pictures */
 .hover-title .y { display: block; color: var(--red); }
-body.detail-open .hover-title { visibility: hidden; }
+body.detail-open .hover-title, body.view-index .hover-title { visibility: hidden; } /* the overview has its captions under the works */
 /* the open medium menu: the title goes behind the blur with the works */
 
 /* top right, one toolbar in two groups: the view icons | language and sound, parted by a thin grey
@@ -336,7 +343,13 @@ body.view-index::before, body.view-list::before {
 /* flights between the gallery and the overview */
 .fly-layer { position: fixed; inset: 0; z-index: 3; pointer-events: none; } /* above the views (later in the page), under the bottom shade: the pictures fly under it as they will lie, so it never switches on when they land */
 .fly { position: absolute; background: center / 100% 100% no-repeat; transform-origin: 0 0; will-change: transform; }
-.index-item img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: left top; pointer-events: none; } /* top-left: the works of a row share their top line */
+.index-item img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: left bottom; pointer-events: none; } /* bottom-left: the caption right under the picture, however low the work */
+/* under each work: its title and year, at most two lines */
+.index-cap { margin: .8em 0 0; font-size: var(--t0); line-height: 1.2; color: var(--ink); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+.index-cap .y { color: var(--red); }
+li:has(> .index-item.is-hover) .index-cap, li:has(> .index-item:hover) .index-cap { color: var(--red); } /* the work under the pointer: its caption red, at once */
+body.cat-americas li:has(> .index-item.is-hover) .index-cap, body.cat-americas li:has(> .index-item:hover) .index-cap,
+body.cat-americas li:has(> .index-item.is-hover) .index-cap .y, body.cat-americas li:has(> .index-item:hover) .index-cap .y { color: #fff; } /* on Amerike, where all text is red: white */
 
 /* List: one row per work, from the grid column to the end of the details column */
 .list {
@@ -352,10 +365,10 @@ body.view-index::before, body.view-list::before {
      medium on 11–12 */
   --th: 4.6em; --thw: calc(var(--th) * var(--thk)); /* the picture's column, --thk times as large under the pointer */
   grid-template-columns: var(--thw) calc(var(--span4) + var(--colg) - var(--thw) - var(--gut)) var(--span2) 1fr; align-items: center;
-  transition: --thk var(--jerk);
+  transition: --thk .45s var(--soft);
 }
 @property --thk { syntax: '<number>'; inherits: true; initial-value: 1; }
-.list-row:hover, .list-row.is-hover { --thk: 1.3; } /* the work under the pointer: its picture's column grows 30% in eight steps, and the title moves along */
+.list-row:hover, .list-row.is-hover { --thk: 1.3; } /* the work under the pointer: its picture's column grows 30%, softly, and the title moves along */
 .list-year { color: var(--red); }
 .list-thumb { display: block; width: var(--thw); height: var(--thw); }
 .list-thumb img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: left center; }
@@ -506,6 +519,22 @@ body.detail-sheet-bottom .bottom-fade { background: var(--sheet-fade); }
 .detail-scroll { z-index: 1; }
 
 
+/* a work's page: what lies under the work rises softly into view as it is scrolled to (main.js) */
+.rv { opacity: 0; transform: translateY(28px); transition: opacity .9s var(--soft), transform .9s var(--soft); }
+.rv.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+
+/* ---------- the tag at the pointer: what an icon without words does (main.js) ---------- */
+.ctag {
+  position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none;
+  max-width: min(32em, 60vw); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding: .5em .6em; font-size: var(--t0); line-height: 1;
+  background: #E63323; color: #111111; border: 0; border-radius: 0;
+}
+.ctag[hidden] { display: none; }
+body.focus-info .ctag { background: #111111; color: #E63323; } /* on the red About page: black */
+body.cat-americas:not(.focus-info) .ctag { background: #fff; color: #111111; } /* on the black Amerike: white */
+
 /* only the words of the menu take clicks: its long hidden list must not cover the view switch */
 .menu, .menu-pick, .menu-list { pointer-events: none; }
 .menu-label, .menu-back { pointer-events: auto; }
@@ -559,7 +588,8 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   body.focus-info .burger-chevron { color: #111111; } /* on About's red page the red chevron would vanish */
   .burger::after { content: ''; position: absolute; inset: -12px; } /* a finger-sized target */
   @media (hover: hover) { .burger:hover { color: var(--red); } } /* (no sticky red after a tap) */
-  body.intro .burger { visibility: hidden; }
+  body.intro .burger { opacity: 0; pointer-events: none; }
+  body.intro-ui .burger { opacity: 1; pointer-events: auto; }
   /* the view icons, larger for a finger; their drawn bottoms (11/12 of the icon) on the word's baseline */
   .views {
     top: calc(var(--pad) + var(--tm) * var(--cap) - var(--tm) * 1.3 * .72 * 11 / 12);
@@ -603,7 +633,8 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
 
   /* ----- overview and list: from --top, the full width ----- */
   .index { padding: var(--top) var(--pad) calc(var(--pad) * 2); bottom: calc(var(--pad) * 2 + var(--t1) * 2.4); } /* it ends above the bottom row */
-  .index-grid { gap: 5vh calc(var(--gut) * 2); grid-template-columns: repeat(3, minmax(0, 1fr)); } /* three in a row */
+  .index-grid { gap: 4vh calc(var(--gut) * 2); grid-template-columns: repeat(3, minmax(0, 1fr)); } /* three in a row */
+  .index-cap { font-size: 12px; }
   .list { padding-top: var(--top); padding-left: var(--pad); }
   /* the picture on columns 1–2, title and year from column 3, the medium under the title (the two
      lines together in the middle of the row) */
@@ -643,4 +674,79 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
     height: calc(var(--pad) * 4 + var(--tm) * 2.4);
     background: linear-gradient(to top, var(--about-bg) calc(var(--pad) * 1.5 + var(--tm) * 2.4), rgba(230, 51, 35, 0) 100%);
   }
+}
+
+/* turning chevrons: softly */
+.menu-chevron, .burger-chevron { transition: transform .35s var(--soft); }
+/* reduced motion: nothing glides or fades */
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+
+/* ---------- a work's picture, enlarged (main.js, openZoom) ---------- */
+#detailImg { pointer-events: auto; cursor: zoom-in; }
+.zoom { position: fixed; inset: 0; z-index: 45; overflow: hidden; background: var(--bg); touch-action: none; }
+.zoom img { position: absolute; left: 0; top: 0; display: block; max-width: none; transform-origin: 0 0; will-change: translate, transform; pointer-events: none; }
+/* the × top right: as large as the names, a finger's room around it */
+.zoom-x { position: absolute; top: var(--pad); right: var(--pad); z-index: 1; font-size: calc(var(--tm) * 1.6); line-height: 1; color: var(--red); padding: .25em; margin: -.25em; }
+.zoom-x .icon { width: .72em; height: .72em; }
+.zoom-x .icon .s { stroke-width: 2.3; }
+@media (hover: hover) { .zoom-x:hover { color: var(--ink); } }
+
+/* the exhibition box bottom right: not wanted for now (the exhibition opens Amerike instead) */
+#langBox { display: none !important; }
+
+/* ---------- Amerike: the exhibition's text, an overlay over everything (main.js, openAmer) ----------
+   the red ground over the whole page (the names and the bar too), as on About; all the text black,
+   what matters most on a black band; the × top right closes it */
+.overlay.amer, .overlay.amer.is-open { background: var(--about-bg); color: #111111; z-index: 34; }
+body.amer-open .ctag { z-index: 61; background: #111111; color: #E63323; } /* on the red: black */
+.amer-scroll {
+  position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain;
+  padding: calc(var(--bar) + 5vh) var(--pad) 14vh var(--cs);
+  user-select: text; -webkit-user-select: text;
+}
+/* the text fades out under the × and above the bottom edge */
+.overlay.amer::before, .overlay.amer::after { content: ''; position: absolute; left: 0; right: 0; z-index: 2; pointer-events: none; }
+.overlay.amer::before { top: 0; height: calc(var(--bar) + var(--pad) * 2); background: linear-gradient(to bottom, var(--about-bg) calc(var(--pad) + var(--tm)), rgba(230, 51, 35, 0) 100%); }
+.overlay.amer::after { bottom: 0; height: calc(var(--pad) * 5); background: linear-gradient(to top, var(--about-bg), rgba(230, 51, 35, 0)); }
+/* the pointer over this page: the outline of America (main.js, amerMap); the system pointer hides */
+.amer-cursor {
+  position: fixed; left: 0; top: 0; z-index: 4; pointer-events: none;
+  width: 76px; height: auto; margin: -26.5px 0 0 -38px; /* its middle on the pointer */
+  overflow: visible; visibility: hidden;
+}
+.amer-cursor.on { visibility: visible; }
+.amer-cursor path { fill: none; stroke: #111111; stroke-width: 34; stroke-linejoin: round; stroke-linecap: round; }
+body .overlay.amer.own-cursor, body .overlay.amer.own-cursor * { cursor: none !important; }
+body .overlay.amer.own-cursor .amer-x, body .overlay.amer.own-cursor .amer-x * { cursor: pointer !important; }
+.amer-scroll { z-index: 1; }
+.amer-x { position: absolute; top: var(--pad); right: var(--pad); z-index: 3; font-size: calc(var(--tm) * 1.6); line-height: 1; color: #111111; padding: .25em; margin: -.25em; }
+.amer-x .icon { width: .72em; height: .72em; }
+.amer-x .icon .s { stroke-width: 2.3; }
+@media (hover: hover) { .amer-x:hover { color: #fff; } }
+.amer strong { font-weight: inherit; color: #E63323; background: #111111; padding: 0 .12em; -webkit-box-decoration-break: clone; box-decoration-break: clone; } /* what matters most: on a black band, in the page's red (each line its own band) */
+.amer ::selection { background: #111111; color: #E63323; }
+.amer-title {
+  margin: 0 0 0 -.05em; max-width: calc(100vw - var(--cs) - var(--pad));
+  font-size: var(--label); line-height: .92; letter-spacing: -.03em; text-wrap: balance;
+}
+/* one rhythm: the title with its subtitle and dates as one block; then the lead; then the text,
+   its paragraphs a short gap apart, the signature a line under it */
+.amer-sub { margin: .35em 0 0; font-size: var(--t1); line-height: 1.15; }
+.amer-dates { margin: .1em 0 0; font-size: var(--t1); line-height: 1.15; }
+.amer-lead { margin: 1.1em 0 0; max-width: calc(var(--ce) - var(--cs)); font-size: var(--t2); line-height: 1.08; letter-spacing: -.02em; text-wrap: pretty; }
+.amer-body { margin-top: calc(var(--tm) * 2.2); max-width: min(calc(var(--ce) - var(--cs)), 38em); font-size: var(--tm); line-height: 1.42; hanging-punctuation: first; }
+.amer-body p { margin: 0; text-wrap: pretty; }
+.amer-body p + p { margin-top: .75em; }
+.amer-sign { margin: 1.4em 0 0; font-size: var(--tm); }
+/* the exhibition's logos at the end of the text, black on the red */
+.amer-logos { margin: calc(var(--tm) * 3) 0 0; color: #111111; line-height: 0; }
+.amer-logos-svg { display: block; height: calc(var(--tm) * 2.2); width: auto; overflow: visible; }
+body.cat-americas .menu-list button.is-active[data-cat="americas"] { cursor: pointer; } /* a click opens its text again */
+@media (max-width: 700px), (orientation: portrait) and (max-width: 900px) {
+  .amer-scroll { padding: calc(var(--pad) * 5 + var(--tm)) var(--pad) 12vh; }
+  .amer-title { font-size: var(--t2); max-width: calc(100vw - var(--pad) * 2 - var(--tm) * 2); }
+  .amer-sub, .amer-dates { font-size: var(--tm); }
+  .amer-lead, .amer-body { max-width: none; }
+  .amer-lead { font-size: var(--t1); line-height: 1.12; }
+  .amer-body { margin-top: calc(var(--tm) * 1.8); }
 }

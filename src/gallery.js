@@ -26,19 +26,24 @@ export function bezier(x1, y1, x2, y2) {
     return c(y1, y2, t);
   };
 }
-// every movement is a little jerky, like the names after the splash: the curve is kept, but time
-// moves in hard steps (16 a second, the names' own rate: 8 in half a second)
-export const STEP_RATE = 16;
+// every movement keeps its soft curve, but time moves in fine steps (ROUGH_FPS a second): a slight
+// hitch, a touch of the unfinished. Only what follows the hand (wheel, swipe, the pointer) is smooth.
+export const ROUGH_FPS = 24;
 const quant = (x, n) => (x >= 1 ? 1 : Math.floor(Math.max(0, x) * n) / n);
-export const stepped = (ease, ms) => { const n = Math.max(2, Math.round(ms / 1000 * STEP_RATE)); return (x) => ease(quant(x, n)); };
-// the same staircase as a CSS easing, for the Web Animations API
-export function steppedCss(x1, y1, x2, y2, ms) {
-  const e = bezier(x1, y1, x2, y2), n = Math.max(2, Math.round(ms / 1000 * STEP_RATE)), pts = [];
-  for (let i = 0; i < n; i++) { const v = +e(i / n).toFixed(4); pts.push(`${v} ${(i / n * 100).toFixed(3)}%`, `${v} ${((i + 1) / n * 100).toFixed(3)}%`); }
+const stepsFor = (ms) => Math.max(3, Math.round(ms / 1000 * ROUGH_FPS));
+export const rough = (ease, ms) => { const n = stepsFor(ms); return (x) => ease(quant(x, n)); };
+// the same, as a CSS easing for the Web Animations API and for transitions
+// (older browsers without linear() easings, before Safari 17.2: the plain smooth curve)
+const hasLinear = typeof CSS !== 'undefined' && CSS.supports?.('animation-timing-function', 'linear(0, 1)');
+export function roughCss(x1, y1, x2, y2, ms) {
+  if (!hasLinear) return `cubic-bezier(${x1}, ${y1}, ${x2}, ${y2})`;
+  const e = bezier(x1, y1, x2, y2), n = stepsFor(ms), pts = [];
+  for (let i = 0; i < n; i++) { const v = +e(i / n).toFixed(4); pts.push(`${v} ${(i / n * 100).toFixed(2)}%`, `${v} ${((i + 1) / n * 100).toFixed(2)}%`); }
   return `linear(${pts.join(', ')}, 1 100%)`;
 }
 export const OPEN_EASE = 'cubic-bezier(.65, 0, .2, 1)';
-const openEase = stepped(bezier(0.65, 0, 0.2, 1), OPEN_MS);
+const openEase = rough(bezier(0.65, 0, 0.2, 1), OPEN_MS);
+const enterEase = rough((t) => 1 - Math.pow(1 - t, 4), 1000);
 
 
 
@@ -332,7 +337,7 @@ export class Gallery {
       if (this.enterAt !== null && !this.flying.has(k)) {
         // smooth, a second each, the ones on the left first
         const t = Math.max(0, (now - this.enterAt - Math.max(0, x) / m.vw * 320) / 1000);
-        if (t < 1) ex = lerp(m.vw + 60 + Math.max(0, x - m.cs) * 0.4, x, 1 - Math.pow(1 - t, 4));
+        if (t < 1) ex = lerp(m.vw + 60 + Math.max(0, x - m.cs) * 0.4, x, enterEase(t));
       }
       s.ex = ex; // where it stands this frame (sliding in included), for the hover
       const st = s.el.style;

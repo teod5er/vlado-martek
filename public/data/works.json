@@ -162,7 +162,39 @@
       "id": "americas",
       "label": "Amerike",
       "label_en": "Americas",
-      "viewer": "sheet"
+      "viewer": "sheet",
+      "intro": {
+        "hr": {
+          "title": "Every Artist is Deluded by America",
+          "subtitle": "Svaki je umjetnik zaluđen Amerikom",
+          "dates": "16. 11. – 14. 12. 2026.",
+          "lead": "Vlado Martek (još) nikad nije bio u Americi, no Amerika je došla k nama i već je **više od trideset godina** motiv koji se opetovano pojavljuje u umjetnikovom opusu.",
+          "body": [
+            "**Prva Martekova Amerika nastala je 1995.** godine i to u dvije varijante. **Kultna karta Amerike na kojoj umjetnik ispisuje riječ Balkan** danas je jedan od njegovih najpoznatijih radova, često reproduciran i izlagan. No taj rad ima i svoju predpovijest. Na poziv Darka Šimičića da oblikuje korice knjige Point de Capiton Miška Šuvakovića, u kojoj autor piše eseje o hrvatskim suvremenim umjetnicima, Martek je te 1995. napravio korice s geografskom kartom Sjedinjenih Američkih Država na kojoj je bilo dominantno ispisano ime Miško Šuvaković, a umjesto imena velikih gradova bila su označena imena svih umjetnika koji su zastupljeni u knjizi. Na koricama je karta SAD-a prelomljena na način da je ime Miško bilo na poleđini, dok je prezime Šuvaković bilo na naslovnici knjige. Knjiga je nastala u ratno vrijeme i u formi samizdata, s doslovno fotokopiranim esejima. Stjecajem okolnosti tiskana je u simboličnom broju primjeraka tek 2000. godine.",
+            "Martekov rad, na sjecištu poezije, vizualnih umjetnosti i filozofije (koju je i diplomirao), bilježi značajnu praksu korištenja geografskih karti kao podloge, ili na druge načine, i **prava je mala likovna opsesija**. Martekova Amerika je od devedesetih do danas doživjela razne varijante od kojih je za potrebe ove izložbe predstavljena većina, a neke izložene u knjižnici nastale su posebno za ovu izložbu. Ukupno se radi o **šezdesetak radova**.",
+            "Način na koji Martek doživljava Ameriku obuhvaća čitanja koja idu u rasponu **od fascinacije do kritike**. Posljednji rad koji je napravio kolaž je sa zemljopisnim konturama **potpuno crne Amerike**. Podvojenost Sjedinjenih Američkih Država očituje se s jedne strane u globalnoj hegemoniji, a s druge u bogatoj kulturnoj produkciji koja pripada svijetu, čini ga većim, i koja je inspiracija. Martek uzima i nudi reakciju na oboje, a **njegove su borbe poetske i nose pobjedu poezije**. Vode nas iz često nakaradne stvarnosti u kulturu.",
+            "Prostor knjižnice u Preradovićevoj ima ograničene mogućnosti izlaganja pa se izložba predstavlja u dva medija. Veća i manja platna izložena su u izlogu i prostoru knjižnice, dok je **ostatak radova, u različitim tehnikama i formatima, predstavljen ovdje, na novom, prvom Martekovom webu**. Dizajnirao ga je Teo Peter.",
+            "Paralelno s ovom izložbom, na 58. godišnjem kongresu ASEEES-a (Association for Slavic, East European, and Eurasian Studies) u Chicagu, o Sjedinjenim Američkim Državama u opusu Vlade Marteka izlagat će povjesničarka umjetnosti Adair Rounthwaite, dok je ove godine **u New Yorku, u prestižnoj biblioteci World Poetry, objavljena knjiga Martekove predpoezije**.",
+            "Izložba Every Artist is Deluded by America mali je i doprinos dugim i bogatim hrvatsko-američkim kulturnim i drugim vezama: **od Nikole Tesle do Orsona Wellesa, od Highwaya Ede Murtića do Amerika Vlade Marteka.**"
+          ],
+          "sign": "Saša Šimpraga, kustos"
+        },
+        "en": {
+          "title": "Every Artist is Deluded by America",
+          "subtitle": "Svaki je umjetnik zaluđen Amerikom",
+          "dates": "16 November – 14 December 2026",
+          "lead": "Vlado Martek has (still) never been to America, but America came to us, and for **more than thirty years** it has been a recurring motif in the artist's work.",
+          "body": [
+            "**Martek's first America was made in 1995**, in two variants. **The cult map of America on which the artist writes the word Balkan** is today one of his best-known works, often reproduced and exhibited. But the work has a prehistory. Invited by Darko Šimičić to design the cover of Miško Šuvaković's book Point de Capiton, a collection of essays on Croatian contemporary artists, Martek made a cover in 1995 with a map of the United States, dominated by the name Miško Šuvaković, with the names of all the artists in the book marked in place of the big cities. The map was folded across the cover so that the name Miško stood on the back and the surname Šuvaković on the front. The book was made in wartime as a samizdat, with literally photocopied essays; as things turned out, it was printed in a symbolic number of copies only in 2000.",
+            "Martek's work, at the crossing of poetry, visual art and philosophy (which he graduated in), shows a significant practice of using geographic maps, as a ground or otherwise, and is **a true small visual obsession**. Since the nineties Martek's America has gone through many variants; most of them are shown for this exhibition, and some of those in the library were made especially for it. Altogether there are **some sixty works**.",
+            "Martek's way of experiencing America spans readings **from fascination to critique**. The last work he made is a collage with the outline of **a completely black America**. The duality of the United States shows on one side in its global hegemony and on the other in a rich cultural production that belongs to the world, makes it larger, and inspires. Martek takes and offers a response to both, and **his struggles are poetic and carry the victory of poetry**. They lead us from an often grotesque reality into culture.",
+            "The library in Preradovićeva has limited room for exhibiting, so the exhibition is presented in two media. Larger and smaller canvases are shown in the window and inside the library, while **the rest of the works, in various techniques and formats, are presented here, on Martek's new, first website**. It was designed by Teo Peter.",
+            "Alongside the exhibition, at the 58th annual ASEEES convention (Association for Slavic, East European, and Eurasian Studies) in Chicago, art historian Adair Rounthwaite will speak about the United States in Vlado Martek's work, and this year **a book of Martek's prepoetry was published in New York, in the World Poetry series**.",
+            "Every Artist is Deluded by America is a small contribution to the long and rich Croatian-American cultural and other ties: **from Nikola Tesla to Orson Welles, from Edo Murtić's Highway to Vlado Martek's Americas.**"
+          ],
+          "sign": "Saša Šimpraga, curator"
+        }
+      }
     }
   ],
   "works": [
@@ -1966,7 +1998,7 @@
   "events": [
     {
       "title": "Every Artist is Deluded by America",
-      "dates": "18.11.–22.12.2026.",
+      "dates": "16.11.–14.12.2026.",
       "place": "Zagreb",
       "en": {
         "place": "Zagreb"
