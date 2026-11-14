@@ -621,11 +621,14 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   body.mnav-open .label, body.mnav-open .about-btn { visibility: hidden; } /* the open menu: no names, no portrait, no views */
 
   /* ----- bottom row: the featured work's title over his portrait ----- */
+  /* his portrait in the bottom-right corner; the featured work's title in the bottom-left, on the
+     bottom row, clear of the portrait */
+  .about-btn { left: auto; right: var(--pad); }
   .hover-title {
-    left: var(--pad); bottom: calc(var(--pad) * 4 + var(--tm) * 2.4); max-width: calc(100vw - var(--pad) * 2);
+    left: var(--pad); bottom: var(--pad); max-width: calc(100vw - var(--pad) * 3 - var(--tm) * 2.4);
     white-space: normal; text-wrap: balance;
   }
-  .bottom-fade { height: calc(var(--tm) * 2.4 + var(--t1h) * 3.8 + var(--pad) * 7); }
+  .bottom-fade { height: calc(var(--t1h) * 2.6 + var(--pad) * 5); }
   .top-link { white-space: normal; max-width: 42vw; line-height: 1.15; }
 
   /* ----- overview and list: from --top, the full width ----- */
