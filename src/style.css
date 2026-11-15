@@ -81,6 +81,9 @@ body {
   --about-fade: linear-gradient(to top, color-mix(in srgb, var(--about-bg) 100%, transparent) 0%, color-mix(in srgb, var(--about-bg) 90%, transparent) 15%, color-mix(in srgb, var(--about-bg) 68%, transparent) 35%, color-mix(in srgb, var(--about-bg) 40%, transparent) 55%, color-mix(in srgb, var(--about-bg) 16%, transparent) 75%, color-mix(in srgb, var(--about-bg) 4%, transparent) 90%, transparent 100%);
 }
 html, body { margin: 0; height: 100%; }
+/* a phone never resizes text on its own (it enlarges some blocks and not others, so two texts set
+   in one size come out in two): every size is exactly as set here */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
   background: var(--bg);
   transition: none;
