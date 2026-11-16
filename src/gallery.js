@@ -10,6 +10,7 @@ import { sound, unlock } from './sound.js';
 const mod = (a, n) => ((a % n) + n) % n;
 const lerp = (a, b, t) => a + (b - a) * t;
 const WHEEL = 320;        // px of wheel travel per work
+const AUTO_MS = 3000;      // left alone, each work stays in front this long before the next one comes
 const SNAP_AFTER = 160;   // ms of quiet before the line settles on a work
 const EASE = 9;           // how quickly the line follows the wheel / hand (1/s)
 export const OPEN_MS = 900; // opening / closing a work: the title grows in step with this
@@ -306,8 +307,18 @@ export class Gallery {
     // settle on the nearest work once the wheel has been quiet for a moment
     if (!this.drag && now - this.lastInput > SNAP_AFTER) this.target = Math.round(this.target);
     const f = this.reduced ? 1 : 1 - Math.exp(-EASE * (this.modeTarget ? 0.5 : 1) * dt); // calmer with a work open
-    this.p += (this.target - this.p) * f;
-    if (Math.abs(this.target - this.p) < 0.0005) this.p = this.target;
+    // moving on by itself: one slow glide on a fixed time (a gentle start, a long soft landing);
+    // any move by hand takes over at once
+    const gl = this.glide;
+    if (gl && (gl.to !== this.target || this.drag)) this.glide = null;
+    if (this.glide) {
+      const t = Math.min(1, (now - gl.at) / AUTO_GLIDE);
+      this.p = gl.from + (gl.to - gl.from) * glideEase(t);
+      if (t >= 1) { this.p = this.target; this.glide = null; }
+    } else {
+      this.p += (this.target - this.p) * f;
+      if (Math.abs(this.target - this.p) < 0.0005) this.p = this.target;
+    }
     // a work opening / closing: on a fixed time and curve, the same as the title's
     if (this.mode !== this.modeTarget) {
       const k = this.reduced ? 1 : openEase((now - this.modeAt) / OPEN_MS);
@@ -318,11 +329,19 @@ export class Gallery {
     // a notch sound and a new title each time another work comes to the front
     const fk = Math.round(this.p);
     if (fk !== this.fk) {
-      if (this.fk !== undefined && !this.paused) sound.notch();
+      if (this.fk !== undefined && !this.paused && !this.auto) sound.notch(); // (moving on by itself: in silence)
+      this.auto = false;
       this.fk = fk;
       const w = this.works[mod(fk, n)];
       if (w !== this.featured) { this.featured = w; this.onFeature?.(w); }
     }
+    // left alone, the gallery moves on by itself: each work stays in front for three seconds. It waits
+    // while it is being moved by hand, while the pointer rests on a work, with a work or a page open,
+    // and in a tab that is not on show; the three seconds start again once it is left alone
+    if (this.hidden || this.covered || this.paused || this.mode || this.modeTarget || this.drag || this.hovered || this.enterAt !== null
+      || this.reduced || n < 2 || document.hidden || document.body.classList.contains('intro') || Math.abs(this.target - this.p) > .01 || now - this.lastInput < SNAP_AFTER) this.stay = now;
+    else if (now - (this.stay ?? now) > AUTO_MS) { this.auto = true; this.target = Math.round(this.target) + 1; this.stay = now; this.glide = { from: this.p, to: this.target, at: now }; }
+    else this.stay ??= now;
 
     if (this.hidden || this.covered) return; // nothing to draw: the gallery is not on show
     const m = this.m;
@@ -356,7 +375,10 @@ export class Gallery {
       // height would lay out the page and resample the picture on every frame
       const bw = w0.toFixed(1);
       if (s.bw !== bw) { s.bw = bw; st.width = `${bw}px`; st.height = `${(w0 / aspect).toFixed(1)}px`; }
-      st.transform = `translate3d(${ex.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${sc.toFixed(4)})`;
+      // the work under the pointer grows by 3 %, about its own middle (softly, over a few frames)
+      s.up = lerp(s.up ?? 0, this.hovered === s.work && !this.mode ? HOVER_GROW : 0, .16);
+      if (s.up < .0005) s.up = 0;
+      st.transform = `translate3d(${(ex - w * s.up / 2).toFixed(1)}px, ${(y - h * s.up / 2).toFixed(1)}px, 0) scale(${(sc * (1 + s.up)).toFixed(4)})`;
       st.opacity = (o * fade).toFixed(3);
       // the gallery itself is sharp; only with a work open does scrolling its page blur what is behind
       const bl = this.mode * this.scrollBlur;
@@ -381,6 +403,10 @@ export class Gallery {
     } else if (this.hovered && (this.paused || !this.mouse)) this.setHover(null);
   }
 }
+
+const AUTO_GLIDE = 1700; // ms: how long the gallery takes to move on by itself
+const glideEase = (t) => (t < .5 ? 16 * t ** 5 : 1 - (-2 * t + 2) ** 5 / 2); // slow in, slow out (quintic)
+const HOVER_GROW = .03; // how much the work under the pointer grows
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

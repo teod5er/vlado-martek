@@ -356,6 +356,10 @@ body.view-index::before, body.view-list::before {
 /* under each work: its title and year, at most two lines */
 .index-cap { margin: .8em 0 0; font-size: calc(var(--t0) * 1.15); line-height: 1.2; color: var(--ink); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
 .index-cap .y { color: var(--red); }
+/* the work under the pointer (.is-hover, main.js: a mouse only) grows by 3 %, from its bottom-left
+   corner, where it stands on its caption (in the list the picture's column already grows, below) */
+#indexGrid .index-item img { transform-origin: left bottom; transition: transform .4s var(--soft); }
+#indexGrid .index-item.is-hover img { transform: scale(1.03); }
 li:has(> .index-item.is-hover) .index-cap, li:has(> .index-item:hover) .index-cap { color: var(--red); } /* the work under the pointer: its caption red, at once */
 body.cat-americas li:has(> .index-item.is-hover) .index-cap, body.cat-americas li:has(> .index-item:hover) .index-cap,
 body.cat-americas li:has(> .index-item.is-hover) .index-cap .y, body.cat-americas li:has(> .index-item:hover) .index-cap .y { color: #fff; } /* on Amerike, where all text is red: white */
@@ -370,15 +374,15 @@ body.cat-americas li:has(> .index-item.is-hover) .index-cap .y, body.cat-america
 .list-rows li { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: -1px; }
 .list-row {
   display: grid; width: 100%; text-align: left; padding: .6em 0; gap: 0 var(--gut);
-  /* the whole row, from the Home line to the right edge: thumb + title on columns 4–8, year on 9–10,
-     medium on 11–12 */
-  --th: 4.6em; --thw: calc(var(--th) * var(--thk)); /* the picture's column, --thk times as large under the pointer */
-  grid-template-columns: var(--thw) calc(var(--span4) + var(--colg) - var(--thw) - var(--gut)) var(--span2) 1fr; align-items: center;
+  /* the whole row, from the Home line to the right edge: thumb + title on columns 4–8, the medium from
+     column 9, the year in the last column (12) */
+  --th: 7.5em; --thw: calc(var(--th) * var(--thk)); /* the picture's column, --thk times as large under the pointer */
+  grid-template-columns: var(--thw) calc(var(--span4) + var(--colg) - var(--thw) - var(--gut)) 1fr max(var(--span1), 5.8em); align-items: center;
   transition: --thk .45s var(--soft);
 }
 @property --thk { syntax: '<number>'; inherits: true; initial-value: 1; }
 .list-row:hover, .list-row.is-hover { --thk: 1.3; } /* the work under the pointer: its picture's column grows 30%, softly, and the title moves along */
-.list-year { color: var(--red); }
+.list-year { color: var(--red); white-space: nowrap; }
 .list-thumb { display: block; width: var(--thw); height: var(--thw); }
 .list-thumb img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: left center; }
 .list-row:hover .list-title, .list-row.is-hover .list-title { color: var(--red); }
@@ -519,11 +523,14 @@ body.detail-sheet-bottom .bottom-fade { background: var(--sheet-fade); }
 /* at the end, after a grey rule: more of the same medium, in the overview's grid */
 .detail-more { margin: 0 0 var(--sec); padding-top: var(--sec); border-top: 1px solid var(--line); } /* a grey rule, no heading */
 .detail-more[hidden] { display: none; }
-.detail-more-grid .index-item:hover img { opacity: .85; }
+/* the other works under a work: as in the overview, the one under the pointer grows by 3 % */
+.detail-more-grid .index-item img { transform-origin: left bottom; transition: transform .4s var(--soft); }
+@media (hover: hover) { .detail-more-grid .index-item:hover img { transform: scale(1.03); } }
 .strip-item { margin: 0; aspect-ratio: 1; background: var(--bg); display: grid; place-items: center; padding: 8%; }
 .strip-item img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; pointer-events: none; }
 /* three details of the work: smaller, three in a row, each crop filling its square edge to edge */
 .detail-strip.is-details { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.detail-strip.is-details.is-two { grid-template-columns: repeat(2, minmax(0, 1fr)); } /* a work with two details: the two larger, side by side */
 .detail-strip.is-details .strip-item { padding: 0; }
 .detail-strip.is-details .strip-item img { width: 100%; height: 100%; object-fit: cover; }
 .detail-links-title { margin: 0 0 22vh; font-size: var(--label); line-height: .9; letter-spacing: -.02em; text-box: trim-both cap alphabetic; }
@@ -680,7 +687,7 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   /* the picture on columns 1–2, title and year from column 3, the medium under the title (the two
      lines together in the middle of the row) */
   .list-row {
-    --th: 4.2em;
+    --th: 6em;
     grid-template-columns: var(--span2) 1fr auto;
     grid-template-rows: 1fr auto auto 1fr;
     grid-template-areas: 'th . .' 'th t y' 'th c c' 'th . .';
@@ -693,7 +700,7 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   .detail-head { max-width: calc(100vw - var(--pad) * 2); }
   .detail-title, .detail-year { font-size: var(--t2); }
   /* under the work: the details (or photos) one under the other, the full width */
-  .detail-strip, .detail-strip.is-details { grid-template-columns: minmax(0, 1fr); }
+  .detail-strip, .detail-strip.is-details, .detail-strip.is-details.is-two { grid-template-columns: minmax(0, 1fr); }
   .detail-links-title { margin-bottom: 10vh; }
   body.detail-open .top-link { display: none; }
 

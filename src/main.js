@@ -1,6 +1,7 @@
 import './style.css';
 import { Gallery, escapeHtml, roughCss } from './gallery.js';
 import { sound, unlock, isEnabled, setEnabled } from './sound.js';
+import { pageView } from './analytics.js';
 
 const $ = (id) => document.getElementById(id);
 // the text shows only once the typeface is in (at most 3 s), so it never flashes in another one
@@ -570,7 +571,7 @@ function buildList({ reveal = false } = {}) {
   unwatchImages($('listRows'), $('list'));
   $('listRows').innerHTML = byYear(visibleWorks).map((w, i) => `<li style="--i:${i}">
       <button type="button" class="list-row" data-id="${escapeHtml(w.id)}">
-        <span class="list-thumb"><img data-src="${escapeHtml(w.thumb || w.image)}" alt="" decoding="async"></span><span class="list-title">${escapeHtml(w.title || '')}</span><span class="list-year">${escapeHtml(w.year || '')}</span><span class="list-cat">${escapeHtml(catsOf(w).map((c) => cats.get(c)).filter(Boolean).join(', '))}</span>
+        <span class="list-thumb"><img data-src="${escapeHtml(w.thumb || w.image)}" alt="" decoding="async"></span><span class="list-title">${escapeHtml(w.title || '')}</span><span class="list-cat">${escapeHtml(catsOf(w).map((c) => cats.get(c)).filter(Boolean).join(', '))}</span><span class="list-year">${escapeHtml(w.year || '')}</span>
       </button></li>`).join('');
   lazyImages($('listRows'), $('list'));
   if (reveal) revealList();
@@ -950,11 +951,12 @@ function fillDetail(work) {
   detailTimer = typeInto($('detailTitle'), work, 30, $('detailYear'));
   $('detailDesc').textContent = work.description || '';
   $('detailNavTitle').textContent = work.title || '';
-  // under the work: its own extra photos when it has them, otherwise three details cut from it
+  // under the work: its own extra photos when it has them, otherwise the details cut from it (three, or two)
   // (`details`, square crops of where most is going on), otherwise the work itself, once
   const crops = !work.photos?.length && work.details?.length;
   stripPhotos = work.photos?.length ? work.photos : crops ? work.details : [work.image];
   $('detailStrip').classList.toggle('is-details', !!crops);
+  $('detailStrip').classList.toggle('is-two', !!crops && work.details.length === 2); // two details: a wide one and a close one, side by side
   $('detailStrip').innerHTML = stripPhotos.map((u) => `<figure class="strip-item"><img src="${escapeHtml(u)}" alt="" decoding="async"></figure>`).join('');
   $('detailStrip').hidden = !stripPhotos.length;
   // at the end, after a grey rule: the other works of its medium, in the overview's grid
@@ -1321,6 +1323,7 @@ function setHash(h, overlayPush = false) {
     if (overlayPush && !pushedOverlay) { history.pushState(null, '', url); pushedOverlay = true; }
     else history.replaceState(null, '', url);
   } catch { /* sandboxed frames may refuse history changes */ }
+  pageView();
 }
 // our own step back (closing a page) must not route: a medium chosen in the same click (Home in a
 // work's path) would be undone by the old address coming back
@@ -1331,6 +1334,7 @@ function restoreHash() {
     if (pushedOverlay) { pushedOverlay = false; ownBack = true; history.back(); setTimeout(() => { ownBack = false; history.replaceState(null, '', base()); }, 120); }
     else history.replaceState(null, '', base());
   } catch { /* ignore */ }
+  pageView();
 }
 function route() {
   if (!data || !app.gallery) return;

@@ -122,24 +122,25 @@ export const sound = {
   click() {
     const c = ready(); if (!c) return;
     const t = c.currentTime;
-    noise(t, 0.03, { freq: 2600, q: 1.4, gain: 0.32 });
-    tone(t, 0.04, { freq: 1400, to: 500, gain: 0.08, type: 'triangle' });
-    noise(t + 0.045, 0.02, { freq: 3800, q: 2, gain: 0.12 });
+    // compact and firm: a short low knock (a pitch that drops fast), with only a breath of a
+    // muffled tap on top for its edge; no hiss, no second click
+    tone(t, 0.05, { freq: 260, to: 110, gain: 0.34 });
+    tone(t, 0.022, { freq: 520, to: 260, gain: 0.07, type: 'triangle' });
+    noise(t, 0.012, { type: 'lowpass', freq: 900, q: 0.7, gain: 0.05 });
   },
-  // one detent of a mouse wheel: a dry plastic tick with a hint of the ratchet spring behind it
+  // one detent of a mouse wheel: a small firm knock, a little higher than the click's
   notch() {
     haptic(); // felt as well as heard
     const c = ready(); if (!c) return;
     const t = c.currentTime;
     const v = 0.85 + Math.random() * 0.3; // no two notches sound quite the same
-    noise(t, 0.012, { type: 'highpass', freq: 3200 * v, q: 0.8, gain: 0.22 });
-    tone(t, 0.014, { freq: 1900 * v, to: 900, gain: 0.05, type: 'square' });
-    noise(t + 0.004, 0.02, { freq: 1200 * v, q: 3, gain: 0.06 });
+    tone(t, 0.026, { freq: 380 * v, to: 190 * v, gain: 0.2 });
+    tone(t, 0.012, { freq: 760 * v, to: 380 * v, gain: 0.04, type: 'triangle' });
   },
   page() {
     const c = ready(); if (!c) return;
     const t = c.currentTime;
-    noise(t, 0.28, { freq: 900, sweepTo: 4200, q: 0.7, gain: 0.16, attack: 0.05 });
-    noise(t + 0.22, 0.05, { freq: 2200, q: 1, gain: 0.12 });
+    noise(t, 0.2, { type: 'lowpass', freq: 500, sweepTo: 1500, q: 0.6, gain: 0.1, attack: 0.04 });
+    tone(t + 0.16, 0.05, { freq: 220, to: 120, gain: 0.16 });
   },
 };
