@@ -781,6 +781,7 @@ body .overlay.amer.own-cursor :is(.amer-x, .amer-go), body .overlay.amer.own-cur
 /* one rhythm: the title with its subtitle and dates as one block; then the lead; then the text,
    its paragraphs a short gap apart, the signature a line under it */
 .amer-sub { margin: .35em 0 0; font-size: var(--t1); line-height: 1.15; }
+.amer-sub[hidden] + .amer-dates { margin-top: .35em; } /* no second title: the dates take its place under the title */
 .amer-dates { margin: .1em 0 0; font-size: var(--t1); line-height: 1.15; }
 .amer-lead { margin: 1.1em 0 0; max-width: calc(var(--ce) - var(--cs)); font-size: var(--t2); line-height: 1.08; letter-spacing: -.02em; text-wrap: pretty; }
 .amer-body { margin-top: calc(var(--tm) * 2.2); max-width: min(calc(var(--ce) - var(--cs)), 38em); font-size: var(--tm); line-height: 1.42; hanging-punctuation: first; }

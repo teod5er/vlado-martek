@@ -779,6 +779,7 @@ function buildAmer() {
   if (!t) return;
   $('amerTitle').textContent = t.title || '';
   $('amerSub').textContent = t.subtitle || '';
+  $('amerSub').hidden = !t.subtitle; // (one title, in the page's language: no second line under it)
   // how long it runs, and where: one line (on a phone the place may wrap under the dates)
   $('amerDates').innerHTML = [t.dates, t.place].filter(Boolean).map((x) => `<span>${escapeHtml(x)}</span>`).join('<span class="amer-dot" aria-hidden="true"> · </span>');
   $('amerLead').innerHTML = hl(t.lead || '');
