@@ -506,7 +506,7 @@ for (const b of document.querySelectorAll('#views .switch-opt')) b.addEventListe
 const capOf = (w) => `<p class="index-cap">${escapeHtml(w.title || '')} <span class="y">${escapeHtml(w.year || '')}</span></p>`;
 function buildIndex({ reveal = false } = {}) {
   unwatchImages($('indexGrid'), $('index'));
-  $('indexGrid').innerHTML = visibleWorks.map((w, i) => `<li style="--i:${i}">
+  $('indexGrid').innerHTML = byYear(visibleWorks).map((w, i) => `<li style="--i:${i}">
       <button type="button" class="index-item" data-id="${escapeHtml(w.id)}" aria-label="${escapeHtml(`${w.title} ${w.year || ''}`)}">
         <img data-src="${escapeHtml(w.thumb || w.image)}" alt="" decoding="async">
       </button>${capOf(w)}</li>`).join('');
@@ -568,7 +568,7 @@ $('indexGrid').addEventListener('click', (e) => {
 function buildList({ reveal = false } = {}) {
   const cats = new Map(data.categories.map((c) => [c.id, c.label]));
   unwatchImages($('listRows'), $('list'));
-  $('listRows').innerHTML = visibleWorks.map((w, i) => `<li style="--i:${i}">
+  $('listRows').innerHTML = byYear(visibleWorks).map((w, i) => `<li style="--i:${i}">
       <button type="button" class="list-row" data-id="${escapeHtml(w.id)}">
         <span class="list-thumb"><img data-src="${escapeHtml(w.thumb || w.image)}" alt="" decoding="async"></span><span class="list-title">${escapeHtml(w.title || '')}</span><span class="list-year">${escapeHtml(w.year || '')}</span><span class="list-cat">${escapeHtml(catsOf(w).map((c) => cats.get(c)).filter(Boolean).join(', '))}</span>
       </button></li>`).join('');
@@ -598,6 +598,10 @@ $('listRows').addEventListener('click', (e) => {
 const catsOf = (w) => w.categories || (w.category ? [w.category] : []);
 // the category a work is shown under: the one being browsed if it belongs to it, else its home
 const catOf = (w) => (catsOf(w).includes(currentCat) ? currentCat : catsOf(w)[0]);
+// the grid and the list: always by year, the oldest first (a work made over several years stands at
+// its first; one with no year comes last); works of one year keep the order they have in works.json
+const yearOf = (w) => +(String(w.year || '').match(/\d{4}/)?.[0] ?? Infinity);
+const byYear = (list) => [...list].sort((a, b) => yearOf(a) - yearOf(b));
 function worksFor(cat) {
   return cat === 'all' ? data.works : data.works.filter((w) => catsOf(w).includes(cat));
 }
@@ -971,7 +975,10 @@ function fillDetail(work) {
 // The work's own page: the same whichever view it is opened from. The picture flies from where it
 // was clicked (the carousel, the grid or the list) to its place on the page, and back on closing.
 const DETAIL_MS = 950, DETAIL_EASE = roughCss(.65, 0, .15, 1, DETAIL_MS); // the picture's flight: a slow start, a long soft landing, in fine steps
-const detailList = () => (openWork && visibleWorks.includes(openWork) ? visibleWorks : data.works);
+const detailList = () => {
+  const list = openWork && visibleWorks.includes(openWork) ? visibleWorks : data.works;
+  return view === 'surf' ? list : byYear(list); // from the grid or the list: on through the works in their order there
+};
 // a picture's own box inside a frame, contained (on the left, or centred on a phone)
 function containIn(r, a, centre = false, bottom = false) {
   const w = a >= r.width / r.height ? r.width : r.height * a, h = w / a;
