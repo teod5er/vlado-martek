@@ -558,6 +558,9 @@ body.detail-sheet-bottom .bottom-fade { background: var(--sheet-fade); }
   background: #E63323; color: #111111; border: 0; border-radius: 0;
 }
 .ctag[hidden] { display: none; }
+/* the drawn pictogram just right of the red square of the pointer */
+.cfollow { position: fixed; left: 0; top: 0; z-index: 62; width: 56px; height: 56px; pointer-events: none; user-select: none; will-change: transform; }
+.cfollow[hidden] { display: none; }
 body.focus-info .ctag { background: #111111; color: #E63323; } /* on the red About page: black */
 body.cat-americas:not(.focus-info) .ctag { background: #fff; color: #111111; } /* on the black Amerike: white */
 

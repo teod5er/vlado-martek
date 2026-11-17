@@ -163,8 +163,10 @@ const tip = (() => {
     raf = 0;
     if (!text || mx < 0) return;
     const w = el.offsetWidth, h = el.offsetHeight;
-    let x = mx + 18, y = my + 22;
-    if (x + w > innerWidth - 8) x = mx - w - 12; // at the right or bottom edge: the other side of the pointer
+    // right of the pictogram that stands beside the pointer, level with it
+    const off = follower ? CF_GAP + CF_SIZE + 6 : 18;
+    let x = mx + off, y = follower ? my - CF_UP + CF_SIZE / 2 - h / 2 : my + 22; // (level with the pictogram's middle)
+    if (x + w > innerWidth - 8) x = mx - w - off; // at the right or bottom edge: the other side of the pointer
     if (y + h > innerHeight - 8) y = my - h - 12;
     el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
   };
@@ -195,31 +197,57 @@ const tip = (() => {
   return { refresh: show };
 })();
 
-// custom pointers from `cursors` in works.json: a random one on every page load,
-// and a different one after every click
-let cursorStyle = null, cursorIdx = -1;
-const CLICKABLE = 'button, a, .work, .index-item, .list-row, #detailImg';
+// the pointer is a small red square; one of the drawn pictograms from `cursors` in works.json
+// stands just right of it (a random one on every page load, a different one after every click).
+// Mouse only. On the red About page the square is black.
+const SQUARE = (c) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='${c}'/></svg>`)}") 5 5`;
+let cursorIdx = -1, follower = null;
+const CF_SIZE = 56, CF_GAP = 10, CF_UP = 10; // the pictogram: its size, its distance from the square, how far its top stands above the square (px)
 function setCursor() {
   const list = data.cursors || [];
-  if (!list.length || !matchMedia('(pointer: fine)').matches) return;
+  if (!list.length || !follower) return;
   let i = Math.floor(Math.random() * list.length);
   if (list.length > 1 && i === cursorIdx) i = (i + 1) % list.length;
   cursorIdx = i;
   const c = typeof list[i] === 'string' ? { src: list[i] } : list[i];
-  const [x, y] = c.hotspot || [0, 0];
-  const img = c.src2x ? `image-set(url("${c.src}") 1x, url("${c.src2x}") 2x)` : `url("${c.src}")`;
-  if (!cursorStyle) { cursorStyle = document.createElement('style'); document.head.append(cursorStyle); }
-  // over anything clickable the ordinary pointer (the hand) takes over
-  // on the black Amerike the same pointer, white (About keeps its red page, so the black one)
-  const inv = c.inv ? (c.inv2x ? `image-set(url("${c.inv}") 1x, url("${c.inv2x}") 2x)` : `url("${c.inv}")`) : '';
-  const dark = 'body.cat-americas:not(.focus-info)';
-  cursorStyle.textContent = `html, html * { cursor: url("${c.src}") ${x} ${y}, auto !important; cursor: ${img} ${x} ${y}, auto !important; }
-    ${inv ? `${dark}, ${dark} * { cursor: url("${c.inv}") ${x} ${y}, auto !important; cursor: ${inv} ${x} ${y}, auto !important; }` : ''}
-    :is(${CLICKABLE}), :is(${CLICKABLE}) * { cursor: pointer !important; }`;
+  follower.set(c);
 }
 function initCursors() {
+  if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
   const list = data.cursors || [];
-  for (const c of list) for (const u of typeof c === 'string' ? [c] : [c.src, c.inv]) if (u) { const im = new Image(); im.src = u; } // preload so a swap is instant
+  for (const c of list) for (const u of typeof c === 'string' ? [c] : [c.src, c.src2x, c.inv, c.inv2x]) if (u) { const im = new Image(); im.src = u; } // preload so a swap is instant
+  const style = document.createElement('style');
+  style.textContent = `html, html * { cursor: ${SQUARE('#E63323')}, auto !important; }
+    body.focus-info, body.focus-info * { cursor: ${SQUARE('#111111')}, auto !important; }`;
+  document.head.append(style);
+  const el = document.createElement('img');
+  el.className = 'cfollow'; el.alt = ''; el.hidden = true; el.setAttribute('aria-hidden', 'true');
+  document.body.append(el);
+  let c = null, mx = -1, my = -1, raf = 0;
+  const dark = () => body.classList.contains('cat-americas') && !body.classList.contains('focus-info');
+  const src = () => {
+    if (!c) return;
+    const inv = dark() && c.inv;
+    el.src = inv ? c.inv : c.src;
+    el.srcset = (inv ? c.inv2x : c.src2x) ? `${inv ? c.inv2x : c.src2x} 2x` : '';
+  };
+  // just right of the square, hanging down from it (at the right edge of the screen: left of it)
+  const place = () => {
+    raf = 0;
+    if (mx < 0) return;
+    const x = mx + CF_GAP + CF_SIZE > innerWidth ? mx - CF_GAP - CF_SIZE : mx + CF_GAP;
+    el.style.transform = `translate(${Math.round(x)}px, ${Math.round(my - CF_UP)}px)`;
+  };
+  addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    mx = e.clientX; my = e.clientY;
+    el.hidden = body.classList.contains('amer-open'); // over Amerike, America itself is the pointer
+    if (!raf) raf = requestAnimationFrame(place);
+  }, { passive: true });
+  document.addEventListener('mouseleave', () => { mx = -1; el.hidden = true; });
+  // the page turns black (Amerike) or back: the pictogram turns white or back
+  new MutationObserver(src).observe(body, { attributes: true, attributeFilter: ['class'] });
+  follower = { set(n) { c = n; src(); } };
   setCursor();
   addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse') setCursor(); }, true);
 }
@@ -1016,11 +1044,11 @@ function layoutFigure(work) {
 }
 addEventListener('resize', () => { if (openWork) layoutFigure(openWork); });
 
-// ---------- the open work tilts: after the mouse on a computer, after the gyroscope on a phone ----------
+// ---------- the open work tilts: after the mouse on a computer; on a phone it turns against the gyroscope, so it stays level ----------
 // smooth, not stepped: like the gallery under the hand, it follows the body
 const tilt = (() => {
   const MAX = 14; // degrees, either way (with the mouse)
-  const MAX_GYRO = 24; // with the gyroscope: more pronounced
+  const MAX_GYRO = 35; // with the gyroscope: as far as the work counter-turns the phone
   const persp = () => (fine.matches ? 1100 : 650); // a closer eye on a phone: the turn shows more
   const fine = matchMedia('(pointer: fine)');
   let x = 0, y = 0, tx = 0, ty = 0, raf = 0, on = false;
@@ -1029,7 +1057,8 @@ const tilt = (() => {
   const clamp = (v) => Math.max(-1, Math.min(1, v));
   const fig = () => $('detailFigure');
   function frame() {
-    x += (tx - x) * 0.12; y += (ty - y) * 0.12;
+    const k = fine.matches ? 0.12 : 0.3; // on a phone it answers quickly, or the work would swing with the hand
+    x += (tx - x) * k; y += (ty - y) * k;
     const m = fine.matches ? MAX : MAX_GYRO;
     fig().style.transform = `perspective(${persp()}px) rotateX(${(-y * m).toFixed(2)}deg) rotateY(${(x * m).toFixed(2)}deg)`;
     // the loop runs only while the picture is still turning (a new mouse or gyroscope reading starts it again)
@@ -1055,10 +1084,11 @@ const tilt = (() => {
     else if (a === 270 || a === -90) [lr, fb] = [-e.beta, e.gamma];
     else if (a === 180) [lr, fb] = [-e.gamma, -e.beta];
     if (g0 == null) { g0 = lr; b0 = fb; }
-    // the resting angle slowly follows the hand, so however the phone is held, it returns to flat
-    g0 += (lr - g0) * 0.01; b0 += (fb - b0) * 0.01;
-    tx = clamp((lr - g0) / 16); // 16° of the phone turns the picture all the way
-    ty = clamp((fb - b0) / 16);
+    // the resting angle follows the hand very slowly, so however the phone comes to be held, it settles
+    g0 += (lr - g0) * 0.004; b0 += (fb - b0) * 0.004;
+    // the other way from the phone, degree for degree: the phone turns, the work stays level in the room
+    tx = clamp(-(lr - g0) / MAX_GYRO);
+    ty = clamp(-(fb - b0) / MAX_GYRO);
     run();
   });
   return {

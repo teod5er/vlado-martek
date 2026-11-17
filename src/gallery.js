@@ -188,6 +188,7 @@ export class Gallery {
       const img = new Image();
       img.alt = ''; img.decoding = 'async'; img.draggable = false;
       img.src = work.thumb || work.image;
+      img.decode?.().catch(() => {}); // decoded off the main thread before it first shows, not while the line moves
       el.append(img);
     }
     el.setAttribute('aria-label', `${work.title} ${work.year || ''}`);
@@ -347,7 +348,7 @@ export class Gallery {
     const m = this.m;
     if (this.enterAt !== null && now - this.enterAt > 1500) this.enterAt = null;
     const lo = Math.floor(this.p) - 2;
-    const hi = m.phone ? Math.ceil(this.p) + 5 : Math.ceil(this.p) + Math.ceil((m.vw - m.cs) / m.step) + 1;
+    const hi = m.phone ? Math.ceil(this.p) + 6 : Math.ceil(this.p) + Math.ceil((m.vw - m.cs) / m.step) + 2; // one beyond the edge: made and decoded before it comes on
     for (const [k, s] of this.slots) if (k < lo || k > hi) { this.release(s); this.slots.delete(k); }
     for (let k = lo; k <= hi; k++) {
       const s = this.slot(k);
@@ -379,15 +380,18 @@ export class Gallery {
       s.up = lerp(s.up ?? 0, this.hovered === s.work && !this.mode ? HOVER_GROW : 0, .16);
       if (s.up < .0005) s.up = 0;
       st.transform = `translate3d(${(ex - w * s.up / 2).toFixed(1)}px, ${(y - h * s.up / 2).toFixed(1)}px, 0) scale(${(sc * (1 + s.up)).toFixed(4)})`;
-      st.opacity = (o * fade).toFixed(3);
+      const op = (o * fade).toFixed(3);
+      if (s.op !== op) { st.opacity = op; s.op = op; }
       // the gallery itself is sharp; only with a work open does scrolling its page blur what is behind
       const bl = this.mode * this.scrollBlur;
       const f = bl > 0.05 ? `blur(${bl.toFixed(1)}px)` : '';
       if (s.f !== f) { st.filter = f; s.f = f; }
       // a work open: the neighbours at the edges go out of focus
-      st.visibility = o * fade < 0.01 || ex > m.vw || ex + w < 0 || this.holdAll || this.flying.has(k) || this.hiddenK.has(k) ? 'hidden' : '';
+      const vis = o * fade < 0.01 || ex > m.vw || ex + w < 0 || this.holdAll || this.flying.has(k) || this.hiddenK.has(k) ? 'hidden' : '';
+      if (st.visibility !== vis) st.visibility = vis;
       // (a phone's deck: the card thrown away stays on top of the deck as it leaves)
-      st.zIndex = String(m.phone && d < 0 ? 1010 + Math.round(d * 10) : 1000 - Math.round(Math.abs(d) * 10) - (d < 0 ? 5 : 0));
+      const z = String(m.phone && d < 0 ? 1010 + Math.round(d * 10) : 1000 - Math.round(Math.abs(d) * 10) - (d < 0 ? 5 : 0));
+      if (st.zIndex !== z) st.zIndex = z;
     }
 
     // hover by hit-testing, so a work that slides under a still pointer counts too
@@ -404,8 +408,11 @@ export class Gallery {
   }
 }
 
-const AUTO_GLIDE = 1700; // ms: how long the gallery takes to move on by itself
-const glideEase = (t) => (t < .5 ? 16 * t ** 5 : 1 - (-2 * t + 2) ** 5 / 2); // slow in, slow out (quintic)
+const AUTO_GLIDE = 1500; // ms: how long the gallery takes to move on by itself
+// slow in, slow out, but gentle (a sine): it starts and ends visibly, with no long standstill at
+// either end and no lurch in the middle (the quintic it replaces stood still for a sixth of the glide
+// at each end, then rushed: it looked like the line stuttered)
+const glideEase = (t) => (1 - Math.cos(Math.PI * t)) / 2;
 const HOVER_GROW = .03; // how much the work under the pointer grows
 
 function escapeHtml(s) {
