@@ -30,7 +30,7 @@ html:not(.fonts) body > :not(.loader) { visibility: hidden; }
   --span2: calc(var(--col) * 2 + var(--gut));
   --span3: calc(var(--col) * 3 + var(--gut) * 2);
   --span4: calc(var(--col) * 4 + var(--gut) * 3);
-  --group-gap: var(--pad);              /* top right: between the view icons and language + sound, either side of the rule: the page margin */
+  --group-gap: var(--pad);              /* a phone: between the view icons and the word beside them */
   --blur: 48px;
   --phi: 1.618;
   --u: clamp(12px, 0.6vw + 6px, 17px);
@@ -125,7 +125,9 @@ button, a, .index-cap, .index-cap .y, .list-title, .crumb-cat { transition: colo
 /* ---------- intro: names, then menu + language, then the gallery ---------- */
 body.intro .label, body.intro .menu, body.intro .about-link, body.intro .views, body.intro .gallery, body.intro .hover-title { opacity: 0; pointer-events: none; }
 /* coming in after the splash: a soft fade (the gallery slides in) */
-.about-link, .hover-title, .gallery { transition: opacity .8s var(--soft); } /* (the menu, views, tools and the word: item by item, main.js) */
+.about-link { transition: opacity .8s var(--soft); }
+.hover-title, .gallery { transition: opacity .8s cubic-bezier(.22, 1, .36, 1); } /* the gallery comes in perfectly smooth, without the fine steps */
+ /* (the menu, views, tools and the word: item by item, main.js) */
 body.intro-names .label { opacity: 1; }
 body.intro-ui .menu, body.intro-ui .about-link, body.intro-ui .views { opacity: 1; }
 body.intro-gallery .gallery, body.intro-gallery .hover-title { opacity: 1; }
@@ -138,8 +140,10 @@ body.intro-gallery .gallery, body.intro-gallery .hover-title { opacity: 1; }
   background: var(--splash);
   pointer-events: none;
 }
-/* the splash lifts away: a fade, then gone */
-body.loaded .loader { opacity: 0; visibility: hidden; transition: opacity .7s ease-out, visibility 0s .7s; }
+/* the splash lifts away: it rises off the top of the screen, as long as a picture's flight and on its
+   curve, but perfectly smooth (without the fine steps of the other movements) */
+.loader { will-change: translate; }
+body.loaded .loader { translate: 0 -100%; visibility: hidden; transition: translate var(--fly-ms) cubic-bezier(.65, 0, .15, 1), visibility 0s var(--fly-ms); }
 .loader { display: grid; place-items: center; }
 .loader-mark { width: min(28vw, 540px); min-width: 230px; height: auto; display: block; }
 
@@ -171,7 +175,6 @@ body.detail-open .bottom-fade, body.events-open .bottom-fade { z-index: 22; } /*
 .about-thumb { flex: none; width: 2.4em; height: 2.4em; background: #c6c6c6 center / cover no-repeat; transition: width .6s var(--soft), height .6s var(--soft); } /* grows and shrinks softly */
 body.intro .about-btn { opacity: 0; pointer-events: none; }
 body.events-open .about-btn, body.focus-info .about-btn { z-index: 25; }
-body.detail-open .about-btn { display: none; } /* a work's page: no portrait in the corner */
 /* during the splash the names sit on the vertical middle, Vlado at the left edge and Martek at the
    right (Martek in black there, so it shows on the red); once the page is in, they glide up together
    into the top-left corner */
@@ -183,16 +186,22 @@ body.detail-open .label, body.events-open .label { z-index: 26; }
 /* a page scrolled down (body.bar-compact, main.js): the names in one line, the size of the top row
    and on it, and his portrait slides out under the screen, so the page has as much room as possible */
 .label { transition: color 1.2s var(--soft), opacity .8s var(--soft), font-size .45s var(--soft), padding-top .45s var(--soft), left .45s var(--soft); }
-body.bar-compact .label { font-size: var(--tm); letter-spacing: 0; } /* set exactly as the categories' names are */
-body.bar-compact .label-first, body.bar-compact .label-last { margin-left: 0; }
-body.bar-compact .label-last { padding-top: var(--pad); left: calc(var(--pad) + var(--first-em, 2.4) * 1em + .32em); } /* a word space after Vlado (--first-em: its width here, main.js) */
+body.bar-compact:not(.names-back) .label { font-size: var(--tm); letter-spacing: 0; } /* set exactly as the categories' names are */
+body.bar-compact:not(.names-back) :is(.label-first, .label-last) { margin-left: 0; }
+body.bar-compact:not(.names-back) .label-last { padding-top: var(--pad); left: calc(var(--pad) + var(--first-em, 2.4) * 1em + .32em); } /* a word space after Vlado (--first-em: its width here, main.js) */
 /* the navigation shrinks with them: the view icons, language and sound go, and the categories give
    way to the path (below, a computer) */
 /* (item by item, the way they came in after the splash, turned round: main.js, setCompact) */
-body.bar-compact :is(.views, .prefs) > *, body.bar-compact .menu-list > li { opacity: 0; }
+body.bar-compact .views > *, body.bar-compact .menu-list > li { opacity: 0; }
 body.bar-compact .views, body.bar-compact .prefs, body.bar-compact .views *, body.bar-compact .prefs * { pointer-events: none; }
-.about-btn { transition: opacity .8s var(--soft), translate .5s var(--soft); }
-body.bar-compact .about-btn { translate: 0 calc(100% + var(--pad) * 2); pointer-events: none; }
+/* his portrait and, in the other corner, language and sound leave and come back together: they slide under the screen */
+:is(.about-btn, .prefs) { transition: opacity .8s var(--soft), translate .5s var(--soft); }
+body.bar-compact:not(.names-back) :is(.about-btn, .prefs) { translate: 0 calc(100% + var(--pad) * 2); pointer-events: none; }
+/* a work opening or closing: the names and his portrait move with the picture's flight, on its time and curve
+   (--fly-ms, --fly-ease: main.js; body.names-back: the work is closing, they are already on their way back) */
+body.detail-open .label { transition: color 1.2s var(--soft), opacity .8s var(--soft), font-size var(--fly-ms) var(--fly-ease), letter-spacing var(--fly-ms) var(--fly-ease), margin-left var(--fly-ms) var(--fly-ease), padding-top var(--fly-ms) var(--fly-ease), left var(--fly-ms) var(--fly-ease); }
+body.detail-open :is(.about-btn, .prefs) { z-index: 25; transition: opacity .8s var(--soft), translate var(--fly-ms) var(--fly-ease); }
+body.detail-open:not(.names-back) :is(.about-btn, .prefs) { transition: none; } /* a work opening: they are gone at once */
 
 /* ---------- icons ----------
    one family: a 12 × 12 grid drawn cap-height tall; filled shapes sit in a 10 × 10 box with
@@ -265,7 +274,7 @@ body.focus-menu .menu-list button { visibility: visible; pointer-events: auto; }
 /* the title of the featured (or hovered) work, typed out at the bottom on the grid column */
 .hover-title {
   position: fixed; bottom: var(--pad); left: var(--cs); z-index: 10; margin: 0;
-  max-width: calc(100vw - var(--cs) - var(--ex-w, 12em)); pointer-events: none; /* clear of the exhibition */
+  max-width: calc(100vw - var(--cs) - var(--ex-w, 12em)); pointer-events: none; /* clear of language and sound (--ex-w: main.js) */
   font-size: var(--t1h); line-height: 1.12;
   text-box: trim-end text alphabetic; /* its last line stands on the bottom row's baseline */
 }
@@ -275,22 +284,16 @@ body.focus-menu .menu-list button { visibility: visible; pointer-events: auto; }
 body.detail-open .hover-title, body.view-index .hover-title { visibility: hidden; } /* the overview has its captions under the works */
 /* the open medium menu: the title goes behind the blur with the works */
 
-/* top right, one toolbar in two groups: the view icons | language and sound, parted by a thin grey
-   rule (the rule is the first item of .prefs; .views stands one gap left of it, --prefs-w being the
-   measured width of .prefs, set by main.js) */
+/* top right: the view icons; bottom right: language and sound, on the bottom row's baseline */
 .views {
-  position: fixed; top: var(--row); right: calc(var(--pad) + var(--prefs-w, 3.3em) + var(--group-gap)); z-index: 12;
+  position: fixed; top: var(--row); right: var(--pad); z-index: 12;
   display: flex; align-items: flex-start; gap: .6em; white-space: nowrap; font-size: var(--tm);
 }
-.prefs { position: fixed; right: var(--pad); top: var(--row); z-index: 12; display: flex; align-items: flex-start; gap: .6em; font-size: var(--tm); }
-/* the rule between the two groups: each group keeps its icons close, the groups stand apart */
-.prefs::before { content: ''; display: block; width: 1px; height: .72em; background: var(--crumb); margin-right: calc(var(--group-gap) - .6em); }
-body.events-open .prefs::before { visibility: hidden; } /* (over a work the counter stands left of the rule) */
-.prefs button { display: block; color: var(--red); }
+.prefs { position: fixed; right: var(--pad); bottom: var(--pad); z-index: 12; display: flex; align-items: flex-end; gap: .6em; font-size: var(--tm); }
+.prefs button { display: block; color: var(--crumb); }
 .prefs button:hover { color: var(--ink); }
 body.intro .prefs { opacity: 0; pointer-events: none; }
-body.intro-ui .prefs { opacity: 1; }
-body.detail-open .prefs, body.events-open .prefs { z-index: 25; }
+body.events-open .prefs { z-index: 25; }
 .view-btn { display: block; color: var(--red); }
 
 .views button { font-size: var(--tm); line-height: 1.15; color: var(--red); text-box: trim-both cap alphabetic; }
@@ -404,14 +407,9 @@ body.cat-americas li:has(> .index-item.is-hover) .index-cap .y, body.cat-america
 .lang .top-link { color: var(--red); }
 .lang .top-link:hover, body.events-open .lang #eventsLink { color: var(--ink); border-color: var(--ink); }
 /* the language on show, as letters: HR / EN */
-.lang-code { display: block; font-size: var(--tm); line-height: 1.15; text-box: trim-both cap alphabetic; }
-/* sound: the usual speaker, two waves while it is on, a small × in their place while it is off */
-.sound-icon .sound-off, .is-off .sound-icon .sound-on { display: none; }
-.is-off .sound-icon .sound-off { display: inline; }
-/* a little larger than the other icons (its shapes are finer than their solid squares), centred on
-   their line; its lines drawn thinner by as much, so on screen they are as heavy as the others' */
-.icon.sound-icon, #mnavPrefs .icon.sound-icon { width: .84em; height: .84em; margin: -.06em 0; }
-.sound-icon .s { stroke-width: 1.3; }
+.lang-code, .sound-word { display: block; font-size: var(--tm); line-height: 1.15; text-box: trim-both cap alphabetic; }
+/* sound: the word, struck through while it is off */
+.is-off .sound-word { text-decoration: line-through; }
 
 /* ---------- overlays ---------- */
 .overlay {
@@ -437,8 +435,8 @@ body.focus-info .label, body.focus-info .prefs { z-index: 26; }
 body.focus-info .about-thumb { width: var(--span2); height: var(--span2); }
 @media (hover: hover) { .about-btn:hover .about-thumb { width: var(--span2); height: var(--span2); } } /* under the pointer it grows to the same size */
 body.focus-info .label-last { color: var(--ink); }
-body.focus-info .prefs button, body.focus-info .prefs button:hover { color: var(--ink); }
-body.focus-info .prefs::before { background: var(--ink); }
+body.focus-info .prefs button { color: color-mix(in srgb, var(--ink) 55%, transparent); } /* on the red page: the grey of its path */
+body.focus-info .prefs button:hover { color: #fff; }
 
 
 /* about: one left-aligned column; click anywhere closes */
@@ -470,11 +468,13 @@ body.focus-info .prefs::before { background: var(--ink); }
 .karma p + p::before { content: none; }
 .karma-k { color: var(--red); }
 /* contact, at the bottom */
-.info-mail { font-size: var(--t1); color: var(--red); text-decoration: none; margin-top: calc(var(--pad) * .5); padding-bottom: 10vh; }
+.info-credits { font-size: var(--t1); margin-top: calc(var(--pad) * .5); padding-bottom: 10vh; }
+.info-credits p { margin: 0; }
+.info-credits p[hidden] { display: none; }
+.info-mail { color: var(--red); text-decoration: none; }
 .info-mail:hover { color: var(--ink); }
-.info-mail[hidden] { display: none; }
 .info-body .rest { color: transparent; }
-.info:not(.is-typed) .info-mail { visibility: hidden; } /* the address shows once the text is in */
+.info:not(.is-typed) .info-credits { visibility: hidden; } /* contact and design show once the text is in */
 
 /* detail: the work on top of the gallery; scrolling brings up its details on a white sheet */
 .overlay.detail, .overlay.detail.is-open { background: var(--bg); }
@@ -485,9 +485,6 @@ body.focus-info .prefs::before { background: var(--ink); }
 /* previous / next, with where this work stands in the medium, bottom right */
 .detail-steps { position: absolute; bottom: var(--pad); right: var(--pad); z-index: 3; display: flex; align-items: flex-end; gap: .5em; font-size: var(--tm); line-height: 1.15; text-box: trim-end text alphabetic; } /* previous / next and the count: bottom right of the work, on the year's baseline (they scroll away with it) */
 .detail-steps button { color: var(--red); }
-.prefs::before { transition: opacity .45s var(--soft); }
-body.bar-compact .prefs::before { opacity: 0; } /* scrolled: the rule goes with the icons either side of it */
-body.detail-open .prefs::before { display: none; } /* over a work the view icons are gone: no rule before the language */
 .detail-steps button:hover { color: var(--ink); }
 .detail-count { font-size: var(--tm); line-height: 1.15; text-box: trim-both cap alphabetic; font-variant-numeric: tabular-nums; color: var(--ink); }
 .count-all { color: var(--crumb); } /* "/ 21" in the path's grey */
@@ -559,7 +556,7 @@ body.detail-sheet-bottom .bottom-fade { background: var(--sheet-fade); }
 }
 .ctag[hidden] { display: none; }
 /* the drawn pictogram just right of the red square of the pointer */
-.cfollow { position: fixed; left: 0; top: 0; z-index: 62; width: 56px; height: 56px; pointer-events: none; user-select: none; will-change: transform; }
+.cfollow { position: fixed; left: 0; top: 0; z-index: 62; width: 44px; height: 44px; pointer-events: none; user-select: none; will-change: transform; }
 .cfollow[hidden] { display: none; }
 body.focus-info .ctag { background: #111111; color: #E63323; } /* on the red About page: black */
 body.cat-americas:not(.focus-info) .ctag { background: #fff; color: #111111; } /* on the black Amerike: white */
@@ -664,9 +661,9 @@ body.intro .menu-label, body.intro .menu-back { pointer-events: none; }
   .mnav-group button { color: var(--red); padding: .35em 0; display: inline-flex; align-items: center; gap: .3em; }
   .mnav-group button.is-on { color: var(--ink); }
   /* language and sound in the menu: the same two icons as on a computer, a size up */
+  #mnavPrefs button { color: var(--crumb); }
   #mnavPrefs { font-size: calc(var(--tm) * 1.3); gap: 1em; align-items: center; margin-top: auto; } /* at the bottom of the menu */
-  #mnavPrefs .lang-code { font-size: inherit; }
-  #mnavPrefs .icon { width: .72em; height: .72em; }
+  #mnavPrefs :is(.lang-code, .sound-word) { font-size: inherit; }
   body.mnav-open .hover-title, body.mnav-open .bottom-fade, body.mnav-open .views,
   body.mnav-open .label, body.mnav-open .about-btn { visibility: hidden; } /* the open menu: no names, no portrait, no views */
 

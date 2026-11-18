@@ -104,26 +104,24 @@ function buildLangMenu() {
   // a phone: the word Menu bottom right (Close while the menu is open)
   updateBurger();
   fitTopRight();
-  // the globe switches to the other language, the speaker turns sound on / off (struck through when off)
+  // the globe switches to the other language, the word Sound turns sound on / off (struck through when off)
   $('langToggle').setAttribute('aria-label', en ? 'Language: English (switch to Hrvatski)' : 'Jezik: hrvatski (prebaci na English)');
   $('langCode').textContent = en ? 'EN' : 'HR'; // the language on show
   $('langToggle').dataset.tip = en ? 'Hrvatski' : 'English'; // the tag at the pointer: what a click switches to
   $('aboutLink').setAttribute('aria-label', en ? 'About' : 'O autoru');
   const t = $('soundToggle');
-  t.setAttribute('aria-label', en ? 'Sound' : 'Zvuk');
   t.dataset.tip = isEnabled() ? (en ? 'Sound off' : 'Isključi zvuk') : (en ? 'Sound on' : 'Uključi zvuk'); // what a click does
   t.classList.toggle('is-off', !isEnabled());
   t.setAttribute('aria-pressed', String(isEnabled()));
 }
 // the media row stops short of the exhibition and the icons at the top right (and wraps if it must)
-// the media row stops short of the toolbar at the top right (and wraps if it must); the title at the
-// bottom stops short of the exhibition at the bottom right
+// the media row stops short of the view icons at the top right (and wraps if it must); the title at
+// the bottom stops short of language and sound at the bottom right
 function fitTopRight() {
   const root = document.documentElement;
-  root.style.setProperty('--prefs-w', `${$('prefBox').getBoundingClientRect().width.toFixed(1)}px`); // the view icons and the counter stand left of it
   root.style.setProperty('--right-w', `${Math.ceil(innerWidth - $('views').getBoundingClientRect().left + 16)}px`);
   root.style.setProperty('--burger-w', `${$('burger').getBoundingClientRect().width.toFixed(1)}px`); // a phone: the view icons stand left of Menu
-  const ex = $('langBox').getBoundingClientRect(); // (the exhibition box bottom right: gone for now)
+  const ex = $('prefBox').getBoundingClientRect(); // language and sound, bottom right (a phone has them in its menu)
   root.style.setProperty('--ex-w', ex.width ? `${Math.ceil(innerWidth - ex.left + 24)}px` : 'var(--pad)');
 }
 addEventListener('resize', () => { if (data) fitTopRight(); });
@@ -199,10 +197,12 @@ const tip = (() => {
 
 // the pointer is a small red square; one of the drawn pictograms from `cursors` in works.json
 // stands just right of it (a random one on every page load, a different one after every click).
-// Mouse only. On the red About page the square is black.
-const SQUARE = (c) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='${c}'/></svg>`)}") 5 5`;
+// Mouse only. Over anything that can be clicked the square turns black. On the red About page it is
+// black already, and on black Amerike black would not show: there it turns white instead.
+const SQUARE = (c) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='${c}'/></svg>`)}") 4 4`;
+const CLICKABLE = ':is(a, button:not(.is-on, .is-active), .work, .list-row, [id=detailImg])', CLICKABLE_IN = (s) => `${s} ${CLICKABLE}, ${s} ${CLICKABLE} *`;
 let cursorIdx = -1, follower = null;
-const CF_SIZE = 56, CF_GAP = 10, CF_UP = 10; // the pictogram: its size, its distance from the square, how far its top stands above the square (px)
+const CF_SIZE = 44, CF_GAP = 8, CF_UP = 8; // the pictogram: its size, its distance from the square, how far its top stands above the square (px)
 function setCursor() {
   const list = data.cursors || [];
   if (!list.length || !follower) return;
@@ -218,7 +218,9 @@ function initCursors() {
   for (const c of list) for (const u of typeof c === 'string' ? [c] : [c.src, c.src2x, c.inv, c.inv2x]) if (u) { const im = new Image(); im.src = u; } // preload so a swap is instant
   const style = document.createElement('style');
   style.textContent = `html, html * { cursor: ${SQUARE('#E63323')}, auto !important; }
-    body.focus-info, body.focus-info * { cursor: ${SQUARE('#111111')}, auto !important; }`;
+    ${CLICKABLE_IN('html')} { cursor: ${SQUARE('#111111')}, auto !important; }
+    body.focus-info, body.focus-info * { cursor: ${SQUARE('#111111')}, auto !important; }
+    ${CLICKABLE_IN('body.focus-info')}, ${CLICKABLE_IN('body.cat-americas')} { cursor: ${SQUARE('#FFFFFF')}, auto !important; }`;
   document.head.append(style);
   const el = document.createElement('img');
   el.className = 'cfollow'; el.alt = ''; el.hidden = true; el.setAttribute('aria-hidden', 'true');
@@ -314,7 +316,7 @@ async function boot() {
   const h0 = parseHash(), first = worksFor(h0.cat && data.categories.some((c) => c.id === h0.cat) ? h0.cat : 'all');
   const urls = [...new Set(first.map((w) => w.thumb || w.image))];
   await Promise.all([minTime, Promise.race([Promise.all(urls.slice(0, 8).map(load)), new Promise((r) => setTimeout(r, 3000))])]);
-  setTimeout(() => preloadThumbs([...first, ...data.works]), /^#\/(work|info|events)/.test(location.hash) ? 400 : 2200);
+  setTimeout(() => preloadThumbs([...first, ...data.works]), /^#\/(work|info|events)/.test(location.hash) ? 400 : INTRO_DELAY + 2200);
 
   initMenu();
   initMobileNav();
@@ -348,7 +350,7 @@ async function boot() {
     const w = data.works.find((x) => x.id === fromHash.work);
     if (w) { gallery.show(w, { animate: false }); openDetail(w, { push: false }); }
   } else if (fromHash.info) openInfo({ push: false });
-  else if (currentCat === 'americas') setTimeout(() => openAmer({ auto: true }), deepLink ? 0 : 1200); // (after the intro's names)
+  else if (currentCat === 'americas') setTimeout(() => openAmer({ auto: true }), deepLink ? 0 : INTRO_DELAY + 1200); // (after the intro's names)
   else if (fromHash.events) openEvents({ push: false });
 }
 
@@ -364,11 +366,11 @@ function typeNames() {
   for (const el of nameLines()) el.innerHTML = [...el.textContent].map((c) => `<span class="ch">${escapeHtml(c)}</span>`).join('');
   namesTyped = Promise.resolve();
 }
-// the top bar comes in item by item: the categories from the left, then the view icons, language
-// and sound (on a phone: the view icons and the word)
+// the top bar comes in item by item: the categories from the left, then the view icons (on a phone:
+// the view icons and the word)
 function revealBar({ delay = 0 } = {}) {
-  if (reducedMotion()) return;
-  const items = [...$('menuList').children, ...$('views').children, ...$('prefBox').children, $('burger')]
+  if (reducedMotion() || openWork) return; // (a work open: the bar stays compact)
+  const items = [...$('menuList').children, ...$('views').children, $('burger')]
     .filter((el) => el.getClientRects().length);
   items.forEach((el, i) => rise(el, { delay: delay + i * 55, dist: 12, dur: 700 }));
 }
@@ -379,14 +381,16 @@ function riseNames(delay, dur, gap) {
   if (reducedMotion()) return;
   nameLetters().forEach((ch, i) => ch.animate([{ transform: 'translateY(105%)' }, { transform: 'none' }], { duration: dur, delay: delay + i * gap, easing: EASE_OUT_FOR(dur), fill: 'backwards' }));
 }
+const INTRO_DELAY = 500; // ms: the home page's animations wait this long, so the splash lifts undisturbed
 async function playIntro() {
   await namesTyped;
-  // as the splash lifts, the names rise letter by letter into their corner (Vlado, then Martek)
+  // the splash rises off the top, so it uncovers the page from the bottom up: first the works come
+  // in, then, as its edge reaches the top row, the names (letter by letter, Vlado, then Martek) and the bar
   body.classList.add('intro-names');
-  riseNames(150, 900, 40);
-  setTimeout(() => { body.classList.add('intro-ui'); revealBar(); }, 500); // the categories and the tools, one after another
-  setTimeout(() => { body.classList.add('intro-gallery'); app.gallery.enter(); }, 950);
-  setTimeout(() => body.classList.remove('intro', 'intro-names', 'intro-ui', 'intro-gallery'), 2400);
+  riseNames(INTRO_DELAY + 550, 900, 40);
+  setTimeout(() => { body.classList.add('intro-gallery'); app.gallery.enter(); }, INTRO_DELAY + 350);
+  setTimeout(() => { body.classList.add('intro-ui'); revealBar(); }, INTRO_DELAY + 700); // the categories and the tools, one after another
+  setTimeout(() => body.classList.remove('intro', 'intro-names', 'intro-ui', 'intro-gallery'), INTRO_DELAY + 2400);
 }
 
 // ---------- views: Surf (the moving line), Index (every work in a grid) and List (one row each) ----------
@@ -685,16 +689,14 @@ function updateBurger() {
   $('burgerText').textContent = mobileNav() ? (en ? 'Close' : 'Zatvori') : c ? c.label : (en ? 'Show all' : 'Prikaži sve');
   if (data) fitTopRight(); // the view icons stand left of the word, whatever its length
 }
-// sound: the usual speaker, with two waves while it is on and a small × while it is off (style.css)
-const SOUND_ICON = '<svg class="icon sound-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M1 3.75h2.25L6 1v10L3.25 8.25H1z"/><path class="s sound-on" d="M7.7 4.3a2.4 2.4 0 0 1 0 3.4M9.18 2.82a4.5 4.5 0 0 1 0 6.36"/><path class="s sound-off" d="M7.75 4.375l3.25 3.25M11 4.375l-3.25 3.25"/></svg>';
 function buildMobileNav() {
   const en = lang === 'en';
   const items = [{ id: 'all', label: en ? 'Show all' : 'Prikaži sve' }, ...data.categories.filter((c) => worksFor(c.id).length)];
   $('mnavCats').innerHTML = items.map((c) => `<li><button type="button" data-cat="${c.id}"${c.id === currentCat ? ' class="is-on" aria-current="page"' : ''}>${catLabel(c.id, c.label)}</button></li>`).join('');
-  // language and sound: the same two as on a computer, the language on show (a tap switches) and the speaker
+  // language and sound: the same two as on a computer, the language on show (a tap switches) and the word Sound
   const on = isEnabled();
   $('mnavPrefs').innerHTML = `<button type="button" data-go="lang" aria-label="${en ? 'Language: English (switch to Hrvatski)' : 'Jezik: hrvatski (prebaci na English)'}"><span class="lang-code">${en ? 'EN' : 'HR'}</span></button>`
-    + `<button type="button" data-go="sound" aria-pressed="${on}" aria-label="${en ? 'Sound' : 'Zvuk'}"${on ? '' : ' class="is-off"'}>${SOUND_ICON}</button>`;
+    + `<button type="button" data-go="sound" aria-pressed="${on}"${on ? '' : ' class="is-off"'}><span class="sound-word">Sound</span></button>`;
   $('mnav').setAttribute('aria-label', en ? 'Menu' : 'Izbornik');
 }
 function setMobileNav(v) {
@@ -915,7 +917,7 @@ function buildInfo() {
   $('infoBody').innerHTML = (a.bio?.[lang] || a.bio?.hr || []).map((p) => para(p)).join('')
     + (a.karma || []).map(([k, v]) => `<div class="karma">${para(k, 'karma-k')}${para(v, 'karma-v')}</div>`).join('');
   // contact at the bottom
-  $('infoMail').hidden = !a.email;
+  $('infoContact').hidden = !a.email;
   if (a.email) { $('infoMail').href = `mailto:${a.email}`; $('infoMail').textContent = a.email; }
 }
 
@@ -952,7 +954,7 @@ function openInfo({ push = true } = {}) {
   body.classList.add('focus-info');
   revealInfoText();
   // the text comes in, part by part
-  [...$('infoBody').children, $('infoMail')].forEach((p, i) => rise(p, { delay: 120 + Math.min(i, 8) * 60, dist: 16, dur: 750 }));
+  [...$('infoBody').children, $('infoCredits')].forEach((p, i) => rise(p, { delay: 120 + Math.min(i, 8) * 60, dist: 16, dur: 750 }));
   if (push) setHash('#/info', true);
 }
 function closeInfo({ fromPop = false } = {}) {
@@ -1006,6 +1008,8 @@ function fillDetail(work) {
 // The work's own page: the same whichever view it is opened from. The picture flies from where it
 // was clicked (the carousel, the grid or the list) to its place on the page, and back on closing.
 const DETAIL_MS = 950, DETAIL_EASE = roughCss(.65, 0, .15, 1, DETAIL_MS); // the picture's flight: a slow start, a long soft landing, in fine steps
+document.documentElement.style.setProperty('--fly-ms', `${DETAIL_MS}ms`); // the names move on the same time and curve
+document.documentElement.style.setProperty('--fly-ease', DETAIL_EASE);
 const detailList = () => {
   const list = openWork && visibleWorks.includes(openWork) ? visibleWorks : data.works;
   return view === 'surf' ? list : byYear(list); // from the grid or the list: on through the works in their order there
@@ -1033,48 +1037,46 @@ function layoutFigure(work) {
   const head = fig.parentElement.querySelector('.detail-head');
   const pad = app.gallery?.m.pad ?? 16; // --pad
   fig.style.bottom = `${fig.parentElement.clientHeight - head.offsetTop + pad * 3}px`;
-  const tilted = fig.style.transform;
-  fig.style.transform = ''; // measure the frame flat, not tilted
+  const moved = fig.style.transform;
+  fig.style.transform = ''; // measure the frame on its place, without the drift
   const f = fig.getBoundingClientRect();
-  fig.style.transform = tilted;
+  fig.style.transform = moved;
   const c = containIn(f, work.aspect ?? 1, app.gallery?.m.phone);
   Object.assign(img.style, { left: `${c.x - f.left}px`, top: `${c.y - f.top}px`, width: `${c.w}px`, height: `${c.h}px` });
-  fig.style.transformOrigin = `${c.x - f.left + c.w / 2}px ${c.y - f.top + c.h / 2}px`; // the tilt turns about the middle of the picture
   return c;
 }
 addEventListener('resize', () => { if (openWork) layoutFigure(openWork); });
 
-// ---------- the open work tilts: after the mouse on a computer; on a phone it turns against the gyroscope, so it stays level ----------
-// smooth, not stepped: like the gallery under the hand, it follows the body
-const tilt = (() => {
-  const MAX = 14; // degrees, either way (with the mouse)
-  const MAX_GYRO = 35; // with the gyroscope: as far as the work counter-turns the phone
-  const persp = () => (fine.matches ? 1100 : 650); // a closer eye on a phone: the turn shows more
+// ---------- the open work drifts the other way from the mouse; on a phone, the other way from the phone's lean ----------
+// flat on the page, only moved. Smooth, not stepped: like the gallery under the hand, it follows the body
+const drift = (() => {
+  const MAX = 24, MAX_PHONE = 14; // px, either way
+  const LEAN = 20; // degrees the phone leans for the whole of that distance
   const fine = matchMedia('(pointer: fine)');
   let x = 0, y = 0, tx = 0, ty = 0, raf = 0, on = false;
+  let held = false; // while the picture flies in it stays on its place, so that it lands exactly there
   let b0 = null, g0 = null; // the phone's resting angle when the work opened
   let asked = false; // iOS: the gyroscope is granted
   const clamp = (v) => Math.max(-1, Math.min(1, v));
   const fig = () => $('detailFigure');
   function frame() {
-    const k = fine.matches ? 0.12 : 0.3; // on a phone it answers quickly, or the work would swing with the hand
-    x += (tx - x) * k; y += (ty - y) * k;
-    const m = fine.matches ? MAX : MAX_GYRO;
-    fig().style.transform = `perspective(${persp()}px) rotateX(${(-y * m).toFixed(2)}deg) rotateY(${(x * m).toFixed(2)}deg)`;
-    // the loop runs only while the picture is still turning (a new mouse or gyroscope reading starts it again)
-    raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.001 ? requestAnimationFrame(frame) : 0;
-    if (!raf && !on) fig().style.transform = '';
+    const k = fine.matches ? 0.12 : 0.2;
+    const ax = held ? 0 : tx, ay = held ? 0 : ty;
+    x += (ax - x) * k; y += (ay - y) * k;
+    const m = fine.matches ? MAX : MAX_PHONE;
+    fig().style.transform = `translate3d(${(x * m).toFixed(2)}px, ${(y * m).toFixed(2)}px, 0)`;
+    // the loop runs only while the picture is still moving (a new mouse or gyroscope reading starts it again)
+    raf = Math.abs(ax - x) + Math.abs(ay - y) > 0.001 ? requestAnimationFrame(frame) : 0;
   }
-  const run = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  const run = () => { if (on && !raf) raf = requestAnimationFrame(frame); };
   addEventListener('pointermove', (e) => {
-    if (!on || e.pointerType !== 'mouse') return;
-    // measured from the middle of the picture: the mouse over its centre leaves it flat
-    const r = $('detailImg').getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-    tx = clamp((e.clientX - cx) / (innerWidth / 2));
-    ty = clamp((e.clientY - cy) / (innerHeight / 2));
+    if (e.pointerType !== 'mouse') return;
+    // measured from the middle of the screen: the mouse there leaves the picture on its place
+    tx = clamp(-(e.clientX / innerWidth - 0.5) * 2);
+    ty = clamp(-(e.clientY / innerHeight - 0.5) * 2);
     run();
   }, { passive: true });
-  document.addEventListener('mouseleave', () => { tx = ty = 0; });
+  document.addEventListener('mouseleave', () => { tx = ty = 0; run(); });
   addEventListener('deviceorientation', (e) => {
     if (!on || fine.matches || e.beta == null) return;
     // the screen may be turned: map the device's axes onto the screen's
@@ -1086,16 +1088,15 @@ const tilt = (() => {
     if (g0 == null) { g0 = lr; b0 = fb; }
     // the resting angle follows the hand very slowly, so however the phone comes to be held, it settles
     g0 += (lr - g0) * 0.004; b0 += (fb - b0) * 0.004;
-    // the other way from the phone, degree for degree: the phone turns, the work stays level in the room
-    tx = clamp(-(lr - g0) / MAX_GYRO);
-    ty = clamp(-(fb - b0) / MAX_GYRO);
+    tx = clamp(-(lr - g0) / LEAN);
+    ty = clamp(-(fb - b0) / LEAN);
     run();
   });
   return {
     // called from the tap that opens a work: iOS asks for the gyroscope only inside a user gesture
     start() {
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      on = true; g0 = b0 = null;
+      if (on || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      on = true; held = true; g0 = b0 = null;
       const D = window.DeviceOrientationEvent;
       if (fine.matches || !D || typeof D.requestPermission !== 'function' || asked) return;
       const ask = () => D.requestPermission().then((r) => { asked = r === 'granted'; }).catch(() => {});
@@ -1103,8 +1104,10 @@ const tilt = (() => {
       // opened from a link, not a tap: iOS refuses, so ask again at the next touch
       addEventListener('touchend', () => { if (on && !asked) ask(); }, { once: true });
     },
-    // flat at once: the picture flies back from where it lies
-    stop() { on = false; tx = ty = x = y = 0; cancelAnimationFrame(raf); raf = 0; fig().style.transform = ''; },
+    // the picture has landed: from here on it moves
+    release() { held = false; run(); },
+    // back on its place at once: the picture flies back from where it lay
+    stop() { on = false; x = y = 0; cancelAnimationFrame(raf); raf = 0; fig().style.transform = ''; },
   };
 })();
 // the work's picture: its thumbnail at once (already in: it was on show where the work was clicked),
@@ -1159,7 +1162,7 @@ function openDetail(work, { push = true, dir = 0 } = {}) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const from = !swap && !reduced ? sourceRect(work) : null;
   openWork = work;
-  tilt.start();
+  drift.start();
   sound.click();
   fillDetail(work);
   fillCount();
@@ -1178,7 +1181,9 @@ function openDetail(work, { push = true, dir = 0 } = {}) {
   }
   app.gallery.setHover(null);
   body.classList.add('detail-open');
+  body.classList.remove('names-back');
   showOverlay($('detail'));
+  setCompact(true, { now: true }); // the names shrink and language and sound go as soon as a work opens
   $('detailScroll').scrollTop = 0;
   $('detail').classList.remove('title-on');
   body.classList.remove('detail-title-on');
@@ -1189,13 +1194,27 @@ function openDetail(work, { push = true, dir = 0 } = {}) {
   const to = layoutFigure(work);
   sheetFades();
   if (reduced) return;
+  if (!from) drift.release();
   // the page comes up, the picture flies in from where it was clicked, the title rises
   rise($('detailTitle'), { delay: 280, dist: 24, dur: 800 });
   rise($('detailYear'), { delay: 360, dist: 24, dur: 800 });
   if (from) {
     img.style.visibility = 'hidden';
-    flyPicture(work.thumb || work.image, from, to).then((el) => { img.style.visibility = ''; requestAnimationFrame(() => el.remove()); });
+    flyPicture(work.thumb || work.image, from, to).then((el) => { img.style.visibility = ''; drift.release(); requestAnimationFrame(() => el.remove()); });
   } else rise(img, { dist: 30, dur: 900 });
+}
+
+// hides the work at its place in the view behind; returns what shows it again
+function holdPlace(work) {
+  if (view === 'surf') {
+    const g = app.gallery, k = Math.round(g.target);
+    g.flying.add(k);
+    return () => g.flying.delete(k);
+  }
+  const sel = view === 'index' ? `.index-item[data-id="${CSS.escape(work.id)}"] img` : `.list-row[data-id="${CSS.escape(work.id)}"] .list-thumb img`;
+  const img = $(view).querySelector(sel);
+  if (img) img.style.visibility = 'hidden';
+  return () => { if (img) img.style.visibility = ''; };
 }
 
 function closeDetail({ fromPop = false } = {}) {
@@ -1209,13 +1228,14 @@ function closeDetail({ fromPop = false } = {}) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // the view behind takes up the work the page ended on
   if (view === 'surf' && app.gallery.featuredWork() !== work) app.gallery.show(work, { animate: false });
-  tilt.stop();
-  const imgRect = $('detailImg').getBoundingClientRect();
+  body.classList.add('names-back'); // the names grow back as the picture flies back
+  const imgRect = $('detailImg').getBoundingClientRect(); // (where it stands now, drift included: the flight starts there)
+  drift.stop();
   const back = view === 'surf' ? app.gallery.featuredRect() : sourceRect(work);
   const done = () => {
     hideOverlay($('detail'));
     for (const a of $('detail').getAnimations()) a.cancel();
-    body.classList.remove('detail-open', 'detail-sheet-bottom');
+    body.classList.remove('detail-open', 'detail-sheet-bottom', 'names-back');
     revealBar();
     updateMenu();
     updateTitle();
@@ -1227,8 +1247,9 @@ function closeDetail({ fromPop = false } = {}) {
   }
   // the picture flies back to its place in the view, while the page fades away
   $('detailImg').style.visibility = 'hidden';
+  const showAgain = holdPlace(work); // its place in the view stays empty until it lands there: never two of the same work
   flyPicture(work.thumb || work.image, { x: imgRect.left, y: imgRect.top, w: imgRect.width, h: imgRect.height }, back)
-    .then((el) => { $('detailImg').style.visibility = ''; requestAnimationFrame(() => el.remove()); });
+    .then((el) => { $('detailImg').style.visibility = ''; showAgain(); requestAnimationFrame(() => el.remove()); });
   fadeOut($('detail'), done, 320); // the page fades away; the picture finishes its flight over the view
 }
 
@@ -1239,8 +1260,9 @@ function stepWork(dir) {
   openDetail(list[(i + dir + list.length) % list.length], { push: true, dir });
 }
 // ---------- a work's picture, enlarged ----------
-// a click (or tap) on the picture opens it over everything, as large as the screen allows: it grows
-// out of its place on the page, and the × top right (or Escape) closes it
+// a click (or tap) on the picture opens it over everything, close up: it grows out of its place on
+// the page, the part on show follows the cursor (a finger drags it), and the × top right (or Escape) closes it
+const ZOOM = 1.5; // how many times larger than the whole work fitted to the screen
 let zoomOff = null;
 const zoomOpen = () => !!zoomOff;
 function openZoom(e) {
@@ -1257,14 +1279,12 @@ function openZoom(e) {
   document.body.append(el);
   body.classList.add('zoom-open');
   sound.click();
-  const phone = () => app.gallery?.m.phone;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   let w = 0, h = 0, x = 0, y = 0, tx = 0, ty = 0, px = e.clientX / innerWidth, py = e.clientY / innerHeight, raf = 0, live = true, touch = null;
-  // as large as the screen allows, the whole work on show (a margin all round, clear of the ×)
+  // close up: larger than the whole work fitted to the screen (along a side that still fits, it stays centred)
   const size = () => {
-    const m = (app.gallery?.m.pad ?? 16) * 2 + (phone() ? 0 : 24);
-    const W = innerWidth - m * 2, H = innerHeight - m * 2;
-    w = aspect >= W / H ? W : H * aspect; h = w / aspect;
+    const W = innerWidth, H = innerHeight;
+    w = (aspect >= W / H ? W : H * aspect) * ZOOM; h = w / aspect;
     img.style.width = `${w}px`; img.style.height = `${h}px`;
   };
   // where the pointer is on the screen is where it looks on the picture (with a margin, so the
@@ -1416,18 +1436,18 @@ function fitLabels() {
 // back up (or the top of the page) brings them back. A work and About stay compact while scrolled.
 // the navigation leaves the way it came in after the splash (revealBar), turned round: item by item,
 // each fading as it sinks a little; and comes back in the same way
-function setCompact(v) {
+function setCompact(v, { now = false } = {}) {
   if (v === body.classList.contains('bar-compact')) return;
   body.classList.toggle('bar-compact', v);
-  const items = [...$('menuList').children, ...$('views').children, ...$('prefBox').children].filter((el) => el.getClientRects().length);
+  const items = [...$('menuList').children, ...$('views').children].filter((el) => el.getClientRects().length); // (language and sound go with his portrait: style.css)
   for (const el of items) for (const a of el.getAnimations()) a.cancel();
-  if (reducedMotion()) return;
+  if (now || reducedMotion()) return;
   items.forEach((el, i) => {
     if (v) el.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(12px)' }], { duration: 450, delay: i * 30, easing: EASE_OUT_FOR(450), fill: 'backwards' });
     else rise(el, { delay: i * 55, dist: 12, dur: 700 });
   });
 }
-const barFull = () => setCompact(false);
+const barFull = () => { if (!openWork) setCompact(false); }; // (a work stays compact for as long as it is open)
 {
   const last = new WeakMap();
   const watch = (el, byDirection) => el.addEventListener('scroll', () => {
@@ -1469,7 +1489,7 @@ $('iHome').addEventListener('click', (e) => { e.stopPropagation(); goHome(); });
 $('iClose').addEventListener('click', (e) => { e.stopPropagation(); closeInfo(); });
 // the about page closes with a click or tap anywhere (or Escape)
 $('info').addEventListener('click', () => closeInfo());
-$('infoMail').addEventListener('click', (e) => e.stopPropagation()); // the address opens mail, the page stays
+for (const a of $('infoCredits').querySelectorAll('a')) a.addEventListener('click', (e) => e.stopPropagation()); // the address opens mail, the designer's site a new tab: the page stays
 // the fades at the top and the bottom take the light panel's colour once it lies under them
 function sheetFades() {
   const p = $('detailPanel').getBoundingClientRect().top;

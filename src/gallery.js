@@ -44,7 +44,7 @@ export function roughCss(x1, y1, x2, y2, ms) {
 }
 export const OPEN_EASE = 'cubic-bezier(.65, 0, .2, 1)';
 const openEase = rough(bezier(0.65, 0, 0.2, 1), OPEN_MS);
-const enterEase = rough((t) => 1 - Math.pow(1 - t, 4), 1000);
+const enterEase = (t) => 1 - Math.pow(1 - t, 4); // the works sliding in: perfectly smooth, without the fine steps
 
 
 
@@ -389,8 +389,10 @@ export class Gallery {
       // a work open: the neighbours at the edges go out of focus
       const vis = o * fade < 0.01 || ex > m.vw || ex + w < 0 || this.holdAll || this.flying.has(k) || this.hiddenK.has(k) ? 'hidden' : '';
       if (st.visibility !== vis) st.visibility = vis;
-      // (a phone's deck: the card thrown away stays on top of the deck as it leaves)
-      const z = String(m.phone && d < 0 ? 1010 + Math.round(d * 10) : 1000 - Math.round(Math.abs(d) * 10) - (d < 0 ? 5 : 0));
+      // one fixed order, like a deck of cards: each work lies on the ones after it. The order never
+      // changes while the line moves, so no work ever jumps over another: the one leaving slides
+      // off the top and uncovers the next
+      const z = String(1000 - (k - Math.round(this.p)));
       if (st.zIndex !== z) st.zIndex = z;
     }
 
