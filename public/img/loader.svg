@@ -22,7 +22,7 @@
   }
 }
 #image_221 {
-  animation: kf_image_221_opacity_0 4.00125s linear infinite;
+  animation: kf_image_221_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_222_opacity_0 {
   0% {
@@ -46,7 +46,7 @@
   }
 }
 #image_222 {
-  animation: kf_image_222_opacity_0 4.00125s linear infinite;
+  animation: kf_image_222_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_223_opacity_0 {
   0% {
@@ -70,7 +70,7 @@
   }
 }
 #image_223 {
-  animation: kf_image_223_opacity_0 4.00125s linear infinite;
+  animation: kf_image_223_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_224_opacity_0 {
   0% {
@@ -94,7 +94,7 @@
   }
 }
 #image_224 {
-  animation: kf_image_224_opacity_0 4.00125s linear infinite;
+  animation: kf_image_224_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_225_opacity_0 {
   0% {
@@ -118,7 +118,7 @@
   }
 }
 #image_225 {
-  animation: kf_image_225_opacity_0 4.00125s linear infinite;
+  animation: kf_image_225_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_226_opacity_0 {
   0% {
@@ -142,7 +142,7 @@
   }
 }
 #image_226 {
-  animation: kf_image_226_opacity_0 4.00125s linear infinite;
+  animation: kf_image_226_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_228_opacity_0 {
   0% {
@@ -166,7 +166,7 @@
   }
 }
 #image_228 {
-  animation: kf_image_228_opacity_0 4.00125s linear infinite;
+  animation: kf_image_228_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_229_opacity_0 {
   0% {
@@ -190,7 +190,7 @@
   }
 }
 #image_229 {
-  animation: kf_image_229_opacity_0 4.00125s linear infinite;
+  animation: kf_image_229_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_227_opacity_0 {
   0% {
@@ -214,7 +214,7 @@
   }
 }
 #image_227 {
-  animation: kf_image_227_opacity_0 4.00125s linear infinite;
+  animation: kf_image_227_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_230_opacity_0 {
   0% {
@@ -238,7 +238,7 @@
   }
 }
 #image_230 {
-  animation: kf_image_230_opacity_0 4.00125s linear infinite;
+  animation: kf_image_230_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_231_opacity_0 {
   0% {
@@ -262,7 +262,7 @@
   }
 }
 #image_231 {
-  animation: kf_image_231_opacity_0 4.00125s linear infinite;
+  animation: kf_image_231_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_234_opacity_0 {
   0% {
@@ -286,7 +286,7 @@
   }
 }
 #image_234 {
-  animation: kf_image_234_opacity_0 4.00125s linear infinite;
+  animation: kf_image_234_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_233_opacity_0 {
   0% {
@@ -310,7 +310,7 @@
   }
 }
 #image_233 {
-  animation: kf_image_233_opacity_0 4.00125s linear infinite;
+  animation: kf_image_233_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_232_opacity_0 {
   0% {
@@ -334,7 +334,7 @@
   }
 }
 #image_232 {
-  animation: kf_image_232_opacity_0 4.00125s linear infinite;
+  animation: kf_image_232_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_235_opacity_0 {
   0% {
@@ -358,7 +358,7 @@
   }
 }
 #image_235 {
-  animation: kf_image_235_opacity_0 4.00125s linear infinite;
+  animation: kf_image_235_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_236_opacity_0 {
   0% {
@@ -382,7 +382,7 @@
   }
 }
 #image_236 {
-  animation: kf_image_236_opacity_0 4.00125s linear infinite;
+  animation: kf_image_236_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_237_opacity_0 {
   0% {
@@ -406,7 +406,7 @@
   }
 }
 #image_237 {
-  animation: kf_image_237_opacity_0 4.00125s linear infinite;
+  animation: kf_image_237_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_238_opacity_0 {
   0% {
@@ -430,7 +430,7 @@
   }
 }
 #image_238 {
-  animation: kf_image_238_opacity_0 4.00125s linear infinite;
+  animation: kf_image_238_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_239_opacity_0 {
   0% {
@@ -454,7 +454,7 @@
   }
 }
 #image_239 {
-  animation: kf_image_239_opacity_0 4.00125s linear infinite;
+  animation: kf_image_239_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_240_opacity_0 {
   0% {
@@ -478,7 +478,7 @@
   }
 }
 #image_240 {
-  animation: kf_image_240_opacity_0 4.00125s linear infinite;
+  animation: kf_image_240_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_244_opacity_0 {
   0% {
@@ -502,7 +502,7 @@
   }
 }
 #image_244 {
-  animation: kf_image_244_opacity_0 4.00125s linear infinite;
+  animation: kf_image_244_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_241_opacity_0 {
   0% {
@@ -526,7 +526,7 @@
   }
 }
 #image_241 {
-  animation: kf_image_241_opacity_0 4.00125s linear infinite;
+  animation: kf_image_241_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_242_opacity_0 {
   0% {
@@ -550,7 +550,7 @@
   }
 }
 #image_242 {
-  animation: kf_image_242_opacity_0 4.00125s linear infinite;
+  animation: kf_image_242_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_243_opacity_0 {
   0% {
@@ -574,7 +574,7 @@
   }
 }
 #image_243 {
-  animation: kf_image_243_opacity_0 4.00125s linear infinite;
+  animation: kf_image_243_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_245_opacity_0 {
   0% {
@@ -598,7 +598,7 @@
   }
 }
 #image_245 {
-  animation: kf_image_245_opacity_0 4.00125s linear infinite;
+  animation: kf_image_245_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_246_opacity_0 {
   0% {
@@ -622,7 +622,7 @@
   }
 }
 #image_246 {
-  animation: kf_image_246_opacity_0 4.00125s linear infinite;
+  animation: kf_image_246_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_247_opacity_0 {
   0% {
@@ -646,7 +646,7 @@
   }
 }
 #image_247 {
-  animation: kf_image_247_opacity_0 4.00125s linear infinite;
+  animation: kf_image_247_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_248_opacity_0 {
   0% {
@@ -670,7 +670,7 @@
   }
 }
 #image_248 {
-  animation: kf_image_248_opacity_0 4.00125s linear infinite;
+  animation: kf_image_248_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_249_opacity_0 {
   0% {
@@ -694,7 +694,7 @@
   }
 }
 #image_249 {
-  animation: kf_image_249_opacity_0 4.00125s linear infinite;
+  animation: kf_image_249_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_250_opacity_0 {
   0% {
@@ -718,7 +718,7 @@
   }
 }
 #image_250 {
-  animation: kf_image_250_opacity_0 4.00125s linear infinite;
+  animation: kf_image_250_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_251_opacity_0 {
   0% {
@@ -742,7 +742,7 @@
   }
 }
 #image_251 {
-  animation: kf_image_251_opacity_0 4.00125s linear infinite;
+  animation: kf_image_251_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_252_opacity_0 {
   0% {
@@ -766,7 +766,7 @@
   }
 }
 #image_252 {
-  animation: kf_image_252_opacity_0 4.00125s linear infinite;
+  animation: kf_image_252_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_253_opacity_0 {
   0% {
@@ -790,7 +790,7 @@
   }
 }
 #image_253 {
-  animation: kf_image_253_opacity_0 4.00125s linear infinite;
+  animation: kf_image_253_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_254_opacity_0 {
   0% {
@@ -814,7 +814,7 @@
   }
 }
 #image_254 {
-  animation: kf_image_254_opacity_0 4.00125s linear infinite;
+  animation: kf_image_254_opacity_0 4.00125s linear 1 both;
 }
 @keyframes kf_image_255_opacity_0 {
   0% {
@@ -838,7 +838,7 @@
   }
 }
 #image_255 {
-  animation: kf_image_255_opacity_0 4.00125s linear infinite;
+  animation: kf_image_255_opacity_0 4.00125s linear 1 both;
 }
 </style>
 <g id="Frame_39" clip-path="url(#clip0_2163_10)">

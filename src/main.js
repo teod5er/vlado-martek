@@ -390,7 +390,10 @@ async function playIntro() {
   riseNames(INTRO_DELAY + 550, 900, 40);
   setTimeout(() => { body.classList.add('intro-gallery'); app.gallery.enter(); }, INTRO_DELAY + 350);
   setTimeout(() => { body.classList.add('intro-ui'); revealBar(); }, INTRO_DELAY + 700); // the categories and the tools, one after another
-  setTimeout(() => body.classList.remove('intro', 'intro-names', 'intro-ui', 'intro-gallery'), INTRO_DELAY + 2400);
+  setTimeout(() => {
+    body.classList.remove('intro', 'intro-names', 'intro-ui', 'intro-gallery');
+    for (const el of nameLines()) el.textContent = el.textContent; // the letters have risen: from here on the names are plain text, spaced as evenly as the path beside them
+  }, INTRO_DELAY + 2400);
 }
 
 // ---------- views: Surf (the moving line), Index (every work in a grid) and List (one row each) ----------

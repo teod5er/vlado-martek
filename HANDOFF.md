@@ -216,3 +216,5 @@ Na zahtjev su trzavi pokreti u koracima (16 u sekundi) zamijenjeni glatkima. Tek
 - **Usklađenost:** imena i portret pri otvaranju i zatvaranju rada miču se u istom trajanju i krivulji kao slika (0,95 s; `--fly-ms`, `--fly-ease`, `body.names-back`).
 - **Portret, HR i Sound** odlaze i vraćaju se zajedno: klize ispod donjeg ruba u istom trajanju i krivulji. Pri otvaranju rada nestaju odmah, a pri zatvaranju se vraćaju u ritmu leta slike.
 - **Ulazak galerije** je potpuno gladak, bez sitnih koraka od 24 u sekundi (`enterEase` u `gallery.js`, prijelaz `.gallery` u `style.css`), kao i podizanje splasha.
+- **Ujednačen gornji red:** imena i putanja imaju isti razmak između riječi (`--word`, razmak samog pisma). Slova imena su odvojena samo dok izranjaju, a poslije su običan tekst.
+- **Znak na splashu** (`loader.svg`) iscrta se jednom i ostaje cijeli dok se splash ne podigne, koliko god učitavanje trajalo (prije se animacija vrtjela u krug i nakon 4 s počinjala ispočetka, s praznim znakom).

@@ -30,6 +30,7 @@ html:not(.fonts) body > :not(.loader) { visibility: hidden; }
   --span2: calc(var(--col) * 2 + var(--gut));
   --span3: calc(var(--col) * 3 + var(--gut) * 2);
   --span4: calc(var(--col) * 4 + var(--gut) * 3);
+  --word: .263em;                       /* the typeface's own word space: every gap in the names and the path */
   --group-gap: var(--pad);              /* a phone: between the view icons and the word beside them */
   --blur: 48px;
   --phi: 1.618;
@@ -188,7 +189,7 @@ body.detail-open .label, body.events-open .label { z-index: 26; }
 .label { transition: color 1.2s var(--soft), opacity .8s var(--soft), font-size .45s var(--soft), padding-top .45s var(--soft), left .45s var(--soft); }
 body.bar-compact:not(.names-back) .label { font-size: var(--tm); letter-spacing: 0; } /* set exactly as the categories' names are */
 body.bar-compact:not(.names-back) :is(.label-first, .label-last) { margin-left: 0; }
-body.bar-compact:not(.names-back) .label-last { padding-top: var(--pad); left: calc(var(--pad) + var(--first-em, 2.4) * 1em + .32em); } /* a word space after Vlado (--first-em: its width here, main.js) */
+body.bar-compact:not(.names-back) .label-last { padding-top: var(--pad); left: calc(var(--pad) + var(--first-em, 2.4) * 1em + var(--word)); } /* a word space after Vlado (--first-em: its width here, main.js) */
 /* the navigation shrinks with them: the view icons, language and sound go, and the categories give
    way to the path (below, a computer) */
 /* (item by item, the way they came in after the splash, turned round: main.js, setCompact) */
@@ -218,12 +219,12 @@ body.detail-open:not(.names-back) :is(.about-btn, .prefs) { transition: none; } 
   display: flex; align-items: flex-start; gap: .28em; font-size: var(--tm);
 }
 /* a medium chosen: Home / Medium, Home in grey (a link back to all works) */
-.menu-back { display: none; align-items: flex-start; gap: .35em; font-size: var(--tm); line-height: 1.15; color: var(--ink); white-space: nowrap; }
+.menu-back { display: none; align-items: flex-start; gap: var(--word); font-size: var(--tm); line-height: 1.15; color: var(--ink); white-space: nowrap; }
 .menu-back > * { font-size: var(--tm); line-height: 1.15; text-box: trim-both cap alphabetic; }
 .crumb-home, .crumb-sep { color: var(--crumb); }
 .crumb-home:hover { color: var(--ink); }
 /* the X after the medium: clears it, back to all works */
-.crumb-x { font-size: var(--tm); color: var(--red); margin-left: .15em; }
+.crumb-x { font-size: var(--tm); color: var(--red); }
 .crumb-x:hover { color: var(--ink); }
 .crumb-x .icon .s { stroke-width: 2.3; } /* the close X: as heavy as the stems of the path's letters */
 body.has-cat .menu-back { display: flex; }
@@ -321,7 +322,7 @@ body.detail-open .about-link, body.events-open .about-link { z-index: 25; }
 .events-dates { color: var(--red); }
 /* a work's top bar, where the media stand: Back to: Medium, then (once the big title has scrolled
    away) the work's name */
-.detail-bar { position: absolute; font-size: var(--tm); top: var(--row); left: var(--cs); right: calc(var(--pad) + 10em); z-index: 3; display: flex; align-items: flex-start; gap: .35em; white-space: nowrap; }
+.detail-bar { position: absolute; font-size: var(--tm); top: var(--row); left: var(--cs); right: calc(var(--pad) + 10em); z-index: 3; display: flex; align-items: flex-start; gap: var(--word); white-space: nowrap; }
 .detail-bar > * { flex: none; font-size: var(--tm); line-height: 1.15; text-box: trim-both cap alphabetic; }
 .crumb-cat { color: var(--ink); }
 .crumb-cat:hover { color: var(--red); }
