@@ -1902,6 +1902,224 @@
       ]
     },
     {
+      "id": "mangelos",
+      "title": "Mangelos",
+      "year": "",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/mangelos.webp",
+      "thumb": "works/painting/mangelos-thumb.webp",
+      "cutout": true,
+      "aspect": 1.4119,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Mangelos",
+        "medium": "",
+        "description": ""
+      },
+      "details": [
+        "works/painting/mangelos-d1.webp",
+        "works/painting/mangelos-d2.webp",
+        "works/painting/mangelos-d3.webp"
+      ]
+    },
+    {
+      "id": "artist",
+      "title": "Artist",
+      "year": "",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/artist.webp",
+      "thumb": "works/painting/artist-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3335,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Artist",
+        "medium": "",
+        "description": ""
+      },
+      "details": [
+        "works/painting/artist-d1.webp",
+        "works/painting/artist-d2.webp"
+      ]
+    },
+    {
+      "id": "bez-naziva-2",
+      "title": "Bez naziva",
+      "year": "",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/bez-naziva-2.webp",
+      "thumb": "works/painting/bez-naziva-2-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3328,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Untitled",
+        "medium": "",
+        "description": ""
+      },
+      "details": [
+        "works/painting/bez-naziva-2-d1.webp",
+        "works/painting/bez-naziva-2-d2.webp"
+      ]
+    },
+    {
+      "id": "bez-naziva-3",
+      "title": "Bez naziva",
+      "year": "",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/bez-naziva-3.webp",
+      "thumb": "works/painting/bez-naziva-3-thumb.webp",
+      "cutout": true,
+      "aspect": 1.1094,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Untitled",
+        "medium": "",
+        "description": ""
+      },
+      "details": [
+        "works/painting/bez-naziva-3-d1.webp",
+        "works/painting/bez-naziva-3-d2.webp"
+      ]
+    },
+    {
+      "id": "bolje-balkan-nego-bol",
+      "title": "Bolje Balkan nego bol",
+      "year": "",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/bolje-balkan-nego-bol.webp",
+      "thumb": "works/painting/bolje-balkan-nego-bol-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3328,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Better the Balkans than Pain",
+        "medium": "",
+        "description": ""
+      },
+      "details": [
+        "works/painting/bolje-balkan-nego-bol-d1.webp",
+        "works/painting/bolje-balkan-nego-bol-d2.webp"
+      ]
+    },
+    {
+      "id": "ima-realnog",
+      "title": "Ima realnog",
+      "year": "",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/ima-realnog.webp",
+      "thumb": "works/painting/ima-realnog-thumb.webp",
+      "cutout": true,
+      "aspect": 0.7502,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "There Is Some Real",
+        "medium": "",
+        "description": ""
+      },
+      "details": [
+        "works/painting/ima-realnog-d1.webp",
+        "works/painting/ima-realnog-d2.webp"
+      ]
+    },
+    {
+      "id": "nije-vrijeme-da-se-psi-kobasicama-vezu",
+      "title": "Nije vrijeme da se psi kobasicama vežu",
+      "year": "",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/nije-vrijeme-da-se-psi-kobasicama-vezu.webp",
+      "thumb": "works/painting/nije-vrijeme-da-se-psi-kobasicama-vezu-thumb.webp",
+      "cutout": true,
+      "aspect": 1.3328,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "It Is No Time to Tie Dogs Up with Sausages",
+        "medium": "",
+        "description": ""
+      },
+      "details": [
+        "works/painting/nije-vrijeme-da-se-psi-kobasicama-vezu-d1.webp",
+        "works/painting/nije-vrijeme-da-se-psi-kobasicama-vezu-d2.webp",
+        "works/painting/nije-vrijeme-da-se-psi-kobasicama-vezu-d3.webp"
+      ]
+    },
+    {
+      "id": "pubertet-2",
+      "title": "Pubertet",
+      "year": "",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/pubertet-2.webp",
+      "thumb": "works/painting/pubertet-2-thumb.webp",
+      "cutout": true,
+      "aspect": 0.7499,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Puberty",
+        "medium": "",
+        "description": ""
+      },
+      "details": [
+        "works/painting/pubertet-2-d1.webp",
+        "works/painting/pubertet-2-d2.webp"
+      ]
+    },
+    {
+      "id": "svaki-je-umjetnik-obmanut-od-amerike-2",
+      "title": "Svaki je umjetnik obmanut od Amerike",
+      "year": "",
+      "categories": [
+        "painting",
+        "americas"
+      ],
+      "image": "works/painting/svaki-je-umjetnik-obmanut-od-amerike-2.webp",
+      "thumb": "works/painting/svaki-je-umjetnik-obmanut-od-amerike-2-thumb.webp",
+      "cutout": true,
+      "aspect": 0.7792,
+      "medium": "",
+      "description": "",
+      "en": {
+        "title": "Every Artist is Deluded by America",
+        "medium": "",
+        "description": ""
+      },
+      "details": [
+        "works/painting/svaki-je-umjetnik-obmanut-od-amerike-2-d1.webp",
+        "works/painting/svaki-je-umjetnik-obmanut-od-amerike-2-d2.webp"
+      ]
+    },
+    {
       "id": "bez-naziva",
       "title": "Bez naziva",
       "year": "1990.",

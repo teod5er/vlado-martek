@@ -14,7 +14,8 @@ write-its-name citajte-pjesme-rimbauda citajte-pjesme-majakovskog read-larkins-p
 umjetnik-artifex ljubav-odgovornost muzej-suvremene-umjetnosti shakespeare starost efke les-artistes-aux-armes
 amerika-za-corave balkani every-artist-is-deluded-by-america crna-amerika izgubljena-olovka izmedu-mora-i-amerike-biraj-more
 staklena-amerika svaki-je-umjetnik-obmanut-od-amerike hanna-arendt ideja-amerike pseudorimbaud-2026 estetika-uber-alles
-amerika-na-romobilu point-de-caption'''.split())
+amerika-na-romobilu point-de-caption artist bez-naziva-2 bez-naziva-3 bolje-balkan-nego-bol ima-realnog
+pubertet-2 svaki-je-umjetnik-obmanut-od-amerike-2'''.split())
 WIDE, CLOSE, CLOSE_PX = .64, .22, 620  # their sides, as parts of the work's shorter side; the close one at least this many pixels of the original
 d = json.load(open('public/data/works.json', encoding='utf-8'))
 def original(w):
