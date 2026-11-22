@@ -211,7 +211,7 @@ Na zahtjev su trzavi pokreti u koracima (16 u sekundi) zamijenjeni glatkima. Tek
 
 - **Zatvaranje rada:** dok slika leti natrag, njezino mjesto u galeriji, mreži ili popisu ostaje prazno (`holdPlace` u `main.js`), pa se isti rad nikad ne vidi dvaput.
 - **Redoslijed u galeriji:** svaki rad leži na radovima iza sebe i taj se redoslijed ne mijenja dok se niz pomiče (`zIndex` u `frame()` u `gallery.js`). Rad koji odlazi klizne s vrha i otkrije sljedeći, pa nijedna slika više ne preskače drugu.
-- **O autoru, dno stranice:** „Contact:” s adresom (`artist.email`) i „Design: T—P” s poveznicom na teopeter.work u novoj kartici, a ispod toga „© 2026” (`#infoCredits`).
+- **O autoru, dno stranice:** „Contact:” s adresom (`artist.email`) i „Design: teopeter.work” s poveznicom na teopeter.work u novoj kartici, a ispod toga „© 2026” (`#infoCredits`).
 - **Otvoren rad:** čim se rad otvori, imena se sažmu u jedan red, a jezik, Sound i portret se sklone (`setCompact` s `now` u `openDetail`). Tako ostaje dok je rad otvoren, i na vrhu stranice.
 - **Usklađenost:** imena i portret pri otvaranju i zatvaranju rada miču se u istom trajanju i krivulji kao slika (0,95 s; `--fly-ms`, `--fly-ease`, `body.names-back`).
 - **Portret, HR i Sound** odlaze i vraćaju se zajedno: klize ispod donjeg ruba u istom trajanju i krivulji. Pri otvaranju rada nestaju odmah, a pri zatvaranju se vraćaju u ritmu leta slike.
