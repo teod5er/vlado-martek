@@ -5,6 +5,7 @@
 // then estimated, and a returning visitor is not recognised).
 // While the ID is empty, nothing loads at all.
 const GTM_ID = 'GTM-KZJQZDSL';
+const UMAMI_ID = 'd398cd19-bb8e-4f5c-a7f4-4035dfb4c578';
 
 // only on the published site: not on localhost (npm run dev / preview) and not in the offline file
 const live = GTM_ID && import.meta.env.PROD && /^https?:$/.test(location.protocol) && !/^(localhost|127\.|192\.168\.|172\.|10\.)/.test(location.hostname);
@@ -20,6 +21,13 @@ if (live) {
   s.async = true;
   s.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(GTM_ID)}`;
   document.head.append(s);
+
+  // Umami (cloud.umami.is): cookieless as well; it follows the address changes by itself
+  const u = document.createElement('script');
+  u.defer = true;
+  u.src = 'https://cloud.umami.is/script.js';
+  u.dataset.websiteId = UMAMI_ID;
+  document.head.append(u);
 }
 
 // the address changes without a load (a medium chosen, a work, About or the events opened or
